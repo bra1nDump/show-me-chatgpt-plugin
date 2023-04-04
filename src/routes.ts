@@ -14,7 +14,7 @@ export class ASCIIArtRender extends OpenAPIRoute {
   static schema = {
     tags: ['figlet'],
     summary:
-      'Renders text as ASCII art. Output is a multi-line string that should be rendered as markdown.',
+      'Renders text as ASCII art. Output is a string that should be rendered a markdown code block. Do not specify a programming language for the code block; it is plain text.',
     parameters: {
       input: Query(
         new Str({

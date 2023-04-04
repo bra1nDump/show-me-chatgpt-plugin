@@ -21,7 +21,7 @@ router.get('/.well-known/ai-plugin.json', (request: Request) => {
     name_for_model: 'asciiArt0',
     name_for_human: 'ASCII Art',
     description_for_model:
-      'Plugin for rendering text as ASCII art. Use it whenever a user asks to convert text into ASCII character art.',
+      'Plugin for rendering text as ASCII art. Use it whenever a user asks to convert text into ASCII character art. Output is a string that should be rendered as a markdown code block (no programming language).',
     description_for_human: 'Convert any text to ASCII art.',
     auth: {
       type: 'none'
