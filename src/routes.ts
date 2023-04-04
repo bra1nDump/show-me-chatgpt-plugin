@@ -13,7 +13,8 @@ figlet.defaults({
 export class ASCIIArtRender extends OpenAPIRoute {
   static schema = {
     tags: ['figlet'],
-    summary: 'Renders text as ASCII art',
+    summary:
+      'Renders text as ASCII art. Output is a multi-line string that should be rendered as markdown.',
     parameters: {
       input: Query(
         new Str({
@@ -34,7 +35,27 @@ export class ASCIIArtRender extends OpenAPIRoute {
           Ghost: 'Ghost',
           '3D Diagonal': '3D Diagonal',
           Graffiti: 'Graffiti',
-          'Dancing Font': 'Dancing Font'
+          'Dancing Font': 'Dancing Font',
+          'Big Money-ne': 'Big Money-ne',
+          'Big Money-nw': 'Big Money-nw',
+          'Big Money-se': 'Big Money-se',
+          'Big Money-sw': 'Big Money-sw',
+          Big: 'Big',
+          Bulbhead: 'Bulbhead',
+          Doom: 'Doom',
+          Isometric1: 'Isometric1',
+          Slant: 'Slant',
+          'Sub-Zero': 'Sub-Zero',
+          'ANSI Regular': 'ANSI Regular',
+          'ANSI Shadow': 'ANSI Shadow',
+          Bloody: 'Bloody',
+          Alligator: 'Alligator',
+          Alligator2: 'Alligator2',
+          Ivrit: 'Ivrit',
+          'Larry 3D': 'Larry 3D',
+          NScript: 'NScript',
+          Poison: 'Poison',
+          'Small Poison': 'Small Poison'
         }
       })
     },
