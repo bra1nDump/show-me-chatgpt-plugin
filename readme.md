@@ -1,6 +1,6 @@
 # ChatGPT Plugin TS <!-- omit in toc -->
 
-> TODO
+> TODO: this is an active WIP as of April 3, 2023.. source and NPM package with utils and types coming soon...
 
 [![Build Status](https://github.com/transitive-bullshit/chatgpt-plugin-ts/actions/workflows/test.yml/badge.svg)](https://github.com/transitive-bullshit/chatgpt-plugin-ts/actions/workflows/test.yml) [![MIT License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/transitive-bullshit/chatgpt-plugin-ts/blob/main/license) [![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg)](https://prettier.io)
 

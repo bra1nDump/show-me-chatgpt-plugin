@@ -1,8 +1,7 @@
 {
-  "name": "chatgpt-plugin-ts",
+  "name": "chatgpt-plugin",
   "version": "0.0.1",
-  "private": true,
-  "description": "ChatGPT Plugin template for TS and CF workers",
+  "description": "ChatGPT Plugin template for TS and CF workers. TODO: this is an active WIP as of April 3, 2023.. source and NPM package with utils and types coming soon...",
   "author": "Travis Fischer <travis@transitivebullsh.it>",
   "repository": "transitive-bullshit/chatgpt-plugin-ts",
   "license": "MIT",
@@ -14,15 +13,17 @@
     "node": ">=14"
   },
   "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler publish",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
     "test": "run-p test:*",
     "test:prettier": "prettier '**/*.{js,jsx,ts,tsx}' --check"
   },
-  "dependencies": {
-  },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20230321.0",
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
+    "@types/figlet": "^1.5.5",
     "@types/node": "^18.15.11",
     "del-cli": "^5.0.0",
     "dotenv-safe": "^8.2.0",
@@ -31,7 +32,8 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^2.8.7",
     "tsx": "^3.12.6",
-    "typescript": "^5.0.3"
+    "typescript": "^5.0.3",
+    "wrangler": "^2.14.0"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -46,5 +48,9 @@
     "cloudflare",
     "cf",
     "worker"
-  ]
+  ],
+  "dependencies": {
+    "@cloudflare/itty-router-openapi": "^0.0.15",
+    "figlet": "^1.5.2"
+  }
 }
