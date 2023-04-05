@@ -1,0 +1,29 @@
+{
+  "name": "chatgpt-plugin-example-ascii-art",
+  "version": "0.0.1",
+  "private": true,
+  "description": "TODO",
+  "author": "Travis Fischer <travis@transitivebullsh.it>",
+  "repository": "transitive-bullshit/chatgpt-plugin-ts",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=14"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler publish"
+  },
+  "dependencies": {
+    "@cloudflare/itty-router-openapi": "^0.0.15",
+    "figlet": "^1.5.2",
+    "chatgpt-plugin": "workspace:../../packages/chatgpt-plugin"
+  },
+  "keywords": [
+    "openai",
+    "chatgpt",
+    "plugin",
+    "openapi",
+    "worker"
+  ]
+}

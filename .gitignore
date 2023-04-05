@@ -4,19 +4,19 @@
 .idea
 
 # dependencies
-/node_modules
-/.pnp
+node_modules/
+.pnp/
 .pnp.js
 
 # testing
 /coverage
 
 # next.js
-/.next/
-/out/
+.next/
+out/
 
 # production
-/build
+build/
 
 # misc
 .DS_Store
@@ -45,6 +45,3 @@ next-env.d.ts
 .env.development.local
 .env.test.local
 .env.production.local
-
-# data dumps
-out/

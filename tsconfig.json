@@ -1,23 +1,11 @@
 {
   "compilerOptions": {
-		"target": "es2021",
-    "lib": ["esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": false,
-    "forceConsistentCasingInFileNames": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "baseUrl": ".",
-    "outDir": "build",
-    "noEmit": true,
-    "types": [
-			"@cloudflare/workers-types"
-		]
+    "composite": true
   },
-  "exclude": ["node_modules", "build"],
-  "include": ["**/*.ts"]
+  "files": [],
+  "include": [],
+  "references": [
+    { "path": "./packages/chatgpt-plugin/tsconfig.json" },
+    { "path": "./plugins/ascii-art/tsconfig.json" }
+  ]
 }
