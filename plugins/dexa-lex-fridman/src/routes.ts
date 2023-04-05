@@ -67,12 +67,15 @@ export class DexaSearch extends OpenAPIRoute {
     // const url = new URL(request.url)
     // const input = url.searchParams.get('input') || 'hello'
     // const font: any = url.searchParams.get('font') || 'Ghost'
-    console.log({ env, data })
-    console.log(env.DEXA_API_BASE_URL, data.query)
     const dexaApiBaseUrl = env.DEXA_API_BASE_URL
     if (!dexaApiBaseUrl) {
       return new Response('DEXA_API_BASE_URL not set', { status: 500 })
     }
+
+    console.log()
+    console.log()
+    console.log('>>> search', data.query)
+    console.log()
 
     const url = `${dexaApiBaseUrl}/api/query`
     const body = types.DexaSearchRequestBodySchema.parse({
@@ -93,7 +96,6 @@ export class DexaSearch extends OpenAPIRoute {
       return res.json()
     })
 
-    console.log(dexaRes)
     const results = dexaRes.chunks.map((chunk) => ({
       content: chunk.content,
       // chunkSummary: chunk.chunkSummary,
@@ -103,6 +105,10 @@ export class DexaSearch extends OpenAPIRoute {
       docName: chunk.docName,
       url: `https://dexa.ai/lex/episodes/${chunk.docSid}?sectionSid=${chunk.sectionSid}&chunkSid=${chunk.chunkSid}`
     }))
+    console.log(`search results for query "${data.query}"`, results)
+    console.log()
+    console.log()
+    console.log('<<< search', data.query)
 
     const responseBody = {
       results
