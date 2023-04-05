@@ -6,13 +6,12 @@ export class DexaSearch extends OpenAPIRoute {
   static schema = {
     tags: ['dexa'],
     summary:
-      'Searches the Lex Fridman podcast transcripts for any topic or question and returns the most relevant results in the form of chunks of conversations. Multiple chunks can be combined to form a summary of the topic or question.',
+      'Searches the Lex Fridman podcast for any topic and returns the most relevant results as conversation transcripts. Multiple conversation transcripts can be combined to form a summary. Always be sure to cite your sources when using this API.',
     parameters: {
       query: Query(
         new Str({
-          description:
-            'Search query either in the form of a question or keywords',
-          example: 'What is the meaning of life?'
+          description: 'Search query',
+          example: 'elon musk tesla'
         }),
         {
           required: true
@@ -25,29 +24,25 @@ export class DexaSearch extends OpenAPIRoute {
           results: [
             {
               content: new Str({
-                description: 'The content of the transcription chunk'
-              }),
-              // chunkSummary: new Str({
-              //   description: 'GPT generated summary of the chunk content'
-              // }),
-              docName: new Str({
-                description: 'Name of the document (episode) the chunk is from'
-              }),
-              sectionName: new Str({
                 description:
-                  'Name of the section (chapter) the chunk is from within the source episode'
+                  'The main content of this conversation transcript with speaker labels'
               }),
-              chunkName: new Str({
-                description: 'Name of the chunk'
+              episodeTitle: new Str({
+                description:
+                  'Title of the podcast episode this conversation is from'
+              }),
+              chapterTitle: new Str({
+                description: 'Title of the chapter this conversation is from'
               }),
               peopleNames: [
                 new Str({
                   description:
-                    'Name of the person (or people) who spoke in this chunk'
+                    'Names of the person (or people) present in the conversation'
                 })
               ],
-              url: new Str({
-                description: 'URL to the search result',
+              citationUrl: new Str({
+                description:
+                  'URL citation linking to the source of this conversation. Use this URL to cite this conversation in answers.',
                 example:
                   'https://dexa.ai/lex/episodes/doc_358?sectionSid=sec_5319&chunkSid=chunk_9725'
               })
@@ -96,10 +91,9 @@ export class DexaSearch extends OpenAPIRoute {
       content: chunk.content,
       // chunkSummary: chunk.chunkSummary,
       peopleNames: chunk.peopleNames,
-      chunkName: chunk.chunkName,
-      sectionName: chunk.sectionName,
-      docName: chunk.docName,
-      url: `https://dexa.ai/lex/episodes/${chunk.docSid}?sectionSid=${chunk.sectionSid}&chunkSid=${chunk.chunkSid}`
+      chapterTitle: chunk.sectionName,
+      episodeTitle: chunk.docName,
+      citationUrl: `https://dexa.ai/lex/episodes/${chunk.docSid}?sectionSid=${chunk.sectionSid}&chunkSid=${chunk.chunkSid}`
     }))
     console.log(`search results for query "${query}"`, results)
     console.log()
