@@ -6,6 +6,7 @@
 
 - [Intro](#intro)
 - [Dexa](#dexa)
+  - [Lex Fridman Stats](#lex-fridman-stats)
 - [Stack](#stack)
 - [License](#license)
 
@@ -24,6 +25,14 @@ It contains a single API route.
 Under the hood, they're doing **a lot** of really awesome, AI-powered data processing:
 
 - TODO @riley
+
+### Lex Fridman Stats
+
+Lex Fridman Podcast stats from [Dexa](https://dexa.ai/) as of April 5, 2023:
+
+- Total audio length: 1 month, 4 days, 21 hours, 8 minutes, 32 seconds
+- Total number of episodes: 364
+- Total characters transcribed: 1,276,987
 
 ## Stack
 
