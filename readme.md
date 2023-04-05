@@ -14,7 +14,19 @@ TODO
 
 ## Notes
 
-- name_for_numan has a max of 30 characters
+- `name_for_human` 
+  - 50 character max
+- `name_for_model` 
+  - 50 character max for 
+- `description_for_human` 
+  - 120 character max
+- `description_for_model` 
+  - 8000 character max
+  - Max decreases over time
+- API response body length
+  - 100k character limit
+  - Decreases over time
+  - Subject to limitations
 
 ## License
 
