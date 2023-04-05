@@ -14,7 +14,6 @@ TODO
 
 ## Notes
 
-<<<<<<< HEAD
 - `name_for_human` 
   - 50 character max
 - `name_for_model` 
