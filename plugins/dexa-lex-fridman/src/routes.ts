@@ -77,7 +77,7 @@ export class DexaSearch extends OpenAPIRoute {
     const url = `${dexaApiBaseUrl}/api/query`
     const body = types.DexaSearchRequestBodySchema.parse({
       query: data.query,
-      topK: 40
+      topK: 10
     })
     const dexaRes: types.DexaSearchResponseBody = await fetch(url, {
       method: 'POST',
