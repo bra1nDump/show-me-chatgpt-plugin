@@ -5,11 +5,22 @@
 [![Build Status](https://github.com/transitive-bullshit/chatgpt-plugin-ts/actions/workflows/test.yml/badge.svg)](https://github.com/transitive-bullshit/chatgpt-plugin-ts/actions/workflows/test.yml) [![MIT License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/transitive-bullshit/chatgpt-plugin-ts/blob/main/license) [![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg)](https://prettier.io)
 
 - [Intro](#intro)
+- [Stack](#stack)
 - [License](#license)
 
 ## Intro
 
-TODO
+This is a simple ChatGPT Plugin which renders text as ASCII art.
+
+It contains a single API route.
+
+[Live demo](https://chatgpt-plugin-ascii-art.transitive-bullshit.workers.dev/.well-known/ai-plugin.json)
+
+## Stack
+
+- [Cloudflare Workers](https://workers.cloudflare.com/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [@cloudflare/itty-router-openapi](https://github.com/cloudflare/itty-router-openapi)
 
 ## License
 

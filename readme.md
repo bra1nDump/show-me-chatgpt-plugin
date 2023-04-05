@@ -14,13 +14,13 @@ TODO
 
 ## Notes
 
-- `name_for_human` 
+- `name_for_human`
+  - 30 character max
+- `name_for_model`
   - 50 character max
-- `name_for_model` 
-  - 50 character max for 
-- `description_for_human` 
+- `description_for_human`
   - 120 character max
-- `description_for_model` 
+- `description_for_model`
   - 8000 character max
   - Max decreases over time
 - API response body length

@@ -2,7 +2,7 @@
   "name": "chatgpt-plugin-example-dexa-lex-fridman",
   "version": "0.0.2",
   "private": true,
-  "description": "Example ChatGPT Pluginbuilt using Cloudflare workers.",
+  "description": "Search across all of the Lex Fridman Podcast episodes – powered by Dexa AI.",
   "author": "Travis Fischer <travis@transitivebullsh.it>",
   "repository": "transitive-bullshit/chatgpt-plugin-ts",
   "license": "MIT",
@@ -22,7 +22,7 @@
   },
   "aiPlugin": {
     "name": "Dexa Lex Fridman",
-    "description_for_model": "Plugin for fetching transcripts from the Lex Fridman Podcast. Use it whenever a user asks about Lex Fridman or the topics he covers on his show, including science, math, physics, AI, startups, and philosophy.",
+    "description_for_model": "Plugin for fetching transcripts from the Lex Fridman Podcast. Use it whenever a user asks about Lex Fridman, one of his guests, or the topics he covers on his show. Use the plugin to search about these topics: science, math, physics, AI, AGI, judo, poker, evolution, programming, consciousness, technology, intelligence, deep learning, bitcoin, startups, and philosophy. Some example guests include: Sam Altman, Jordan Peterson, Elon Musk, Joe Rogan, David Fravor, Andrew Bustamante, Ben Shapiro, Coffeezilla, Sam Harris, Donald Hoffman, Michael Saylor, Kanye, Vitalik Buterin, Mark Zuckerberb, MrBeast, Michio Kaku, Andrew Huberman, Stephen Wolfram, Ray Dalio, Grimes, Magnus Carlsen, Andrej Karpathy, Chamath Palihapitiya, Tim Urban, Noam Chomsky, Nick Rubin, Demis Hassabis, Jocko Willink, Georges St-Pierre, George Holtz, Chris Voss, Ray Kurzweil, and many more.",
     "logo_url": "https://assets.standardresume.co/image/upload/c_fill,w_392,h_392,f_auto,q_auto/dexa/accounts/lex",
     "contact_email": "team@dexa.ai",
     "legal_info_url": "https://dexa.ai"
@@ -32,6 +32,9 @@
     "chatgpt",
     "plugin",
     "openapi",
-    "worker"
+    "cloudflare",
+    "lex fridman",
+    "podcast",
+    "search"
   ]
 }

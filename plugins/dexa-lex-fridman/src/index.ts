@@ -1,6 +1,6 @@
 import { OpenAPIRouter } from '@cloudflare/itty-router-openapi'
 import slugify from '@sindresorhus/slugify'
-import { type AIPlugin } from 'chatgpt-plugin'
+import { type AIPluginManifest } from 'chatgpt-plugin'
 
 import * as routes from './routes'
 import pkg from '../package.json'
@@ -24,7 +24,7 @@ router.get('/.well-known/ai-plugin.json', (request: Request) => {
   const host = request.headers.get('host')
   const nameForModel = slugify(pkg.aiPlugin.name, { separator: '_' })
 
-  const pluginSpec: AIPlugin = {
+  const pluginSpec: AIPluginManifest = {
     schema_version: 'v1',
     name_for_model: nameForModel,
     name_for_human: pkg.aiPlugin.name,

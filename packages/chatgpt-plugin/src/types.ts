@@ -1,33 +1,33 @@
-export interface AIPlugin {
+export interface AIPluginManifest {
   schema_version: string
   name_for_model: string
   name_for_human: string
   description_for_model: string
   description_for_human: string
-  auth: Auth
-  api: API
+  auth: AIPluginAuth
+  api: AIPluginAPI
   logo_url: string
   contact_email: string
   legal_info_url: string
 }
 
-export interface API {
+export interface AIPluginAPI {
   type: string
   url: string
   has_user_authentication: boolean
 }
 
-export interface Auth {
+export interface AIPluginAuth {
   type: string | 'none'
   authorization_type?: string
   authorization_url?: string
   client_url?: string
   scope?: string
   authorization_content_type?: string
-  verification_tokens?: VerificationTokens
+  verification_tokens?: AIPluginVerificationTokens
   instructions?: string
 }
 
-export interface VerificationTokens {
+export interface AIPluginVerificationTokens {
   openai: string
 }

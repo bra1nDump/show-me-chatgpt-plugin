@@ -1,5 +1,5 @@
 import { OpenAPIRouter } from '@cloudflare/itty-router-openapi'
-import { type AIPlugin } from 'chatgpt-plugin'
+import { type AIPluginManifest } from 'chatgpt-plugin'
 
 import * as routes from './routes'
 
@@ -16,7 +16,7 @@ router.get('/render', routes.ASCIIArtRender)
 
 router.get('/.well-known/ai-plugin.json', (request: Request) => {
   const host = request.headers.get('host')
-  const pluginSpec: AIPlugin = {
+  const pluginSpec: AIPluginManifest = {
     schema_version: 'v1',
     name_for_model: 'asciiArt0',
     name_for_human: 'ASCII Art',
