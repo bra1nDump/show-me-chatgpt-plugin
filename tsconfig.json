@@ -4,8 +4,5 @@
   },
   "files": [],
   "include": [],
-  "references": [
-    { "path": "./packages/chatgpt-plugin/tsconfig.json" },
-    { "path": "./plugins/ascii-art/tsconfig.json" }
-  ]
+  "references": [{ "path": "./packages/chatgpt-plugin/tsconfig.json" }]
 }

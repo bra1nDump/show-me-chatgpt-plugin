@@ -28,7 +28,6 @@ router.get('/.well-known/ai-plugin.json', (request: Request) => {
     schema_version: 'v1',
     name_for_model: nameForModel,
     name_for_human: pkg.aiPlugin.name,
-    description_for_model: pkg.aiPlugin.description_for_model,
     description_for_human: pkg.description,
     auth: {
       type: 'none'
