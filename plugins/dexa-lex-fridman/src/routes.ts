@@ -1,9 +1,4 @@
-import {
-  Enumeration,
-  OpenAPIRoute,
-  Query,
-  Str
-} from '@cloudflare/itty-router-openapi'
+import { OpenAPIRoute, Query, Str } from '@cloudflare/itty-router-openapi'
 
 import * as types from './types'
 
@@ -16,7 +11,7 @@ export class DexaSearch extends OpenAPIRoute {
       query: Query(
         new Str({
           description:
-            'Search query either in the form of a question of keywords',
+            'Search query either in the form of a question or keywords',
           example: 'What is the meaning of life?'
         }),
         {
@@ -64,22 +59,23 @@ export class DexaSearch extends OpenAPIRoute {
   }
 
   async handle(request: Request, env: any, _ctx, data: Record<string, any>) {
-    // const url = new URL(request.url)
-    // const input = url.searchParams.get('input') || 'hello'
-    // const font: any = url.searchParams.get('font') || 'Ghost'
     const dexaApiBaseUrl = env.DEXA_API_BASE_URL
     if (!dexaApiBaseUrl) {
       return new Response('DEXA_API_BASE_URL not set', { status: 500 })
     }
 
+    const openaiUserLocaleInfo = request.headers.get(
+      'openai-subdivision-1-iso-code'
+    )
+    const { query } = data
     console.log()
     console.log()
-    console.log('>>> search', data.query)
+    console.log('>>> search', `${query} (${openaiUserLocaleInfo})`)
     console.log()
 
     const url = `${dexaApiBaseUrl}/api/query`
     const body = types.DexaSearchRequestBodySchema.parse({
-      query: data.query,
+      query,
       topK: 10
     })
     const dexaRes: types.DexaSearchResponseBody = await fetch(url, {
@@ -105,10 +101,10 @@ export class DexaSearch extends OpenAPIRoute {
       docName: chunk.docName,
       url: `https://dexa.ai/lex/episodes/${chunk.docSid}?sectionSid=${chunk.sectionSid}&chunkSid=${chunk.chunkSid}`
     }))
-    console.log(`search results for query "${data.query}"`, results)
+    console.log(`search results for query "${query}"`, results)
     console.log()
     console.log()
-    console.log('<<< search', data.query)
+    console.log('<<< search', `${query} (${openaiUserLocaleInfo})`)
 
     const responseBody = {
       results
