@@ -14,6 +14,7 @@ TODO
 
 ## Notes
 
+<<<<<<< HEAD
 - `name_for_human` 
   - 50 character max
 - `name_for_model` 
@@ -27,6 +28,7 @@ TODO
   - 100k character limit
   - Decreases over time
   - Subject to limitations
+- TODO: `defineConfig` function to help validate `ai-plugin.json` configs?
 
 ## License
 
