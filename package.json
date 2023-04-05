@@ -1,6 +1,5 @@
 {
   "name": "chatgpt-plugin-ts",
-  "version": "0.0.1",
   "private": true,
   "description": "Examples and resources for creaeting ChatGPT plugins in TypeScript.",
   "author": "Travis Fischer <travis@transitivebullsh.it>",
@@ -18,6 +17,7 @@
     "build": "run-s build:*",
     "build:tsup": "lerna run build --no-private",
     "build:tsc": "tsc --build",
+    "deploy": "lerna run deploy",
     "clean": "del packages/*/build",
     "prebuild": "run-s clean",
     "prepare": "husky install",

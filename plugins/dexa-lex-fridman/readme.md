@@ -1,6 +1,6 @@
-# ChatGPT Plugin Example - ASCII Art <!-- omit in toc -->
+# ChatGPT Plugin Example - Dexa Lex Fridman Podcast <!-- omit in toc -->
 
-> Example ChatGPT Plugin which renders text as ASCII art. Built using Cloudflare workers.
+> Example ChatGPT Plugin built using Cloudflare workers.
 
 [![Build Status](https://github.com/transitive-bullshit/chatgpt-plugin-ts/actions/workflows/test.yml/badge.svg)](https://github.com/transitive-bullshit/chatgpt-plugin-ts/actions/workflows/test.yml) [![MIT License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/transitive-bullshit/chatgpt-plugin-ts/blob/main/license) [![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg)](https://prettier.io)
 

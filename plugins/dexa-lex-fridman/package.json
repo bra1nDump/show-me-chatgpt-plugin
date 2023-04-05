@@ -1,0 +1,37 @@
+{
+  "name": "chatgpt-plugin-example-dexa-lex-fridman",
+  "version": "0.0.2",
+  "private": true,
+  "description": "Example ChatGPT Pluginbuilt using Cloudflare workers.",
+  "author": "Travis Fischer <travis@transitivebullsh.it>",
+  "repository": "transitive-bullshit/chatgpt-plugin-ts",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=14"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler publish"
+  },
+  "dependencies": {
+    "@cloudflare/itty-router-openapi": "^0.0.15",
+    "@sindresorhus/slugify": "^2.2.0",
+    "chatgpt-plugin": "workspace:../../packages/chatgpt-plugin",
+    "zod": "^3.21.4"
+  },
+  "aiPlugin": {
+    "name": "Dexa Lex Fridman",
+    "description_for_model": "Plugin for fetching transcripts from the Lex Fridman Podcast. Use it whenever a user asks about Lex Fridman or the topics he covers on his show, including science, math, physics, AI, startups, and philosophy.",
+    "logo_url": "https://transitivebullsh.it/.well-known/logo.png",
+    "contact_email": "travis@transitivebullsh.it",
+    "legal_info_url": "https://transitivebullsh.it/about"
+  },
+  "keywords": [
+    "openai",
+    "chatgpt",
+    "plugin",
+    "openapi",
+    "worker"
+  ]
+}

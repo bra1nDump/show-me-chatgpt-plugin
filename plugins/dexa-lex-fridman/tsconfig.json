@@ -7,6 +7,6 @@
     "emitDeclarationOnly": true,
     "types": ["@cloudflare/workers-types"]
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "package.json", "../../temp.ts"],
   "references": [{ "path": "../../packages/chatgpt-plugin/tsconfig.json" }]
 }
