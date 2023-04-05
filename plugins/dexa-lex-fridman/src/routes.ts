@@ -1,12 +1,13 @@
 import { OpenAPIRoute, Query, Str } from '@cloudflare/itty-router-openapi'
 
 import * as types from './types'
+import { omit } from './utils'
 
 export class DexaSearch extends OpenAPIRoute {
   static schema = {
     tags: ['dexa'],
     summary:
-      'Searches the Lex Fridman podcast for any topic and returns the most relevant results as conversation transcripts. Multiple conversation transcripts can be combined to form a summary. Always be sure to cite your sources when using this API.',
+      'Searches the Lex Fridman podcast for any topic and returns the most relevant results as conversation transcripts. Multiple conversation transcripts can be combined to form a summary. Always cite your sources when using this API using the citationUrl.',
     parameters: {
       query: Query(
         new Str({
@@ -34,12 +35,12 @@ export class DexaSearch extends OpenAPIRoute {
               chapterTitle: new Str({
                 description: 'Title of the chapter this conversation is from'
               }),
-              peopleNames: [
-                new Str({
-                  description:
-                    'Names of the person (or people) present in the conversation'
-                })
-              ],
+              // peopleNames: [
+              //   new Str({
+              //     description:
+              //       'Names of the person (or people) present in the conversation'
+              //   })
+              // ],
               citationUrl: new Str({
                 description:
                   'URL citation linking to the source of this conversation. Use this URL to cite this conversation in answers.',
@@ -90,12 +91,18 @@ export class DexaSearch extends OpenAPIRoute {
     const results = dexaRes.chunks.map((chunk) => ({
       content: chunk.content,
       // chunkSummary: chunk.chunkSummary,
-      peopleNames: chunk.peopleNames,
+      // peopleNames: chunk.peopleNames,
       chapterTitle: chunk.sectionName,
       episodeTitle: chunk.docName,
       citationUrl: `https://dexa.ai/lex/episodes/${chunk.docSid}?sectionSid=${chunk.sectionSid}&chunkSid=${chunk.chunkSid}`
     }))
-    console.log(`search results for query "${query}"`, results)
+    console.log(
+      `search results for query "${query}"`,
+      results.map((r, i) => ({
+        ...omit(r, 'content'),
+        chunkName: dexaRes.chunks[i].chunkName
+      }))
+    )
     console.log()
     console.log()
     console.log('<<< search', `${query} (${openaiUserLocaleInfo})`)
