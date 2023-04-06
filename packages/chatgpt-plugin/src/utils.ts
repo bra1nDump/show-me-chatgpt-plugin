@@ -18,6 +18,8 @@ function isIpInCIDR(ip: string, cidr: string) {
  * Validates that the given IP address is in the range of IP addresses
  * documented by OpenAI's production ChatGPT Plugin docs.
  *
+ * Credit to [Steven Tey](https://gist.github.com/steven-tey/994ae6be0da254ebbdf28d06623874ec) for the original implementation.
+ *
  * @see https://platform.openai.com/docs/plugins/production/ip-egress-ranges
  */
 export function isValidChatGPTIPAddress(ip: string) {

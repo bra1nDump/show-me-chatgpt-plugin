@@ -68,7 +68,7 @@ export class DexaSearch extends OpenAPIRoute {
     }
 
     if (!isValidChatGPTIPAddress(ip)) {
-      console.warn('search error invalid IP address', ip)
+      // console.warn('search error invalid IP address', ip)
       return new Response(`Forbidden`, { status: 403 })
     }
 
@@ -84,7 +84,11 @@ export class DexaSearch extends OpenAPIRoute {
     const url = `${dexaApiBaseUrl}/api/query`
     const body = types.DexaSearchRequestBodySchema.parse({
       query,
-      topK: 10
+      // NOTE: I tried testing with returning 10 results, but ChatGPT would frequently
+      // stop generating it's response in the middle of an answer, so I'm guessing the
+      // returned results were too long and ChatGPT was hitting the max token limit
+      // abruptly. I haven't been able to reproduce this but for `topK: 5` so far.
+      topK: 5
     })
     const { results }: types.DexaSearchResponseBody = await fetch(url, {
       method: 'POST',
