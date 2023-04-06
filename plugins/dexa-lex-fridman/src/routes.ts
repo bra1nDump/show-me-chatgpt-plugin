@@ -2,6 +2,7 @@ import { OpenAPIRoute, Query, Str } from '@cloudflare/itty-router-openapi'
 import { isValidChatGPTIPAddress } from 'chatgpt-plugin'
 
 import * as types from './types'
+import { omit } from './utils'
 
 export class DexaSearch extends OpenAPIRoute {
   static schema = {
