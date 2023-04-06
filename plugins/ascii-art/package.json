@@ -1,6 +1,6 @@
 {
   "name": "chatgpt-plugin-example-ascii-art",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "description": "Example ChatGPT Plugin which renders text as ASCII art. Built using Cloudflare workers.",
   "author": "Travis Fischer <travis@transitivebullsh.it>",
