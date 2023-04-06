@@ -1,7 +1,7 @@
 import { OpenAPIRoute, Query, Str } from '@cloudflare/itty-router-openapi'
+import { isValidChatGPTIPAddress } from 'chatgpt-plugin'
 
 import * as types from './types'
-import { omit } from './utils'
 
 export class DexaSearch extends OpenAPIRoute {
   static schema = {
@@ -60,13 +60,24 @@ export class DexaSearch extends OpenAPIRoute {
       return new Response('DEXA_API_BASE_URL not set', { status: 500 })
     }
 
+    const ip = request.headers.get('Cf-Connecting-Ip')
+    if (!ip) {
+      console.warn('search error missing IP address')
+      return new Response('invalid source IP', { status: 500 })
+    }
+
+    if (!isValidChatGPTIPAddress(ip)) {
+      console.warn('search error invalid IP address', ip)
+      return new Response(`Forbidden`, { status: 403 })
+    }
+
     const openaiUserLocaleInfo = request.headers.get(
       'openai-subdivision-1-iso-code'
     )
     const { query } = data
     console.log()
     console.log()
-    console.log('>>> search', `${query} (${openaiUserLocaleInfo})`)
+    console.log('>>> search', `${query} (${openaiUserLocaleInfo}, ${ip})`)
     console.log()
 
     const url = `${dexaApiBaseUrl}/api/query`
@@ -96,7 +107,7 @@ export class DexaSearch extends OpenAPIRoute {
     )
     console.log()
     console.log()
-    console.log('<<< search', `${query} (${openaiUserLocaleInfo})`)
+    console.log('<<< search', `${query} (${openaiUserLocaleInfo}, ${ip})`)
 
     const responseBody = {
       results
