@@ -24,7 +24,11 @@ It contains a single API route.
 
 Under the hood, they're doing **a lot** of really awesome, AI-powered data processing:
 
-- TODO @riley
+- Transcriptions with speaker labels (diarization) for attribution (using [Assembly](https://assemblyai.com))
+- Automatic post-processing for common transcription errors
+- Advanced chunking based on metadata, topic detection, and sentence structure
+- Metadata extraction and enrichment with support for photos of speakers
+- Heirarchical clustering and summarization
 
 ### Lex Fridman Stats
 
