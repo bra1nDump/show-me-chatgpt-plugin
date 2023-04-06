@@ -74,7 +74,7 @@ export class DexaSearch extends OpenAPIRoute {
       query,
       topK: 10
     })
-    const dexaRes: types.DexaSearchResponseBody = await fetch(url, {
+    const { results }: types.DexaSearchResponseBody = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(body),
       headers: {
@@ -88,19 +88,10 @@ export class DexaSearch extends OpenAPIRoute {
       return res.json()
     })
 
-    const results = dexaRes.chunks.map((chunk) => ({
-      content: chunk.content,
-      // chunkSummary: chunk.chunkSummary,
-      // peopleNames: chunk.peopleNames,
-      chapterTitle: chunk.sectionName,
-      episodeTitle: chunk.docName,
-      citationUrl: `https://dexa.ai/lex/episodes/${chunk.docSid}?sectionSid=${chunk.sectionSid}&chunkSid=${chunk.chunkSid}`
-    }))
     console.log(
       `search results for query "${query}"`,
       results.map((r, i) => ({
-        ...omit(r, 'content'),
-        chunkName: dexaRes.chunks[i].chunkName
+        ...omit(r, 'content')
       }))
     )
     console.log()

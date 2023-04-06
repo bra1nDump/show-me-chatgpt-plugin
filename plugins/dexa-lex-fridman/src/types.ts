@@ -7,6 +7,13 @@ export const DexaSearchRequestBodySchema = z.object({
 
 export type DexaSearchRequestBody = z.infer<typeof DexaSearchRequestBodySchema>
 
+export type DexaSearchResult = {
+  episodeTitle: string
+  chapterTitle: string
+  content: string
+  citationUrl: string
+}
+
 export type Chunk = {
   /** The text content of the chunk */
   content: string
@@ -26,32 +33,5 @@ export type Chunk = {
 }
 
 export type DexaSearchResponseBody = {
-  chunks: Chunk[]
-}
-
-export const DexaAskRequestBodySchema = z.object({
-  query: z.string().min(1).max(500)
-})
-
-export type DexaAskRequestBody = z.infer<typeof DexaAskRequestBodySchema>
-
-/** An answer from a specific person */
-export type Answer = {
-  /** The answer text */
-  answer: string
-  /** The person that answered the question */
-  personName: string
-  personSid: string
-  /** Context used to answer the question */
-  context: string
-  sectionName: string
-  docName: string
-  chunkSid: string
-  sectionSid: string
-  docSid: string
-}
-
-/** Answers from all people that answered the question */
-export type DexaAskResponseBody = {
-  answers: Answer[]
+  results: DexaSearchResult[]
 }
