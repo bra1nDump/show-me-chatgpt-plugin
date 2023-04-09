@@ -1,7 +1,7 @@
 {
   "name": "chatgpt-plugin-ts",
   "private": true,
-  "description": "Examples and resources for creaeting ChatGPT plugins in TypeScript.",
+  "description": "Examples and resources for creating ChatGPT plugins in TypeScript.",
   "author": "Travis Fischer <travis@transitivebullsh.it>",
   "repository": "transitive-bullshit/chatgpt-plugin-ts",
   "license": "MIT",

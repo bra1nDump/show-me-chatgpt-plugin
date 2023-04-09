@@ -1,16 +1,30 @@
-# ChatGPT Plugin TS <!-- omit in toc -->
+<a href="https://github.com/transitive-bullshit/chatgpt-plugin-ts">
+  <img alt="ChatGPT Plugin TS" src="/media/social.png">
+</a>
 
-> TODO: this is an active WIP as of April 3, 2023.. source and NPM package with utils and types coming soon...
+<h1 align="center">ChatGPT Plugin TS</h1>
 
-[![Build Status](https://github.com/transitive-bullshit/chatgpt-plugin-ts/actions/workflows/test.yml/badge.svg)](https://github.com/transitive-bullshit/chatgpt-plugin-ts/actions/workflows/test.yml) [![MIT License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/transitive-bullshit/chatgpt-plugin-ts/blob/main/license) [![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg)](https://prettier.io)
+<p align="center">
+  Examples and resources for creating ChatGPT plugins in TypeScript.
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/chatgpt-plugin"><img alt="chatgpt-plugin NPM package" src="https://img.shields.io/npm/v/chatgpt-plugin.svg" /></a>
+  <a href="https://github.com/transitive-bullshit/chatgpt-plugin-ts/actions/workflows/test.yml"><img alt="Build Status" src="https://github.com/transitive-bullshit/chatgpt-plugin-ts/actions/workflows/test.yml/badge.svg" /></a>
+  <a href="https://github.com/transitive-bullshit/chatgpt-plugin-ts/blob/main/license"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-blue" /></a>
+  <a href="https://prettier.io"><img alt="Prettier Code Formatting" src="https://img.shields.io/badge/code_style-prettier-brightgreen.svg" /></a>
+</p>
 
 - [Intro](#intro)
+- [Example Plugins](#example-plugins)
 - [Notes](#notes)
 - [License](#license)
 
 ## Intro
 
 TODO
+
+## Example Plugins
 
 ## Notes
 

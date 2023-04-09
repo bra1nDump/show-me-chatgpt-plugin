@@ -1,3 +1,6 @@
+<video src="https://user-images.githubusercontent.com/552829/230789960-e6c33215-fcb6-43b3-aa29-2d7a3ccd78dc.mp4" controls="controls">
+</video>
+
 # ChatGPT Plugin Example - Dexa Lex Fridman Podcast <!-- omit in toc -->
 
 > Example ChatGPT Plugin to search across all of the [Lex Fridman Podcast](https://lexfridman.com/podcast/) episodes – powered by [Dexa](https://dexa.ai) 🔥
@@ -5,9 +8,10 @@
 [![Build Status](https://github.com/transitive-bullshit/chatgpt-plugin-ts/actions/workflows/test.yml/badge.svg)](https://github.com/transitive-bullshit/chatgpt-plugin-ts/actions/workflows/test.yml) [![MIT License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/transitive-bullshit/chatgpt-plugin-ts/blob/main/license) [![Prettier Code Formatting](https://img.shields.io/badge/code_style-prettier-brightgreen.svg)](https://prettier.io)
 
 - [Intro](#intro)
+- [Stack](#stack)
 - [Dexa](#dexa)
   - [Lex Fridman Stats](#lex-fridman-stats)
-- [Stack](#stack)
+- [Examples](#examples)
 - [License](#license)
 
 ## Intro
@@ -16,7 +20,16 @@ This is a powerful ChatGPT Plugin which gives ChatGPT access to all of the trans
 
 It contains a single API route.
 
-[Live demo](https://chatgpt-plugin-dexa-lex-fridman.transitive-bullshit.workers.dev/.well-known/ai-plugin.json)
+More details can be found in the [twitter launch thread](https://twitter.com/transitive_bs/status/1643990888417464332).
+
+## Stack
+
+- [Dexa API](https://dexa.ai/) (currently in private beta)
+- [Cloudflare Workers](https://workers.cloudflare.com/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [@cloudflare/itty-router-openapi](https://github.com/cloudflare/itty-router-openapi)
+
+Here's an example [live ai-plugin JSON manifest](https://chatgpt-plugin-dexa-lex-fridman.transitive-bullshit.workers.dev/.well-known/ai-plugin.json). API endpoints are protected so only OpenAI can access them.
 
 ## Dexa
 
@@ -38,12 +51,13 @@ Lex Fridman Podcast stats from [Dexa](https://dexa.ai/) as of April 5, 2023:
 - Total characters transcribed: 45,005,793
 - Total audio length: ~36 days
 
-## Stack
+## Examples
 
-- [Dexa API](https://dexa.ai/) (currently in private beta)
-- [Cloudflare Workers](https://workers.cloudflare.com/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [@cloudflare/itty-router-openapi](https://github.com/cloudflare/itty-router-openapi)
+> What advice does Lex's podcast have for young people?
+
+<p align="center">
+  <img src="/media/advice-for-youth-opt.jpg" alt="What advice does Lex's podcast have for young people?" width="300px">
+</p>
 
 ## License
 
