@@ -16,7 +16,7 @@
 
 ## Intro
 
-This is a powerful ChatGPT Plugin which gives ChatGPT access to all of the transcriptions across 300 episodes of the [Lex Fridman Podcast](https://lexfridman.com/podcast/).
+This is a ChatGPT retrieval plugin which gives ChatGPT access to all of the transcriptions across 360+ episodes of the [Lex Fridman Podcast](https://lexfridman.com/podcast/).
 
 It contains a single API route.
 
@@ -29,7 +29,7 @@ More details can be found in the [twitter launch thread](https://twitter.com/tra
 - [TypeScript](https://www.typescriptlang.org/)
 - [@cloudflare/itty-router-openapi](https://github.com/cloudflare/itty-router-openapi)
 
-Here's an example [live ai-plugin JSON manifest](https://chatgpt-plugin-dexa-lex-fridman.transitive-bullshit.workers.dev/.well-known/ai-plugin.json). API endpoints are protected so only OpenAI can access them.
+Here's an example [live manifest file](https://chatgpt-plugin-dexa-lex-fridman.transitive-bullshit.workers.dev/.well-known/ai-plugin.json). API endpoints are protected so only OpenAI can access them.
 
 ## Dexa
 

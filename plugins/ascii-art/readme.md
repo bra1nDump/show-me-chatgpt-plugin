@@ -1,3 +1,6 @@
+<video src="https://user-images.githubusercontent.com/552829/230790570-7d8129e7-6d29-45bf-832d-e6df90986f0f.mp4" controls="controls">
+</video>
+
 # ChatGPT Plugin Example - ASCII Art <!-- omit in toc -->
 
 > Example ChatGPT Plugin which renders text as ASCII art. Built using Cloudflare workers.
@@ -6,6 +9,7 @@
 
 - [Intro](#intro)
 - [Stack](#stack)
+- [Examples](#examples)
 - [License](#license)
 
 ## Intro
@@ -14,13 +18,19 @@ This is a simple ChatGPT Plugin which renders text as ASCII art.
 
 It contains a single API route.
 
-[Live demo](https://chatgpt-plugin-ascii-art.transitive-bullshit.workers.dev/.well-known/ai-plugin.json)
+[Live manifest file](https://chatgpt-plugin-ascii-art.transitive-bullshit.workers.dev/.well-known/ai-plugin.json)
 
 ## Stack
 
 - [Cloudflare Workers](https://workers.cloudflare.com/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [@cloudflare/itty-router-openapi](https://github.com/cloudflare/itty-router-openapi)
+
+## Examples
+
+<p align="center">
+  <img src="/media/plugin-ascii-art-demo-opt.png" alt="Great as ASCII art in Poison font" width="45%">
+</p>
 
 ## License
 

@@ -17,14 +17,74 @@
 
 - [Intro](#intro)
 - [Example Plugins](#example-plugins)
+  - [Dexa Lex Fridman Plugin](#dexa-lex-fridman-plugin)
+    - [Demo Video](#demo-video)
+    - [Examples](#examples)
+  - [ASCII Art Plugin](#ascii-art-plugin)
+    - [Demo Video](#demo-video-1)
+    - [Examples](#examples-1)
 - [Notes](#notes)
 - [License](#license)
 
 ## Intro
 
-TODO
+This repo contains the [chatgpt-plugin NPM package](./packages/chatgpt-plugin), with TS types and utilities for building ChatGPT Plugins with TypeScript.
+
+It also contains several high quality example plugins that you can use as a template for building your own plugins. The goal is to add more examples using different OpenAPI frameworks and hosting providers over time. Currently, all of the examples use Cloudflare Workers, but I'll add an example using Vercel serverless functions soon.
+
+If there's something missing that you'd like to see, please [open an issue](https://github.com/transitive-bullshit/chatgpt-plugin-ts/issues/new) or join our [ChatGPT Hackers community](https://www.chatgpthackers.dev/) on Discord, with over 8000 developers who are building cool stuff with AI!
 
 ## Example Plugins
+
+TS code for all fo the example plugins can be found in the [plugins](/plugins) directory.
+
+### Dexa Lex Fridman Plugin
+
+Example ChatGPT retrieval plugin to search across all of the [Lex Fridman Podcast](https://lexfridman.com/podcast/) episodes – powered by [Dexa AI](https://dexa.ai).
+
+- [source code](/plugins/dexa-lex-fridman)
+- [launch tweet](https://twitter.com/transitive_bs/status/1643990888417464332)
+- built using CF workers
+
+#### Demo Video
+
+<p align="center">
+  <video src="https://user-images.githubusercontent.com/552829/230789960-e6c33215-fcb6-43b3-aa29-2d7a3ccd78dc.mp4" controls="controls" width="420">
+  </video>
+</p>
+
+#### Examples
+
+<p align="center">
+  <img src="/media/advice-for-youth-opt.jpg" alt="What advice does Lex's podcast have for young people?" width="45%">
+  &nbsp;&nbsp;&nbsp;
+
+  <img src="/media/elon-musk-philosophy-on-life-opt.jpg" alt="What is Elon Musk's philosophy on life?" width="45%">
+</p>
+
+<p align="center">
+  <img src="/media/poker-and-physics-opt.jpg" alt="What do poker and physics have in common?" width="45%">
+  &nbsp;&nbsp;&nbsp;
+
+  <img src="/media/love-opt.jpg" alt="What do Lex's guests think about love?" width="45%">
+</p>
+
+### ASCII Art Plugin
+
+This is a super simple example plugin that converts text to ASCII art. It provides a great template to start building your own plugins.
+
+#### Demo Video
+
+<p align="center">
+  <video src="https://user-images.githubusercontent.com/552829/230790570-7d8129e7-6d29-45bf-832d-e6df90986f0f.mp4" controls="controls" width="420">
+  </video>
+</p>
+
+#### Examples
+
+<p align="center">
+  <img src="/media/plugin-ascii-art-demo-opt.png" alt="Great as ASCII art in Poison font" width="45%">
+</p>
 
 ## Notes
 
