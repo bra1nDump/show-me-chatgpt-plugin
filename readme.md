@@ -18,11 +18,7 @@
 - [Intro](#intro)
 - [Example Plugins](#example-plugins)
   - [Dexa Lex Fridman Plugin](#dexa-lex-fridman-plugin)
-    - [Demo Video](#demo-video)
-    - [Examples](#examples)
   - [ASCII Art Plugin](#ascii-art-plugin)
-    - [Demo Video](#demo-video-1)
-    - [Examples](#examples-1)
 - [Notes](#notes)
 - [License](#license)
 
@@ -36,7 +32,7 @@ If there's something missing that you'd like to see, please [open an issue](http
 
 ## Example Plugins
 
-TS code for all fo the example plugins can be found in the [plugins](/plugins) directory.
+TS code for all example plugins can be found in the [plugins](/plugins) directory.
 
 ### Dexa Lex Fridman Plugin
 
@@ -45,15 +41,6 @@ Example ChatGPT retrieval plugin to search across all of the [Lex Fridman Podcas
 - [source code](/plugins/dexa-lex-fridman)
 - [launch tweet](https://twitter.com/transitive_bs/status/1643990888417464332)
 - built using CF workers
-
-#### Demo Video
-
-<p align="center">
-  <video src="https://user-images.githubusercontent.com/552829/230789960-e6c33215-fcb6-43b3-aa29-2d7a3ccd78dc.mp4" controls="controls" width="420">
-  </video>
-</p>
-
-#### Examples
 
 <p align="center">
   <img src="/media/advice-for-youth-opt.jpg" alt="What advice does Lex's podcast have for young people?" width="45%">
@@ -71,19 +58,14 @@ Example ChatGPT retrieval plugin to search across all of the [Lex Fridman Podcas
 
 ### ASCII Art Plugin
 
-This is a super simple example plugin that converts text to ASCII art. It provides a great template to start building your own plugins.
+This is a really simple example plugin that converts text to ASCII art. It's a great template to start building your own plugins.
 
-#### Demo Video
-
-<p align="center">
-  <video src="https://user-images.githubusercontent.com/552829/230790570-7d8129e7-6d29-45bf-832d-e6df90986f0f.mp4" controls="controls" width="420">
-  </video>
-</p>
-
-#### Examples
+- [source code](/plugins/ascii-art/)
+- [launch tweet](https://twitter.com/transitive_bs/status/1643144204900597760)
+- built using CF workers
 
 <p align="center">
-  <img src="/media/plugin-ascii-art-demo-opt.png" alt="Great as ASCII art in Poison font" width="45%">
+  <img src="/media/plugin-ascii-art-demo-opt.jpg" alt="ASCII art using the Poison font" width="45%">
 </p>
 
 ## Notes

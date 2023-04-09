@@ -29,7 +29,7 @@ It contains a single API route.
 ## Examples
 
 <p align="center">
-  <img src="/media/plugin-ascii-art-demo-opt.png" alt="Great as ASCII art in Poison font" width="45%">
+  <img src="/media/plugin-ascii-art-demo-opt.jpg" alt="ASCII art using the Poison font" width="45%">
 </p>
 
 ## License
