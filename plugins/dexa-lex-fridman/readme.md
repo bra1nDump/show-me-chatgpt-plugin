@@ -53,10 +53,18 @@ Lex Fridman Podcast stats from [Dexa](https://dexa.ai/) as of April 5, 2023:
 
 ## Examples
 
-> What advice does Lex's podcast have for young people?
+<p align="center">
+  <img src="/media/advice-for-youth-opt.jpg" alt="What advice does Lex's podcast have for young people?" width="45%">
+  &nbsp;&nbsp;&nbsp;
+
+  <img src="/media/elon-musk-philosophy-on-life-opt.jpg" alt="What is Elon Musk's philosophy on life?" width="45%">
+</p>
 
 <p align="center">
-  <img src="/media/advice-for-youth-opt.jpg" alt="What advice does Lex's podcast have for young people?" width="300px">
+  <img src="/media/poker-and-physics-opt.jpg" alt="What do poker and physics have in common?" width="45%">
+  &nbsp;&nbsp;&nbsp;
+
+  <img src="/media/love-opt.jpg" alt="What do Lex's guests think about love?" width="45%">
 </p>
 
 ## License
