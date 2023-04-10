@@ -43,7 +43,7 @@ pnpm install chatgpt-plugin
 
 ## Example Plugins
 
-TS code for all example plugins can be found in the [plugins](/plugins) directory.
+TS code for all example plugins can be found in the [examples](/examples) directory.
 
 ### Dexa Lex Fridman Plugin
 
