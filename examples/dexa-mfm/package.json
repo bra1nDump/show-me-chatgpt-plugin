@@ -1,0 +1,36 @@
+{
+  "name": "chatgpt-plugin-example-dexa-mfm",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Search across all of the My First Million Podcast – powered by Dexa AI.",
+  "author": "Travis Fischer <travis@transitivebullsh.it>",
+  "repository": "transitive-bullshit/chatgpt-plugin-ts",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=14"
+  },
+  "scripts": {},
+  "dependencies": {
+    "@sindresorhus/slugify": "^2.2.0",
+    "chatgpt-plugin": "workspace:../../packages/chatgpt-plugin",
+    "zod": "^3.21.4"
+  },
+  "aiPlugin": {
+    "name": "Dexa Lex Fridman",
+    "description_for_model": "Plugin for searching transcripts from the My First Million (MFM) Podcast by Sam Parr (@TheSamParr) and Shaan Puri (@ShaanVP). Use it whenever a user asks about business ideas, entrepreneurship, or the MFM Podcast.",
+    "logo_url": "https://assets.standardresume.co/image/upload/c_fill,w_392,h_392,f_auto,q_auto/dexa/accounts/lex",
+    "contact_email": "team@dexa.ai",
+    "legal_info_url": "https://dexa.ai"
+  },
+  "keywords": [
+    "openai",
+    "chatgpt",
+    "plugin",
+    "openapi",
+    "my first million",
+    "mfm",
+    "podcast",
+    "search"
+  ]
+}

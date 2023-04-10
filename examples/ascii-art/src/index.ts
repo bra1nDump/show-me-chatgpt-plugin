@@ -1,5 +1,5 @@
 import { OpenAPIRouter } from '@cloudflare/itty-router-openapi'
-import { type AIPluginManifest } from 'chatgpt-plugin'
+import { defineAIPluginManifest } from 'chatgpt-plugin'
 
 import * as routes from './routes'
 
@@ -16,7 +16,7 @@ router.get('/render', routes.ASCIIArtRender)
 
 router.get('/.well-known/ai-plugin.json', (request: Request) => {
   const host = request.headers.get('host')
-  const pluginSpec: AIPluginManifest = {
+  const pluginManifest = defineAIPluginManifest({
     schema_version: 'v1',
     name_for_model: 'asciiArt0',
     name_for_human: 'ASCII Art',
@@ -34,9 +34,9 @@ router.get('/.well-known/ai-plugin.json', (request: Request) => {
     logo_url: 'https://transitivebullsh.it/.well-known/logo.png',
     contact_email: 'travis@transitivebullsh.it',
     legal_info_url: 'https://transitivebullsh.it/about'
-  }
+  })
 
-  return new Response(JSON.stringify(pluginSpec, null, 2), {
+  return new Response(JSON.stringify(pluginManifest, null, 2), {
     headers: {
       'content-type': 'application/json;charset=UTF-8'
     }

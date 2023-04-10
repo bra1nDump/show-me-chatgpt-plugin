@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@cloudflare/itty-router-openapi": "^0.0.15",
-    "@sindresorhus/slugify": "^2.2.0",
     "chatgpt-plugin": "workspace:../../packages/chatgpt-plugin",
     "zod": "^3.21.4"
   },

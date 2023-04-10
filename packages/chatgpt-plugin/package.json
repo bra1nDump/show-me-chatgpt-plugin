@@ -31,5 +31,8 @@
     "well-known",
     "openai",
     "openapi"
-  ]
+  ],
+  "dependencies": {
+    "@sindresorhus/slugify": "^2.2.0"
+  }
 }
