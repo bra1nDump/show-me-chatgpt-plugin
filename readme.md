@@ -16,6 +16,7 @@
 </p>
 
 - [Intro](#intro)
+- [Install](#install)
 - [Example Plugins](#example-plugins)
   - [Dexa Lex Fridman Plugin](#dexa-lex-fridman-plugin)
   - [ASCII Art Plugin](#ascii-art-plugin)
@@ -30,6 +31,16 @@ It also contains several high quality example plugins that you can use as a temp
 
 If there's something missing that you'd like to see, please [open an issue](https://github.com/transitive-bullshit/chatgpt-plugin-ts/issues/new) or join our [ChatGPT Hackers community](https://www.chatgpthackers.dev/) on Discord, with over 8000 developers who are building cool stuff with AI!
 
+## Install
+
+```bash
+npm install chatgpt-plugin
+# or
+yarn add chatgpt-plugin
+# or
+pnpm install chatgpt-plugin
+```
+
 ## Example Plugins
 
 TS code for all example plugins can be found in the [plugins](/plugins) directory.
@@ -38,7 +49,7 @@ TS code for all example plugins can be found in the [plugins](/plugins) director
 
 Example ChatGPT retrieval plugin to search across all of the [Lex Fridman Podcast](https://lexfridman.com/podcast/) episodes – powered by [Dexa AI](https://dexa.ai).
 
-- [source code](/plugins/dexa-lex-fridman)
+- [source code](/examples/dexa-lex-fridman)
 - [launch tweet](https://twitter.com/transitive_bs/status/1643990888417464332)
 - built using CF workers
 
@@ -60,7 +71,7 @@ Example ChatGPT retrieval plugin to search across all of the [Lex Fridman Podcas
 
 This is a really simple example plugin that converts text to ASCII art. It's a great template to start building your own plugins.
 
-- [source code](/plugins/ascii-art/)
+- [source code](/examples/ascii-art/)
 - [launch tweet](https://twitter.com/transitive_bs/status/1643144204900597760)
 - built using CF workers
 

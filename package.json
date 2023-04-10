@@ -11,7 +11,7 @@
   },
   "workspaces": [
     "packages/*",
-    "plugins/*"
+    "examples/*"
   ],
   "scripts": {
     "build": "run-s build:*",

@@ -16,6 +16,8 @@
 </p>
 
 - [Intro](#intro)
+- [Install](#install)
+- [Usage](#usage)
 - [License](#license)
 
 ## Intro
@@ -34,6 +36,24 @@ The goals of this package are to:
 Framework-specific and hosting provider-specific examples can be found in the [example plugins](../../plugins) folder.
 
 See the [main readme](https://github.com/transitive-bullshit/chatgpt-plugin-ts) for more details.
+
+## Install
+
+```bash
+npm install chatgpt-plugin
+# or
+yarn add chatgpt-plugin
+# or
+pnpm install chatgpt-plugin
+```
+
+## Usage
+
+```ts
+import { type AIPluginManifest, isValidChatGPTIPAddress } from 'chatgpt-plugin'
+
+// see the example plugins for more details
+```
 
 ## License
 
