@@ -61,9 +61,6 @@ importers:
       '@cloudflare/itty-router-openapi':
         specifier: ^0.0.15
         version: 0.0.15
-      '@sindresorhus/slugify':
-        specifier: ^2.2.0
-        version: 2.2.0
       chatgpt-plugin:
         specifier: workspace:../../packages/chatgpt-plugin
         version: link:../../packages/chatgpt-plugin
