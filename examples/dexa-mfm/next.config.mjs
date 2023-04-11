@@ -1,3 +1,5 @@
+import transpile from 'next-transpile-modules'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   async rewrites() {
@@ -9,5 +11,6 @@ const nextConfig = {
     ]
   }
 }
+const withTM = transpile(['../../packages/chatgpt-plugin'])
 
-export default nextConfig
+export default withTM(nextConfig)

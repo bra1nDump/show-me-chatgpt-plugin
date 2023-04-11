@@ -21,6 +21,7 @@
     "@trpc/server": "^10.19.1",
     "chatgpt-plugin": "workspace:../../packages/chatgpt-plugin",
     "next": "^13.3.0",
+    "next-transpile-modules": "^10.0.0",
     "nextjs-cors": "^2.1.2",
     "trpc-openapi": "^1.1.2",
     "zod": "^3.21.4"
