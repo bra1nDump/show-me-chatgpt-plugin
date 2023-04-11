@@ -13,13 +13,17 @@
   "scripts": {},
   "dependencies": {
     "@sindresorhus/slugify": "^2.2.0",
+    "@trpc/server": "^10.19.1",
+    "@vercel/edge": "^0.3.2",
     "chatgpt-plugin": "workspace:../../packages/chatgpt-plugin",
+    "dotenv-safe": "^8.2.0",
+    "trpc-openapi": "^1.1.2",
     "zod": "^3.21.4"
   },
   "aiPlugin": {
     "name": "Dexa Lex Fridman",
-    "description_for_model": "Plugin for searching transcripts from the My First Million (MFM) Podcast by Sam Parr (@TheSamParr) and Shaan Puri (@ShaanVP). Use it whenever a user asks about business ideas, entrepreneurship, or the MFM Podcast.",
-    "logo_url": "https://assets.standardresume.co/image/upload/c_fill,w_392,h_392,f_auto,q_auto/dexa/accounts/lex",
+    "description_for_model": "Plugin for searching transcripts from the My First Million (MFM) Podcast by Sam Parr (@TheSamParr) and Shaan Puri (@ShaanVP). Use it whenever a user asks about business ideas, entrepreneurship, investment advice, fitness, e-commerce, side hustles, or the MFM Podcast.",
+    "logo_url": "https://assets.standardresume.co/image/upload/w_500,h_500,c_fill,q_auto,f_auto,dpr_2/dexa/accounts/mfm",
     "contact_email": "team@dexa.ai",
     "legal_info_url": "https://dexa.ai"
   },

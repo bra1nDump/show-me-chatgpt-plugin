@@ -90,6 +90,7 @@ export class DexaSearch extends OpenAPIRoute {
       // abruptly. I haven't been able to reproduce this but for `topK: 5` so far.
       topK: 5
     })
+
     const { results }: types.DexaSearchResponseBody = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(body),
@@ -106,7 +107,7 @@ export class DexaSearch extends OpenAPIRoute {
 
     console.log(
       `search results for query "${query}"`,
-      results.map((r, i) => ({
+      results.map((r) => ({
         ...omit(r, 'content')
       }))
     )

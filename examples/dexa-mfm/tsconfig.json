@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base",
   "compilerOptions": {
     "composite": true,
+    "lib": ["esnext", "DOM"],
     "outDir": "build",
     "tsBuildInfoFile": "build/.tsbuildinfo",
     "emitDeclarationOnly": true

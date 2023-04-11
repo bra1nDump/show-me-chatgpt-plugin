@@ -7,13 +7,18 @@ export const DexaSearchRequestBodySchema = z.object({
 
 export type DexaSearchRequestBody = z.infer<typeof DexaSearchRequestBodySchema>
 
-export type DexaSearchResult = {
-  episodeTitle: string
-  chapterTitle: string
-  content: string
-  citationUrl: string
-}
+export const DexaSearchResultSchema = z.object({
+  content: z.string(),
+  episodeTitle: z.string(),
+  chapterTitle: z.string(),
+  citationUrl: z.string()
+})
 
-export type DexaSearchResponseBody = {
-  results: DexaSearchResult[]
-}
+export const DexaSearchResponseBodySchema = z.object({
+  results: z.array(DexaSearchResultSchema)
+})
+
+export type DexaSearchResult = z.infer<typeof DexaSearchResultSchema>
+export type DexaSearchResponseBody = z.infer<
+  typeof DexaSearchResponseBodySchema
+>
