@@ -1,6 +1,6 @@
 {
   "name": "chatgpt-plugin-example-dexa-lex-fridman",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "Search across all of the Lex Fridman Podcast episodes – powered by Dexa AI.",
   "author": "Travis Fischer <travis@transitivebullsh.it>",
