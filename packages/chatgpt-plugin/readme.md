@@ -50,7 +50,11 @@ pnpm install chatgpt-plugin
 ## Usage
 
 ```ts
-import { type AIPluginManifest, isValidChatGPTIPAddress } from 'chatgpt-plugin'
+import {
+  type AIPluginManifest,
+  defineAIPluginManifest,
+  isValidChatGPTIPAddress
+} from 'chatgpt-plugin'
 
 // see the example plugins for more details
 ```
