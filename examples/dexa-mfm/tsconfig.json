@@ -14,9 +14,5 @@
   },
   "include": ["next-env.d.ts", "package.json", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"],
-  "references": [
-    {
-      "path": "../../packages/chatgpt-plugin/tsconfig.json"
-    }
-  ]
+  "references": [{ "path": "../../packages/chatgpt-plugin/tsconfig.json" }]
 }
