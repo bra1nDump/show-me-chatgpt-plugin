@@ -3,4 +3,10 @@ main = "src/index.ts"
 compatibility_date = "2023-04-04"
 
 [vars]
-DEXA_API_BASE_URL="TODO"
+vars = { DEXA_API_BASE_URL="TODO", ENVIRONMENT="dev" }
+
+[env.staging]
+vars = { DEXA_API_BASE_URL="TODO", ENVIRONMENT = "staging" }
+
+[env.production]
+vars = { DEXA_API_BASE_URL="TODO", ENVIRONMENT = "production" }

@@ -66,7 +66,7 @@ export class DexaSearch extends OpenAPIRoute {
       return new Response('invalid source IP', { status: 500 })
     }
 
-    if (!isValidChatGPTIPAddress(ip)) {
+    if (env.environment === 'production' && !isValidChatGPTIPAddress(ip)) {
       // console.warn('search error invalid IP address', ip)
       return new Response(`Forbidden`, { status: 403 })
     }

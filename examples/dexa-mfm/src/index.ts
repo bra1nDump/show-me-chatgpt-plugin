@@ -6,6 +6,7 @@ import pkg from '../package.json'
 
 export interface Env {
   DEXA_API_BASE_URL: string
+  ENVIRONMENT: string
 }
 
 const router = OpenAPIRouter({
