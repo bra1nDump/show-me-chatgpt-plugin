@@ -9,6 +9,5 @@ export const environment = process.env.NODE_ENV || 'development'
 export const isDev = environment === 'development'
 
 export const port = process.env.PORT || '3000'
-export const url = isDev
-  ? `http://localhost:${port}`
-  : `https://${process.env.VERCEL_URL}`
+export const domain = 'chatgpt-plugin-dexa-mfm.vercel.app'
+export const url = isDev ? `http://localhost:${port}` : `https://${domain}`
