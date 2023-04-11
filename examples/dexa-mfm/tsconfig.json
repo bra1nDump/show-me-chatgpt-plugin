@@ -2,17 +2,12 @@
   "extends": "../../tsconfig.base",
   "compilerOptions": {
     "composite": true,
-    "lib": ["esnext", "DOM"],
     "outDir": "build",
     "tsBuildInfoFile": "build/.tsbuildinfo",
-    "emitDeclarationOnly": false,
-    "noEmit": false,
-    "jsx": "preserve",
-    "paths": {
-      "@/*": ["./*"]
-    }
+    "emitDeclarationOnly": true,
+    "types": ["@cloudflare/workers-types"]
   },
-  "include": ["next-env.d.ts", "package.json", "**/*.ts", "**/*.tsx"],
+  "include": ["src/**/*.ts", "package.json"],
   "exclude": ["node_modules"],
   "references": [{ "path": "../../packages/chatgpt-plugin/tsconfig.json" }]
 }
