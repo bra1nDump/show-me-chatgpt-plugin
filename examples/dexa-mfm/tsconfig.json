@@ -5,8 +5,18 @@
     "lib": ["esnext", "DOM"],
     "outDir": "build",
     "tsBuildInfoFile": "build/.tsbuildinfo",
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": false,
+    "noEmit": false,
+    "jsx": "preserve",
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
-  "include": ["src/**/*.ts", "package.json"],
-  "references": [{ "path": "../../packages/chatgpt-plugin/tsconfig.json" }]
+  "include": ["next-env.d.ts", "package.json", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"],
+  "references": [
+    {
+      "path": "../../packages/chatgpt-plugin/tsconfig.json"
+    }
+  ]
 }

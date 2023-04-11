@@ -1,18 +1,12 @@
 import * as z from 'zod'
 import { TRPCError, initTRPC } from '@trpc/server'
-import { CreateHTTPContextOptions } from '@trpc/server/adapters/standalone'
+import { CreateNextContextOptions } from '@trpc/server/adapters/next'
+import { isValidChatGPTIPAddress } from 'chatgpt-plugin'
 // import { ipAddress } from '@vercel/edge'
-import { defineAIPluginManifest } from 'chatgpt-plugin'
-import dotenv from 'dotenv-safe'
-import http from 'http'
-import {
-  type OpenApiMeta,
-  createOpenApiHttpHandler,
-  generateOpenApiDocument
-} from 'trpc-openapi'
+import { type OpenApiMeta } from 'trpc-openapi'
 
+import * as config from './config'
 import * as types from './types'
-import pkg from '../package.json'
 import { omit } from './utils'
 
 export type Context = { ip: string | null; openaiUserLocaleInfo: string | null }
@@ -20,11 +14,12 @@ export type Context = { ip: string | null; openaiUserLocaleInfo: string | null }
 export const createContext = async ({
   req,
   res
-}: CreateHTTPContextOptions): Promise<Context> => {
+}: CreateNextContextOptions): Promise<Context> => {
   let ip: string | null
   let openaiUserLocaleInfo: string | null
 
   try {
+    ip = req.headers['x-forwarded-for'] as string
     openaiUserLocaleInfo = req.headers[
       'openai-subdivision-1-iso-code'
     ] as string
@@ -32,20 +27,16 @@ export const createContext = async ({
     console.error(err)
   }
 
-  console.log({ ip, openaiUserLocaleInfo })
-
   return { ip, openaiUserLocaleInfo }
 }
-
-dotenv.config()
 
 const t = initTRPC
   .context<Context>()
   .meta<OpenApiMeta>()
   .create({
     defaultMeta: {
-      title: pkg.aiPlugin.name,
-      version: pkg.version
+      title: config.aiPlugin.name,
+      version: config.pkg.version
     }
   })
 
@@ -56,7 +47,7 @@ export const appRouter = t.router({
         method: 'GET',
         path: '/search',
         description:
-          'Searches the MFM podcast for any topic and returns the most relevant results as conversation transcripts. Multiple conversation transcripts can be combined to form a summary. Always cite your sources when using this API using the citationUrl.'
+          'Searches the MFM podcast for any topic and returns the most relevant results as conversation transcripts. Multiple conversation transcripts can be combined to form a summary. Always cite your sources when using this API via the citationUrl.'
       }
     })
     .input(z.object({ query: z.string() }))
@@ -70,8 +61,26 @@ export const appRouter = t.router({
         })
       }
 
+      if (!config.isDev && !isValidChatGPTIPAddress(ctx.ip)) {
+        console.warn('search error invalid IP address', ctx.ip)
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Forbidden'
+        })
+      }
+
+      const detail = config.isDev
+        ? ' (dev)'
+        : `(${ctx.openaiUserLocaleInfo}, ${ctx.ip})`
       const { query } = input
-      const url = `${dexaApiBaseUrl}/api/query`
+
+      console.log(ctx)
+      console.log()
+      console.log()
+      console.log('>>> search', query, detail)
+      console.log()
+
+      const url = `${dexaApiBaseUrl}/api/query-mfm`
       const body = types.DexaSearchRequestBodySchema.parse({
         query,
         // NOTE: I tried testing with returning 10 results, but ChatGPT would frequently
@@ -103,42 +112,10 @@ export const appRouter = t.router({
       )
       console.log()
       console.log()
-      console.log(
-        '<<< search',
-        `${query} (${ctx.openaiUserLocaleInfo}, ${ctx.ip})`
-      )
+      console.log('<<< search', query, detail)
 
       return { results }
     })
 })
 
-// export const openApiDocument = generateOpenApiDocument(appRouter, {
-//   title: pkg.aiPlugin.name,
-//   version: pkg.version,
-//   baseUrl: 'http://localhost:3000' // TODO
-// })
-
-// router.get('/.well-known/ai-plugin.json', (request: Request) => {
-//   const host = request.headers.get('host')
-//   const pluginManifest = defineAIPluginManifest(
-//     {
-//       description_for_human: pkg.description,
-//       ...pkg.aiPlugin
-//     },
-//     { host }
-//   )
-
-//   return new Response(JSON.stringify(pluginManifest, null, 2), {
-//     headers: {
-//       'content-type': 'application/json;charset=UTF-8'
-//     }
-//   })
-// })
-
 export type AppRouter = typeof appRouter
-
-const server = http.createServer(
-  createOpenApiHttpHandler({ router: appRouter, createContext })
-)
-
-server.listen(3000)

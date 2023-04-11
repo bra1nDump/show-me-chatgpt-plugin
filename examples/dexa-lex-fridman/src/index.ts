@@ -26,7 +26,7 @@ router.get('/.well-known/ai-plugin.json', (request: Request) => {
       description_for_human: pkg.description,
       ...pkg.aiPlugin
     },
-    { host }
+    { openAPIUrl: `https://${host}/openapi.json` }
   )
 
   return new Response(JSON.stringify(pluginManifest, null, 2), {

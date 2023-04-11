@@ -2,16 +2,39 @@ import slugify from '@sindresorhus/slugify'
 
 import * as types from './types'
 
+const preferredKeysOrder: (keyof types.AIPluginManifest)[] = [
+  'schema_version',
+  'name_for_model',
+  'name_for_human',
+  'description_for_model',
+  'description_for_human',
+  'auth',
+  'api',
+  'logo_url',
+  'contact_email',
+  'legal_info_url'
+]
+
+const preferredKeysOrderMap = preferredKeysOrder.reduce(
+  (acc, key, i) => ({ ...acc, [key]: i }),
+  {} as Record<keyof types.AIPluginManifest, number>
+)
+
 // TODO: better typing and validation
 export function defineAIPluginManifest(
   partialPluginManifest: Partial<types.AIPluginManifest>,
-  opts: { host?: string } = {}
+  opts: { openAPIUrl?: string } = {}
 ): types.AIPluginManifest {
-  const { host } = opts
+  const { openAPIUrl } = opts
 
   const nameForModel =
     partialPluginManifest.name_for_model ||
-    slugify(partialPluginManifest.name_for_human, { separator: '_' })
+    slugify(
+      partialPluginManifest.name_for_human ||
+        (partialPluginManifest as any).name ||
+        'chatgpt test plugin',
+      { separator: '_' }
+    )
 
   const pluginManifest = {
     schema_version: 'v1',
@@ -19,15 +42,25 @@ export function defineAIPluginManifest(
     auth: {
       type: 'none'
     },
-    api: host
+    api: openAPIUrl
       ? {
           type: 'openapi',
-          url: `https://${host}/openapi.json`,
+          url: openAPIUrl,
           has_user_authentication: false
         }
       : undefined,
     ...partialPluginManifest
   } as types.AIPluginManifest
 
-  return pluginManifest
+  // ensure the manifest keys are always in a determinstic order
+  const pluginManifestSorted = Object.fromEntries(
+    Object.entries(pluginManifest).sort((a, b) => {
+      const kA = preferredKeysOrderMap[a[0]] ?? Number.POSITIVE_INFINITY
+      const kB = preferredKeysOrderMap[b[0]] ?? Number.POSITIVE_INFINITY
+
+      return kA - kB
+    })
+  ) as types.AIPluginManifest
+
+  return pluginManifestSorted
 }
