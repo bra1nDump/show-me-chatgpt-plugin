@@ -77,7 +77,7 @@ importers:
         specifier: ^10.19.1
         version: 10.19.1
       chatgpt-plugin:
-        specifier: workspace:../../packages/chatgpt-plugin
+        specifier: latest
         version: link:../../packages/chatgpt-plugin
       next:
         specifier: ^13.3.0

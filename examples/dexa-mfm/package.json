@@ -19,7 +19,7 @@
   "dependencies": {
     "@sindresorhus/slugify": "^2.2.0",
     "@trpc/server": "^10.19.1",
-    "chatgpt-plugin": "workspace:../../packages/chatgpt-plugin",
+    "chatgpt-plugin": "latest",
     "next": "^13.3.0",
     "next-transpile-modules": "^10.0.0",
     "nextjs-cors": "^2.1.2",
