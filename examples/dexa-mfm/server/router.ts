@@ -1,9 +1,8 @@
 import * as z from 'zod'
+import { type OpenApiMeta } from '@fisch0920/trpc-openapi'
 import { TRPCError, initTRPC } from '@trpc/server'
 import { CreateNextContextOptions } from '@trpc/server/adapters/next'
 import { isValidChatGPTIPAddress } from 'chatgpt-plugin'
-// import { ipAddress } from '@vercel/edge'
-import { type OpenApiMeta } from 'trpc-openapi'
 
 import * as config from './config'
 import * as types from './types'
@@ -61,13 +60,14 @@ export const appRouter = t.router({
         })
       }
 
-      if (!config.isDev && !isValidChatGPTIPAddress(ctx.ip)) {
-        console.warn('search error invalid IP address', ctx.ip)
-        throw new TRPCError({
-          code: 'FORBIDDEN',
-          message: 'Forbidden'
-        })
-      }
+      // TODO: temporary
+      // if (!config.isDev && !isValidChatGPTIPAddress(ctx.ip)) {
+      //   console.warn('search error invalid IP address', ctx.ip)
+      //   throw new TRPCError({
+      //     code: 'FORBIDDEN',
+      //     message: 'Forbidden'
+      //   })
+      // }
 
       const detail = config.isDev
         ? ' (dev)'
