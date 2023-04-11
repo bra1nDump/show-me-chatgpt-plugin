@@ -35,10 +35,13 @@ export function defineAIPluginManifest(
         'chatgpt test plugin',
       { separator: '_' }
     )
+  const nameForHuman =
+    partialPluginManifest.name_for_human ||
+    (partialPluginManifest as any).name ||
+    'chatgpt test plugin'
 
   const pluginManifest = {
     schema_version: 'v1',
-    name_for_model: nameForModel,
     auth: {
       type: 'none'
     },
@@ -49,7 +52,9 @@ export function defineAIPluginManifest(
           has_user_authentication: false
         }
       : undefined,
-    ...partialPluginManifest
+    ...partialPluginManifest,
+    name_for_model: nameForModel,
+    name_for_human: nameForHuman
   } as types.AIPluginManifest
 
   // ensure the manifest keys are always in a determinstic order

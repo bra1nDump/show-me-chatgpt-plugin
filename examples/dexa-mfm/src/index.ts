@@ -25,6 +25,7 @@ router.get('/.well-known/ai-plugin.json', (request: Request) => {
   const pluginManifest = defineAIPluginManifest(
     {
       description_for_human: pkg.description,
+      name_for_human: pkg.aiPlugin.name,
       ...pkg.aiPlugin
     },
     { openAPIUrl: `https://${host}/openapi.json` }
