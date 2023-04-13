@@ -2,13 +2,16 @@ import z from 'zod'
 
 export const DexaSearchRequestBodySchema = z.object({
   query: z.string().min(1).max(500),
-  topK: z.number().min(1).max(100).default(10)
+  topK: z.number().min(1).max(100).default(10),
+  docSid: z.string().optional(),
+  personSid: z.string().optional()
 })
 
 export type DexaSearchRequestBody = z.infer<typeof DexaSearchRequestBodySchema>
 
 export const DexaSearchResultSchema = z.object({
   content: z.string(),
+  summary: z.string(),
   episodeTitle: z.string(),
   chapterTitle: z.string(),
   citationUrl: z.string()

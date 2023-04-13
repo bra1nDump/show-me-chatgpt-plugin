@@ -30,6 +30,9 @@ export class DexaSearch extends OpenAPIRoute {
                 description:
                   'The main content of this conversation transcript with speaker labels'
               }),
+              // summary: new Str({
+              //   description: 'A summary of this conversation transcript'
+              // }),
               episodeTitle: new Str({
                 description:
                   'Title of the podcast episode this conversation is from'
@@ -115,7 +118,9 @@ export class DexaSearch extends OpenAPIRoute {
     console.log('<<< search', `${query} (${openaiUserLocaleInfo}, ${ip})`)
 
     const responseBody = {
-      results
+      results: results.map((r) => ({
+        ...omit(r, 'summary')
+      }))
     }
 
     return new Response(JSON.stringify(responseBody, null, 2), {
