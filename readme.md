@@ -27,7 +27,7 @@
 
 This repo contains the [chatgpt-plugin NPM package](./packages/chatgpt-plugin), with TS types and utilities for building ChatGPT Plugins with TypeScript.
 
-It also contains several high quality example plugins that you can use as a template for building your own plugins. The goal is to add more examples using different OpenAPI frameworks and hosting providers over time. Currently, all of the examples use Cloudflare Workers, but I'll add an example using Vercel serverless functions soon.
+It also contains several high quality example plugins that you can use as a template for building your own plugins. The goal is to add more examples using different OpenAPI frameworks and hosting providers over time. Currently, all of the examples use Cloudflare Workers, and here's one using [Vercel edge functions](https://github.com/steven-tey/weathergpt).
 
 If there's something missing that you'd like to see, please [open an issue](https://github.com/transitive-bullshit/chatgpt-plugin-ts/issues/new) or join our [ChatGPT Hackers community](https://www.chatgpthackers.dev/) on Discord, with over 8000 developers who are building cool stuff with AI!
 
