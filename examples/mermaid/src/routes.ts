@@ -16,7 +16,7 @@ export class MermaidRender extends OpenAPIRoute {
           example: 'elon musk tesla'
         }),
         {
-          required: true
+          required: false
         }
       )
     },
@@ -71,10 +71,35 @@ export class MermaidRender extends OpenAPIRoute {
       ]
     }
 
-    return new Response(JSON.stringify(responseBody, null, 2), {
-      headers: {
-        'content-type': 'application/json;charset=UTF-8'
-      }
-    })
+    const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>OpenGraph Image Example</title>
+    </head>
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    </script>
+    <body>
+      <pre class="mermaid" style="width: 100vw">
+          graph LR
+          A --- B
+          B-->C[fa:fa-ban forbidden]
+          B-->D(fa:fa-spinner);
+      </pre>
+    </body>
+    <style>svg {
+     max-width: none !important;
+    }</style>
+    </html>
+      `
+    
+      return new Response(html, {
+        headers: {
+          'content-type': 'text/html;charset=UTF-8',
+        },})
   }
 }
+

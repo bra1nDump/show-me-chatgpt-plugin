@@ -17,7 +17,7 @@ const router = OpenAPIRouter({
   }
 })
 
-router.get('/search', routes.MermaidRender)
+router.get('/', routes.MermaidRender)
 
 router.get('/.well-known/ai-plugin.json', (request: Request) => {
   const host = request.headers.get('host')
@@ -38,7 +38,7 @@ router.get('/.well-known/ai-plugin.json', (request: Request) => {
 })
 
 // 404 for everything else
-router.all('*', () => new Response('Not Found.', { status: 404 }))
+router.all('*', () => new Response('404 Not Found...', { status: 200 }))
 
 export default {
   fetch: (request: Request, env: Env, ctx: ExecutionContext) =>
