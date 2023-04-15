@@ -19,6 +19,17 @@ const router = OpenAPIRouter({
 
 router.get('/', routes.MermaidRender)
 
+router.options('/.well-known/ai-plugin.json', () => {
+  console.log('LOOOl')
+  return new Response(null, {
+    headers: {
+      'Acess-Control-Allow-Origin': '*',
+      'Acess-Control-Allow-Methods': 'GET, OPTIONS',
+      'Acess-Control-Allow-Headers': 'Content-Type'
+    }
+  })
+})
+
 router.get('/.well-known/ai-plugin.json', (request: Request) => {
   const host = request.headers.get('host')
   const pluginManifest = defineAIPluginManifest(
@@ -32,6 +43,7 @@ router.get('/.well-known/ai-plugin.json', (request: Request) => {
 
   return new Response(JSON.stringify(pluginManifest, null, 2), {
     headers: {
+      'Acess-Control-Allow-Origin': '*',
       'content-type': 'application/json;charset=UTF-8'
     }
   })
