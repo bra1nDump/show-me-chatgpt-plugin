@@ -2,6 +2,14 @@
   <img alt="ChatGPT Plugin TS" src="/media/social.png">
 </a>
 
+# How to run
+
+- install pnpm https://pnpm.io/
+- install dependencies `pnpm install`
+- `cd packages/chatgpt-plugin && pnpm run build`
+- `cd examples/mermaid`
+- `pnpm run dev`
+
 <h1 align="center">ChatGPT Plugin TS</h1>
 
 <p align="center">
@@ -15,13 +23,14 @@
   <a href="https://prettier.io"><img alt="Prettier Code Formatting" src="https://img.shields.io/badge/code_style-prettier-brightgreen.svg" /></a>
 </p>
 
-- [Intro](#intro)
-- [Install](#install)
-- [Example Plugins](#example-plugins)
-  - [Dexa Lex Fridman Plugin](#dexa-lex-fridman-plugin)
-  - [ASCII Art Plugin](#ascii-art-plugin)
-- [Notes](#notes)
-- [License](#license)
+- [How to run](#how-to-run)
+  - [Intro](#intro)
+  - [Install](#install)
+  - [Example Plugins](#example-plugins)
+    - [Dexa Lex Fridman Plugin](#dexa-lex-fridman-plugin)
+    - [ASCII Art Plugin](#ascii-art-plugin)
+  - [Notes](#notes)
+  - [License](#license)
 
 ## Intro
 
