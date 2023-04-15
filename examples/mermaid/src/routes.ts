@@ -18,7 +18,6 @@ export class MermaidRender extends OpenAPIRoute {
         }),
         {
           required: false
-          required: false
         }
       )
     },
@@ -104,4 +103,3 @@ export function previewHandle(request: Request) {
     // )
     // response.setHeader('Access-Control-Allow-Credentials', 'true')
   }
-}
