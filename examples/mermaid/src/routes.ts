@@ -4,7 +4,7 @@ import { isValidChatGPTIPAddress } from 'chatgpt-plugin'
 import * as types from './types'
 import { omit } from './utils'
 
-export class DexaSearch extends OpenAPIRoute {
+export class MermaidRender extends OpenAPIRoute {
   static schema = {
     tags: ['dexa'],
     summary:
@@ -39,12 +39,9 @@ export class DexaSearch extends OpenAPIRoute {
 
   async handle(request: Request, env: any, _ctx, data: Record<string, any>) {
     console.log(data)
+
     // const body = types.DexaSearchRequestBodySchema.parse({
     //   data,
-    //   // NOTE: I tried testing with returning 10 results, but ChatGPT would frequently
-    //   // stop generating it's response in the middle of an answer, so I'm guessing the
-    //   // returned results were too long and ChatGPT was hitting the max token limit
-    //   // abruptly. I haven't been able to reproduce this but for `topK: 5` so far.
     //   topK: 5
     // })
 

@@ -17,7 +17,7 @@ const router = OpenAPIRouter({
   }
 })
 
-router.get('/search', routes.DexaSearch)
+router.get('/search', routes.MermaidRender)
 
 router.get('/.well-known/ai-plugin.json', (request: Request) => {
   const host = request.headers.get('host')
