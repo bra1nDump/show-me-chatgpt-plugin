@@ -16,7 +16,7 @@ export class MermaidRender extends OpenAPIRoute {
           example: 'dsadad'
         }),
         {
-          required: true
+          required: false
         }
       )
     },
@@ -106,7 +106,7 @@ export class MermaidRender extends OpenAPIRoute {
         'Access-Control-Allow-Headers':
           'Content-Type, Authorization, x-api-key',
         'Access-Control-Allow-Credentials': 'true',
-        'content-type': 'application/json;charset=UTF-8'
+        'content-type': 'text/html;charset=UTF-8'
       }
     })
     // response.setHeader()
