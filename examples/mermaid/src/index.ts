@@ -19,6 +19,8 @@ const router = OpenAPIRouter({
 
 router.get('/', routes.MermaidRender)
 
+router.get('/preview.html', routes.previewHandle)
+
 router.options('/.well-known/ai-plugin.json', () => {
   console.log('LOOOl')
   return new Response(null, {
