@@ -12,7 +12,7 @@ export class DexaSearch extends OpenAPIRoute {
     parameters: {
       query: Query(
         new Str({
-          description: 'Search query',
+          description: 'Mermaid diagram to render',
           example: 'elon musk tesla'
         }),
         {
@@ -25,28 +25,10 @@ export class DexaSearch extends OpenAPIRoute {
         schema: {
           results: [
             {
-              content: new Str({
+              diagramUrl: new Str({
                 description:
-                  'The main content of this conversation transcript with speaker labels'
-              }),
-              episodeTitle: new Str({
-                description:
-                  'Title of the podcast episode this conversation is from'
-              }),
-              chapterTitle: new Str({
-                description: 'Title of the chapter this conversation is from'
-              }),
-              // peopleNames: [
-              //   new Str({
-              //     description:
-              //       'Names of the person (or people) present in the conversation'
-              //   })
-              // ],
-              citationUrl: new Str({
-                description:
-                  'URL citation linking to the source of this conversation. Use this URL to cite this conversation in answers.',
-                example:
-                  'https://dexa.ai/lex/episodes/doc_358?sectionSid=sec_5319&chunkSid=chunk_9725'
+                  'URL with a mermaid diagram that can be used to visualize the conversation',
+                example: 'https://placekitten.com/g/200/300'
               })
             }
           ]
@@ -56,67 +38,40 @@ export class DexaSearch extends OpenAPIRoute {
   }
 
   async handle(request: Request, env: any, _ctx, data: Record<string, any>) {
-    const dexaApiBaseUrl = env.DEXA_API_BASE_URL
-    if (!dexaApiBaseUrl) {
-      return new Response('DEXA_API_BASE_URL not set', { status: 500 })
-    }
+    console.log(data)
+    // const body = types.DexaSearchRequestBodySchema.parse({
+    //   data,
+    //   // NOTE: I tried testing with returning 10 results, but ChatGPT would frequently
+    //   // stop generating it's response in the middle of an answer, so I'm guessing the
+    //   // returned results were too long and ChatGPT was hitting the max token limit
+    //   // abruptly. I haven't been able to reproduce this but for `topK: 5` so far.
+    //   topK: 5
+    // })
 
-    const ip = request.headers.get('Cf-Connecting-Ip')
-    if (!ip) {
-      console.warn('search error missing IP address')
-      return new Response('invalid source IP', { status: 500 })
-    }
+    // Route 1.
+    // Get the id from the request, get the mermaid diagram string
+    // Put in a map { user_id: mermaid_diagram_string }
 
-    if (!isValidChatGPTIPAddress(ip)) {
-      // console.warn('search error invalid IP address', ip)
-      return new Response(`Forbidden`, { status: 403 })
-    }
+    // Return a link to 2. Html with meta tags
 
-    const openaiUserLocaleInfo = request.headers.get(
-      'openai-subdivision-1-iso-code'
-    )
-    const { query } = data
-    console.log()
-    console.log()
-    console.log('>>> search', `${query} (${openaiUserLocaleInfo}, ${ip})`)
-    console.log()
+    // In a different route to render html page with the meta tags
+    // Example of what works
+    // <!-- Facebook Meta Tags -->
+    // <meta property="og:url" content="https://dexa.ai/lex/episodes/doc_358?sectionSid=sec_5319&chunkSid=chunk_9725">
+    // <meta property="og:type" content="website">
+    // <meta property="og:title" content="Daniel Negreanu: Poker | Lex Fridman Podcast #324">
+    // <meta property="og:description" content="undefined">
+    // <meta property="og:image" content="https://dexa.ai/resources/chunk/image/chunk_9725.png">
 
-    const url = `${dexaApiBaseUrl}/api/query`
-    const body = types.DexaSearchRequestBodySchema.parse({
-      query,
-      // NOTE: I tried testing with returning 10 results, but ChatGPT would frequently
-      // stop generating it's response in the middle of an answer, so I'm guessing the
-      // returned results were too long and ChatGPT was hitting the max token limit
-      // abruptly. I haven't been able to reproduce this but for `topK: 5` so far.
-      topK: 5
-    })
-
-    const { results }: types.DexaSearchResponseBody = await fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(body),
-      headers: {
-        'content-type': 'application/json'
-      }
-    }).then((res) => {
-      if (!res.ok) {
-        throw new Error(`Dexa API error: ${res.statusText}`)
-      }
-
-      return res.json()
-    })
-
-    console.log(
-      `search results for query "${query}"`,
-      results.map((r) => ({
-        ...omit(r, 'content')
-      }))
-    )
-    console.log()
-    console.log()
-    console.log('<<< search', `${query} (${openaiUserLocaleInfo}, ${ip})`)
+    // Might be optional, lets try embedding svg in the previous link.
+    // 3. Another route to return the actual image content - svg inline
 
     const responseBody = {
-      results
+      results: [
+        {
+          diagramUrl: 'https://placekitten.com/g/200/300'
+        }
+      ]
     }
 
     return new Response(JSON.stringify(responseBody, null, 2), {
