@@ -10,13 +10,13 @@ export class MermaidRender extends OpenAPIRoute {
     summary:
       'Searches the Lex Fridman podcast for any topic and returns the most relevant results as conversation transcripts. Multiple conversation transcripts can be combined to form a summary. Always cite your sources when using this API using the citationUrl.',
     parameters: {
-      query: Query(
+      mermaid: Query(
         new Str({
           description: 'Mermaid diagram to render',
-          example: 'elon musk tesla'
+          example: 'dsadad'
         }),
         {
-          required: false
+          required: true
         }
       )
     },
@@ -84,10 +84,7 @@ export class MermaidRender extends OpenAPIRoute {
     </script>
     <body>
       <pre class="mermaid" style="width: 100vw">
-          graph LR
-          A --- B
-          B-->C[fa:fa-ban forbidden]
-          B-->D(fa:fa-spinner);
+          ${data.mermaid}
       </pre>
     </body>
     <style>svg {
