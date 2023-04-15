@@ -80,6 +80,18 @@ importers:
         specifier: ^3.21.4
         version: 3.21.4
 
+  examples/mermaid:
+    dependencies:
+      '@cloudflare/itty-router-openapi':
+        specifier: ^0.0.15
+        version: 0.0.15
+      chatgpt-plugin:
+        specifier: workspace:../../packages/chatgpt-plugin
+        version: link:../../packages/chatgpt-plugin
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
+
   packages/chatgpt-plugin:
     dependencies:
       '@sindresorhus/slugify':
