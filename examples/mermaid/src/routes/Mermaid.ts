@@ -26,11 +26,11 @@ export class MermaidRoute extends OpenAPIRoute {
   /// 2. Creates /openapi.json route under the hood. Injects this into gpt prompt to teach about how to use the plugin.
   static schema = {
     tags: ['dexa'],
-    summary: `Taking in a mermaid diagram, renders it and returns a link to the rendered image.`,
+    summary: `Taking in a diagram, renders it and returns a link to the rendered image. Select the diagram language from amongst BlockDiag, BPMN, Bytefield, C4 (with PlantUML), D2, DBML, Ditaa, Erd, Excalidraw, GraphViz, Mermaid, Pikchr, PlantUML, Structurizr, SvgBob, UMLet, Vega, Vega-Lite, WaveDrom`,
     parameters: {
       mermaid: Query(
         new Str({
-          description: 'Mermaid diagram to render',
+          description: 'Diagram to render',
           example: `
 mindmap
   root((mindmap))
@@ -53,6 +53,15 @@ mindmap
         }),
         {
           required: true
+        }
+      ),
+      diagramLanguage: Query(
+        new Str({
+          description: 'The language to use to render the diagram',
+          example: 'mermaid'
+        }),
+        {
+          required: false
         }
       )
     },
@@ -84,9 +93,9 @@ mindmap
     mermaid = mermaid.replace(/\+/g, ' ')
 
     const url = new URL(request.url)
-    
+    const diagramLanguage = url.searchParams.get('diagramLanguage').toLowerCase() || 'mermaid'
     //const imageUrl = 'https://kroki.io/graphviz/svg/eJxLyUwvSizIUHBXqPZIzcnJ17ULzy/KSakFAGxACMY=';
-    const imageUrl = 'https://kroki.io/mermaid/svg/' + compressAndEncodeBase64(mermaid)
+    const imageUrl = 'https://kroki.io/' + diagramLanguage + '/svg/' + compressAndEncodeBase64(mermaid)
 
     return new Response(
       JSON.stringify({
