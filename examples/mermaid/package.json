@@ -1,8 +1,8 @@
 {
-  "name": "chatgpt-plugin-example-mermaid",
-  "version": "0.1.2",
+  "name": "diagram-chatgpt-plugin",
+  "version": "0.1",
   "private": true,
-  "description": "Render Mermaid Graphs",
+  "description": "Create Diagrams with Kroki, using Mermaid, GraphViz, Excalidraw, and more",
   "author": "Travis Fischer <travis@transitivebullsh.it>",
   "repository": "transitive-bullshit/chatgpt-plugin-ts",
   "license": "MIT",

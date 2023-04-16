@@ -34,10 +34,10 @@ router.get('/.well-known/ai-plugin.json', (request: Request) => {
   console.log('using manifest', openAPIUrl)
   const pluginManifest = defineAIPluginManifest(
     {
-      description_for_human: 'Render Mermaid Graphs',
-      name_for_human: 'Mermaid',
+      description_for_human: 'Render any Diagram using Mermaid, GraphViz, and many more.',
+      name_for_human: 'Diagram',
       logo_url:
-        'https://assets.standardresume.co/image/upload/c_fill,w_392,h_392,f_auto,q_auto/dexa/accounts/lex',
+        'https://res.cloudinary.com/deepwave-org/image/upload/v1681620862/Heye.earth/Projects/PinClipart.com_venn-diagram-clipart_5480153_hk80cf.png',
       contact_email: 'kirill2003de@gmail.com',
       legal_info_url: 'https://example.com',
       description_for_model: DESCRIPTION_FOR_MODEL
