@@ -1,10 +1,10 @@
 import { OpenAPIRoute, Query, Str } from '@cloudflare/itty-router-openapi'
 import { isValidChatGPTIPAddress } from 'chatgpt-plugin'
 
-import * as types from './types'
-import { omit } from './utils'
+import * as types from '../types'
+import { omit } from '../utils'
 
-export class Mermaid extends OpenAPIRoute {
+export class MermaidRoute extends OpenAPIRoute {
   /// 2. Creates /openapi.json route under the hood. Injects this into gpt prompt to teach about how to use the plugin.
   static schema = {
     tags: ['dexa'],
@@ -75,11 +75,6 @@ mindmap
       }),
       {
         headers: {
-          'Access-Control-Allow-Origin': 'https://chat.openai.com/',
-          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-          'Access-Control-Allow-Headers':
-            'Content-Type, Authorization, x-api-key',
-          'Access-Control-Allow-Credentials': 'true',
           'content-type': 'application/json;charset=UTF-8'
         }
       }

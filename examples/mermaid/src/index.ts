@@ -2,7 +2,7 @@ import { OpenAPIRouter } from '@cloudflare/itty-router-openapi'
 import { defineAIPluginManifest } from 'chatgpt-plugin'
 import { createCors } from 'itty-cors';
 
-import * as routes from './routes'
+import { MermaidRoute } from './routes/Mermaid'
 import pkg from '../package.json'
 
 export interface Env {
@@ -22,7 +22,7 @@ const { preflight, corsify } = createCors({ origins: ['*'] });
 router.all('*', preflight)
 
 // 1. Define the plugin manifest
-router.get('/', routes.Mermaid)
+router.get('/', MermaidRoute)
 //router.get('/preview.html', routes.previewHandle)
 
 router.get('/.well-known/ai-plugin.json', (request: Request) => {
@@ -50,7 +50,6 @@ When you get the response it will include an image url, you should render it inl
 `
     },
     { openAPIUrl }
-   // { openAPIUrl: `http://127.0.0.1:35243/openapi.json` }
   )
 
   console.log(pluginManifest)
@@ -67,18 +66,16 @@ router.all('*', () => new Response('404 Not Found...', { status: 200 }))
 
 export default {
   fetch: (request: Request, env: Env, ctx: ExecutionContext) => {
-    const host = request.headers.get('host')
-    console.log("================= host", host);
     if (request.method === 'OPTIONS') {
-      console.log("we got a cors request");
+      console.log("got a cors request");
       return new Response(null, {
         status: 200,
         headers: {
-          'access-control-allow-origin': '*', 
+          'access-control-allow-origin': '*', //request.headers.get('Origin'), 
+          'access-control-allow-headers': request.headers.get('Access-Control-Request-Headers'),
         } 
       });
     } 
-    console.log("we got other cors request", request.method);
     return router.handle(request, env, ctx).then(corsify);
   }
 }
