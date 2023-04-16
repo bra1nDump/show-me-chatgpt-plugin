@@ -8,6 +8,9 @@
   "type": "module",
   "source": "./src/index.ts",
   "types": "./build/index.d.ts",
+  "aiPlugin": {
+    "name": "Mermaid Renderer"
+  },
   "exports": {
     ".": {
       "import": "./build/index.js",
