@@ -1,9 +1,9 @@
 import { OpenAPIRouter } from '@cloudflare/itty-router-openapi'
 import { defineAIPluginManifest } from 'chatgpt-plugin'
-import { createCors } from 'itty-cors';
+import { createCors } from 'itty-cors'
 
-import { MermaidRoute } from './routes/Mermaid'
 import pkg from '../package.json'
+import { MermaidRoute, richPreview } from './routes/Mermaid'
 
 export interface Env {
   DEXA_API_BASE_URL: string
@@ -18,27 +18,29 @@ const router = OpenAPIRouter({
   }
 })
 
-const { preflight, corsify } = createCors({ origins: ['*'] });
+const { preflight, corsify } = createCors({ origins: ['*'] })
 router.all('*', preflight)
 
-// 1. Define the plugin manifest
+router.get('/richPreview', richPreview)
+
+// 2. Expose magic openapi.json, expose API itself
 router.get('/', MermaidRoute)
-//router.get('/preview.html', routes.previewHandle)
 
+// 1. Define the plugin manifest
 router.get('/.well-known/ai-plugin.json', (request: Request) => {
-  const host = request.headers.get('host')
-  const openAPIUrl = `http://${host}/openapi.json`;
+  const url = new URL(request.url)
+  const openAPIUrl = `${url.href}/openapi.json`
 
-  console.log("using manifest", openAPIUrl);
-
+  console.log('using manifest', openAPIUrl)
   const pluginManifest = defineAIPluginManifest(
     {
-      "description_for_human": "Render Mermaid Graphs",
-      "name_for_human": "Mermaid",
-      "logo_url": "https://assets.standardresume.co/image/upload/c_fill,w_392,h_392,f_auto,q_auto/dexa/accounts/lex",
-      "contact_email": "kirill2003de@gmail.com",
-      "legal_info_url": "https://example.com",
-      "description_for_model": DESCRIPTION_FOR_MODEL,
+      description_for_human: 'Render Mermaid Graphs',
+      name_for_human: 'Mermaid',
+      logo_url:
+        'https://assets.standardresume.co/image/upload/c_fill,w_392,h_392,f_auto,q_auto/dexa/accounts/lex',
+      contact_email: 'kirill2003de@gmail.com',
+      legal_info_url: 'https://example.com',
+      description_for_model: DESCRIPTION_FOR_MODEL
     },
     { openAPIUrl }
   )
@@ -58,20 +60,22 @@ router.all('*', () => new Response('404 Not Found...', { status: 200 }))
 export default {
   fetch: (request: Request, env: Env, ctx: ExecutionContext) => {
     if (request.method === 'OPTIONS') {
+      console.log('got a cors request')
       return new Response(null, {
         status: 200,
         headers: {
-          'access-control-allow-origin': '*', //request.headers.get('Origin'), 
-          'access-control-allow-headers': request.headers.get('Access-Control-Request-Headers'),
-        } 
-      });
-    } 
-    return router.handle(request, env, ctx).then(corsify);
+          'access-control-allow-origin': '*', //request.headers.get('Origin'),
+          'access-control-allow-headers': request.headers.get(
+            'Access-Control-Request-Headers'
+          )
+        }
+      })
+    }
+    return router.handle(request, env, ctx).then(corsify)
   }
 }
 
-const DESCRIPTION_FOR_MODEL = (
-`You should use this plugin when people want visualizations.
+const DESCRIPTION_FOR_MODEL = `You should use this plugin when people want visualizations.
 
 The plugin takes in a mermaid diagram and renders it returning a link to the rendered image.
 The plugin expects a mermaid.js snippet as input.
@@ -83,4 +87,4 @@ If you think the best diagram to represent the data is a mindmap:
 
 Interpreting the response:
 When you get the response it will include an image url, you should render it inline.
-`);
+`
