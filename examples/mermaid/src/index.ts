@@ -29,13 +29,14 @@ router.get('/', MermaidRoute)
 // 1. Define the plugin manifest
 router.get('/.well-known/ai-plugin.json', (request: Request) => {
   const url = new URL(request.url)
-  const host = request.headers.get('host');
+  const host = request.headers.get('host')
   const openAPIUrl = `${url.protocol}//${host}/openapi.json`
 
   console.log('using manifest', openAPIUrl)
   const pluginManifest = defineAIPluginManifest(
     {
-      description_for_human: 'Render any Diagram using Mermaid, GraphViz, and many more.',
+      description_for_human:
+        'Render any Diagram using Mermaid, GraphViz, and many more.',
       name_for_human: 'Diagram',
       logo_url:
         'https://res.cloudinary.com/deepwave-org/image/upload/v1681620862/Heye.earth/Projects/PinClipart.com_venn-diagram-clipart_5480153_hk80cf.png',
@@ -88,4 +89,5 @@ If you think the best diagram to represent the data is a mindmap:
 
 Interpreting the response:
 When you get the response it will include an image url, you should render it inline.
+You will also get a link as editDiagramOnline to edit the diagram, you should render it inline.
 `
