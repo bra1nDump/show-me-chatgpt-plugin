@@ -17,7 +17,9 @@ const router = OpenAPIRouter({
   }
 })
 
-router.get('/', routes.MermaidRender)
+router.get('/', routes.Mermaid)
+
+router.get('/render', routes.MermaidRender)
 
 router.get('/preview.html', routes.previewHandle)
 
