@@ -29,7 +29,8 @@ router.get('/', MermaidRoute)
 // 1. Define the plugin manifest
 router.get('/.well-known/ai-plugin.json', (request: Request) => {
   const url = new URL(request.url)
-  const openAPIUrl = `${url.href}/openapi.json`
+  const host = request.headers.get('host');
+  const openAPIUrl = `${url.protocol}//${host}/openapi.json`
 
   console.log('using manifest', openAPIUrl)
   const pluginManifest = defineAIPluginManifest(
