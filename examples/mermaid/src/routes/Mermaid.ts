@@ -1,10 +1,14 @@
+import * as mermaid from 'mermaid'
 import * as pako from 'pako'
 import { OpenAPIRoute, Query, Str } from '@cloudflare/itty-router-openapi'
 import { isValidChatGPTIPAddress } from 'chatgpt-plugin'
+import ConvertAPI from 'convertapi'
 
 import * as types from '../types'
 import { omit } from '../utils'
 import { saveShortLink } from './Shorten'
+
+const convertapi = new ConvertAPI('zZdknV6AQWeiGzji')
 
 function compressAndEncodeBase64(input: string) {
   // Convert the input string to a Uint8Array
@@ -52,7 +56,11 @@ export async function getGPTResponse(
   let historyString = await store.get('CHAT_HISTORY')
 
   let history: Interaction[] = []
-  if (historyString === null || historyString === undefined) {
+  if (
+    true || // UNTIL WE HAVE AUTHENTICATION, WE WILL JUST START A NEW CHAT EVERY TIME
+    historyString === null ||
+    historyString === undefined
+  ) {
     console.log("No history, let's start a new one")
     history = [
       {
@@ -102,8 +110,6 @@ export async function getGPTResponse(
 
   return textReply
 }
-
-console.log(compressAndEncodeBase64('digraph G {Hello->World}'))
 
 export class MermaidRoute extends OpenAPIRoute {
   /// 2. Creates /openapi.json route under the hood. Injects this into gpt prompt to teach about how to use the plugin.
@@ -169,7 +175,9 @@ export class MermaidRoute extends OpenAPIRoute {
 
     if (diagramLanguage === 'mermaid') {
       const mermaidNoHyphenatedWords = processString(mermaidNoPluses)
-      console.log('mermaidNoHyphenatedWords', mermaidNoHyphenatedWords)
+      console.log('\nmermaidNoHyphenatedWords', mermaidNoHyphenatedWords)
+
+      diagramSource = mermaidNoHyphenatedWords
 
       // Encode the mermaid diagram to a Base64 string
       const mermaidEditorJson = {
@@ -182,17 +190,22 @@ export class MermaidRoute extends OpenAPIRoute {
 
       editDiagramOnline = 'https://mermaid.live/edit#' + buffer
       console.log('editDiagramOnline', editDiagramOnline)
-
-      diagramSource = mermaidNoHyphenatedWords
     }
 
     // TODO: Add graphvis editor https://www.devtoolsdaily.com/graphviz/?#%7B%22dot%22%3A%22digraph%20MessageArchitecture%20%7B%5Cn%20%20messageClient%5Cn%20%20messageQueue%5Bshape%3Drarrow%5D%5Cn%7D%22%7D
 
-    const imageUrl =
-      'https://kroki.io/' +
-      diagramLanguage +
-      '/svg/' +
-      compressAndEncodeBase64(mermaidNoPluses)
+    const imageUrl = await convertToImage(request, diagramSource)
+
+    // var resultPromise = convertapi.convert('pdf', { File: 'https://website/my_file' }, 'html');
+
+    console.log('Generated mermaid image URL: ' + imageUrl)
+
+    // Does not support mindmaps
+    // const imageUrl =
+    //   'https://kroki.io/' +
+    //   diagramLanguage +
+    //   '/svg/' +
+    //   compressAndEncodeBase64(diagramSource)
 
     const slug = await saveShortLink(env.SHORTEN, imageUrl)
     let shortenedURL = `${new URL(request.url).origin}/s/${slug}`
@@ -222,6 +235,21 @@ export class MermaidRoute extends OpenAPIRoute {
   }
 }
 
+async function convertToImage(request: Request, diagramSource: string): string {
+  const imageGen =
+    encodeURIComponent(`${new URL(request.url).origin}/render?mermaid=`) +
+    encodeURIComponent(diagramSource)
+  console.log('imageGen', imageGen)
+  const apiResponse = await fetch(
+    `https://v2.convertapi.com/convert/web/to/jpg?Secret=zZdknV6AQWeiGzji&Url=${imageGen}&StoreFile=true&ConversionDelay=2`
+  )
+  const jsonResponse: any = await apiResponse.json()
+  console.log('jsonResponse', jsonResponse)
+  // Get the URL from the API response
+  const imageUrl = jsonResponse.Files[0].Url
+  return imageUrl
+}
+
 function processString(input: string): string {
   // Step 1: Replace all '-->' occurrences with the keyword 'ARRRROW'
   const step1 = input.replace(/-->/g, 'ARRRROW')
@@ -240,6 +268,49 @@ function processString(input: string): string {
   const step4 = step3.replace(/ARRRROW/g, '-->').replace(/__/g, '-')
 
   return step4
+}
+
+export function preview(request: Request, data: Record<string, any>) {
+  console.log('\n\nPreview')
+  console.log(request.url)
+  const searchParams = new URL(request.url).searchParams
+  const mermaid = searchParams.get('mermaid')
+
+  const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenGraph Image Example</title>
+  <meta property="og:url" content="https://dexa.ai/lex/episodes/doc_358?sectionSid=sec_5319&chunkSid=chunk_9725">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Daniel Negreanu: Poker | Lex Fridman Podcast #324">
+  <meta property="og:description" content="undefined">
+  <meta property="og:image" content="https://dexa.ai/resources/chunk/image/chunk_9725.png">
+  <link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  </script>
+  <body>
+    <pre class="mermaid" style="width: 100vw">
+        ${mermaid.replace(/\+/g, ' ')}
+    </pre>
+  </body>
+  <style>svg {
+   max-width: none !important;
+   max-height: 100vh !important;
+  }</style>
+</html>
+  `
+
+  return new Response(html, {
+    headers: {
+      'content-type': 'text/html;charset=UTF-8'
+    }
+  })
 }
 
 function systemPrompt(userQuestion: string): string {

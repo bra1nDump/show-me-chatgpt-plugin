@@ -19,7 +19,9 @@
     "@cloudflare/itty-router-openapi": "^0.0.15",
     "@cloudflare/workers-types": "^4.20230321.0",
     "chatgpt-plugin": "workspace:../../packages/chatgpt-plugin",
+    "convertapi": "^1.11.2",
     "itty-cors": "^0.3.6",
+    "mermaid": "^10.1.0",
     "nanoid": "^4.0.2",
     "pako": "^2.1.0",
     "zod": "^3.21.4"

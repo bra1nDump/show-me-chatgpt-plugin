@@ -4,7 +4,7 @@ import { defineAIPluginManifest } from 'chatgpt-plugin'
 import { createCors } from 'itty-cors'
 
 import pkg from '../package.json'
-import { MermaidRoute } from './routes/Mermaid'
+import { MermaidRoute, preview } from './routes/Mermaid'
 import { ShortLinkRoute, debugCreateLink } from './routes/Shorten'
 
 export interface Env {
@@ -26,6 +26,8 @@ router.all('*', preflight)
 
 // 2. Expose magic openapi.json, expose API itself
 router.get('/', MermaidRoute)
+
+router.get('/render', preview)
 
 router.post('/debug/links', debugCreateLink)
 router.get('/s/:id', ShortLinkRoute)
