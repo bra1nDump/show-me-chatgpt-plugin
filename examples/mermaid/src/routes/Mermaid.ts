@@ -44,15 +44,36 @@ export interface Interaction {
 
 export async function getGPTResponse(
   userQuestion: string,
-  apiKey: string
+  env: any
 ): Promise<string> {
+  const apiKey = env.OPENAI_KEY as string
+  const store = env.CHAT_HISTORY as KVNamespace
+
+  let historyString = await store.get('CHAT_HISTORY')
+
+  let history: Interaction[] = []
+  if (historyString === null || historyString === undefined) {
+    console.log("No history, let's start a new one")
+    history = [
+      {
+        role: 'system',
+        content: systemPrompt(userQuestion)
+      }
+    ]
+  } else {
+    // Get old messages
+    console.log('Appending to old history')
+    history = JSON.parse(historyString)
+
+    history.push({
+      role: 'user',
+      content: userQuestion
+    })
+  }
+
+  console.log('history', history)
+
   const apiUrl = `https://api.openai.com/v1/chat/completions`
-
-  // TODO: Dominic suggests savings :D
-  // return "Good to hear bro";
-
-  // get env OPENAI_KEY, from .env
-
   let chatRequest = await fetch(apiUrl, {
     method: 'POST',
     headers: {
@@ -62,18 +83,22 @@ export async function getGPTResponse(
     },
     body: JSON.stringify({
       model: 'gpt-4',
-      messages: [
-        {
-          role: 'system',
-          content: systemPrompt(userQuestion)
-        }
-      ],
+      messages: history,
       temperature: 0.7
     })
   })
 
-  const response = await chatRequest.json()
+  const response: any = await chatRequest.json()
   let textReply = response.choices[0].message.content
+
+  // Add to history as assistant
+  history.push({
+    role: 'assistant',
+    content: textReply
+  })
+
+  // Save history
+  await store.put('CHAT_HISTORY', JSON.stringify(history))
 
   return textReply
 }
@@ -118,6 +143,8 @@ export class MermaidRoute extends OpenAPIRoute {
   /// 3. Handles the API request
   async handle(request: Request, env: any, _ctx, data: Record<string, any>) {
     console.log(data)
+    console.log(_ctx)
+    console.log(request)
     let { mermaid, diagramLanguage } = data
     console.log('snippet', mermaid)
 
@@ -129,7 +156,7 @@ export class MermaidRoute extends OpenAPIRoute {
 
       console.log('key', env)
       // GPT Plugins encoded spaces as +
-      mermaidNoPluses = await getGPTResponse(queryNoPluses, env.OPENAI_KEY)
+      mermaidNoPluses = await getGPTResponse(queryNoPluses, env)
     } else {
       // GPT Plugins encoded spaces as +
       mermaidNoPluses = mermaid.replace(/\+/g, ' ')
@@ -205,7 +232,6 @@ function processString(input: string): string {
     const replacement = match.replace(/-/g, '__')
     step2 = step2.replace(match, replacement)
   })
-  console.log('step2', step2)
 
   // Step 3: Replace all '-' with a space
   const step3 = step2.replace(/-/g, ' ')

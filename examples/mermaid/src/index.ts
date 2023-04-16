@@ -1,15 +1,15 @@
 import { OpenAPIRouter } from '@cloudflare/itty-router-openapi'
+import { KVNamespace } from '@cloudflare/workers-types'
 import { defineAIPluginManifest } from 'chatgpt-plugin'
 import { createCors } from 'itty-cors'
-import { KVNamespace } from '@cloudflare/workers-types'
 
 import pkg from '../package.json'
-import { MermaidRoute, richPreview } from './routes/Mermaid'
-import { debugCreateLink, ShortLinkRoute } from './routes/Shorten'
+import { MermaidRoute } from './routes/Mermaid'
+import { ShortLinkRoute, debugCreateLink } from './routes/Shorten'
 
 export interface Env {
-  DEXA_API_BASE_URL: string;
-  SHORTEN: KVNamespace;
+  SHORTEN: KVNamespace
+  CHAT_HISTORY: KVNamespace
 }
 
 const router = OpenAPIRouter({
@@ -26,7 +26,7 @@ router.all('*', preflight)
 
 // 2. Expose magic openapi.json, expose API itself
 router.get('/', MermaidRoute)
- 
+
 router.post('/debug/links', debugCreateLink)
 router.get('/s/:id', ShortLinkRoute)
 
@@ -78,7 +78,7 @@ export default {
 }
 
 const DESCRIPTION_FOR_MODEL = `
-You should use this plugin when people want visualizations.
+You should use this plugin when people want visualizations. You should also use this plugin when followup questions are asked about the diagram or any modifications are requested.
 Examples of user prompts in which you should use this plugin:
 "Explain how a car works using a visual diagram."
 "Describe the process of making a car."
@@ -98,6 +98,12 @@ Example requests:
 }
 {
   query: "Show me how a pen is structured."
+}
+{
+  query: "Add more nodes to the diagram."
+}
+{
+  query: "Change the diagram type to a state diagram."
 }
 
 
