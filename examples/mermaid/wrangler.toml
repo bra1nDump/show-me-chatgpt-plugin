@@ -1,6 +1,12 @@
 name = "chatgpt-plugin-mermaid"
 main = "src/index.ts"
 compatibility_date = "2023-04-04"
+kv_namespaces = [
+    { "binding" = "SHORTEN", "id" = "a9b2b608299343e999fe485ba89e3583", "preview_id" = "2c62bef60d614441b2e570dfa7b61a35" },
+    { "binding" = "TEST", "id" = "0e9ee6712e3d46c58816e0a48522eb99", "preview_id" = "f2b922791c8c44838f852edcf4aab40e" }
+]
 
 [vars]
 DEXA_API_BASE_URL="TODO"
+
+

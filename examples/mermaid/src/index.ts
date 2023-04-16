@@ -1,12 +1,15 @@
 import { OpenAPIRouter } from '@cloudflare/itty-router-openapi'
 import { defineAIPluginManifest } from 'chatgpt-plugin'
 import { createCors } from 'itty-cors'
+import { KVNamespace } from '@cloudflare/workers-types'
 
 import pkg from '../package.json'
 import { MermaidRoute, richPreview } from './routes/Mermaid'
+import { debugCreateLink, ShortLinkRoute } from './routes/Shorten'
 
 export interface Env {
-  DEXA_API_BASE_URL: string
+  DEXA_API_BASE_URL: string;
+  SHORTEN: KVNamespace;
 }
 
 const router = OpenAPIRouter({
@@ -21,10 +24,11 @@ const router = OpenAPIRouter({
 const { preflight, corsify } = createCors({ origins: ['*'] })
 router.all('*', preflight)
 
-//router.get('/richPreview', richPreview)
-
 // 2. Expose magic openapi.json, expose API itself
 router.get('/', MermaidRoute)
+ 
+router.post('/debug/links', debugCreateLink)
+router.get('/s/:id', ShortLinkRoute)
 
 // 1. Define the plugin manifest
 router.get('/.well-known/ai-plugin.json', (request: Request) => {
@@ -32,7 +36,6 @@ router.get('/.well-known/ai-plugin.json', (request: Request) => {
   const host = request.headers.get('host')
   const openAPIUrl = `${url.protocol}//${host}/openapi.json`
 
-  console.log('using manifest', openAPIUrl)
   const pluginManifest = defineAIPluginManifest(
     {
       description_for_human:
@@ -47,8 +50,6 @@ router.get('/.well-known/ai-plugin.json', (request: Request) => {
     { openAPIUrl }
   )
 
-  console.log(pluginManifest)
-
   return new Response(JSON.stringify(pluginManifest, null, 2), {
     headers: {
       'content-type': 'application/json;charset=UTF-8'
@@ -62,11 +63,10 @@ router.all('*', () => new Response('404 Not Found...', { status: 200 }))
 export default {
   fetch: (request: Request, env: Env, ctx: ExecutionContext) => {
     if (request.method === 'OPTIONS') {
-      console.log('got a cors request')
       return new Response(null, {
         status: 200,
         headers: {
-          'access-control-allow-origin': '*', //request.headers.get('Origin'),
+          'access-control-allow-origin': '*',
           'access-control-allow-headers': request.headers.get(
             'Access-Control-Request-Headers'
           )

@@ -4,6 +4,7 @@ import { isValidChatGPTIPAddress } from 'chatgpt-plugin'
 
 import * as types from '../types'
 import { omit } from '../utils'
+import  { saveShortLink } from './Shorten'
 
 function compressAndEncodeBase64(input: string) {
   // Convert the input string to a Uint8Array
@@ -35,8 +36,6 @@ function encodeBase64(input: string) {
 
   return base64Encoded
 }
-
-console.log(compressAndEncodeBase64('digraph G {Hello->World}'))
 
 export class MermaidRoute extends OpenAPIRoute {
   /// 2. Creates /openapi.json route under the hood. Injects this into gpt prompt to teach about how to use the plugin.
@@ -138,12 +137,20 @@ mindmap
       '/svg/' +
       compressAndEncodeBase64(mermaidNoPluses)
 
+    const slug = await saveShortLink(env.SHORTEN, imageUrl)
+    let shortenedURL = `${new URL(request.url).origin}/s/${slug}`;
+
+    const editorSlug = await saveShortLink(env.SHORTEN, editDiagramOnline)
+    let shortenedEditDiagramURL = `${new URL(request.url).origin}/s/${editorSlug}`;
+
+    console.log({shortenedURL});
+
     return new Response(
       JSON.stringify({
         results: [
           {
-            image: imageUrl,
-            editDiagramOnline
+            image: shortenedURL,
+            editDiagramOnline: shortenedEditDiagramURL,
           }
         ]
       }),
