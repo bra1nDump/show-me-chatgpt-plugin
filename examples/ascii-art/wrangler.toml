@@ -1,3 +1,0 @@
-name = "chatgpt-plugin-ascii-art"
-main = "src/index.ts"
-compatibility_date = "2023-04-04"
