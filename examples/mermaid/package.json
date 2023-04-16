@@ -12,11 +12,13 @@
   },
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler publish"
+    "deploy": "wrangler publish",
+    "tsc": "tsc"
   },
   "dependencies": {
     "@cloudflare/itty-router-openapi": "^0.0.15",
     "chatgpt-plugin": "workspace:../../packages/chatgpt-plugin",
+    "itty-cors": "^0.3.6",
     "zod": "^3.21.4"
   },
   "aiPlugin": {
