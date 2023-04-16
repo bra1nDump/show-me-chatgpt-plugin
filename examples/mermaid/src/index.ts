@@ -21,7 +21,7 @@ const router = OpenAPIRouter({
 const { preflight, corsify } = createCors({ origins: ['*'] })
 router.all('*', preflight)
 
-router.get('/richPreview', richPreview)
+//router.get('/richPreview', richPreview)
 
 // 2. Expose magic openapi.json, expose API itself
 router.get('/', MermaidRoute)

@@ -85,42 +85,9 @@ mindmap
 
     const url = new URL(request.url)
     
-    // eNpLyUwvSizIUHBXqPZIzcnJ17ULzy_KSanlAgB1EAjQ
-    // eNpLyUwvSizIUHBXqPZIzcnJ17ULzy/KSakFAGxACMY=
-    //
     //const imageUrl = 'https://kroki.io/graphviz/svg/eJxLyUwvSizIUHBXqPZIzcnJ17ULzy/KSakFAGxACMY=';
     const imageUrl = 'https://kroki.io/mermaid/svg/' + compressAndEncodeBase64(mermaid)
-    //try {
-    //  const response = await fetch('https://kroki.io/mermaid/svg', {
-    //    headers: {
-    //      'Accept': 'image/svg+xml',
-    //      'Context-Type': 'text/plain',
-    //    },
-    //    method: 'POST',
-    //    body: mermaid
-    //  }
-    //  );
-    //}
 
-    //const imageGen = encodeURIComponent(`${url.href}/render?mermaid=` + mermaid)
-    //console.log("trying to get an image");
-    //let jsonResponse: any;
-    //try {
-    //  const downstreamURL =  `https://v2.convertapi.com/convert/web/to/jpg?Secret=VrvzgfsXZmsQy80d&Url=${imageGen}&StoreFile=true&ConversionDelay=2`;
-    //  console.log(downstreamURL);
-    //  const apiResponse = await fetch(downstreamURL)
-    //  if (apiResponse.status !== 200) {
-    //    console.log("did not get a good response", apiResponse);
-    //  }
-    //  jsonResponse = await apiResponse.json()
-    //} catch (err) {
-    //  console.log("got an error, falling back")
-    //  jsonResponse.Files = [ {Url: 'https://placekitten.com/200/200'} ];
-    //}
-    //console.log("got an JSON response")
-
-    // Get the URL from the API response
-    //const imageUrl = jsonResponse.Files[0].Url
     return new Response(
       JSON.stringify({
         results: [
@@ -179,29 +146,3 @@ export function richPreview(request: Request) {
     }
   })
 }
-
-// TODO make this work
-//    mermaid = 'digraph G {Hello->World}'
-//    const buffer = new TextEncoder().encode(mermaid)
-//    console.log("going back", new TextDecoder().decode(buffer));
-//    //const buffer = Buffer.from(mermaid);
-//    console.log("orginal buffer", buffer);
-//    const compressed = pako.deflate(buffer)//, { raw: true })
-//    //const compressed = zlib.deflate(buffer);
-//    console.log("compressed", compressed)
-//    console.log("compressed form", btoa(compressed))
-//    const result = btoa(compressed).replace(/\+/g, '-').replace(/\//g, '_')
-//
-//    const raw = atob(result.replace(/\-/g, '+').replace(/_/g, '/'));
-//    console.log("decoded raw to", raw);
-//    
-//  
-//    
-//
-//    const expect = 'eJxLyUwvSizIUHBXqPZIzcnJ17ULzy_KSakFAGxACMY=';
-//    console.log({result, expect});
-//
-//    const imageUrl = 'https://kroki.io/graphviz/svg/eNpLyUwvSizIUHBXqPZIzcnJ17ULzy_KSanlAgB1EAjQ';
-//    //const imageUrl = 'https://kroki.io/mermaid/svg/' + result;
-//    //const imageUrl = 'https://kroki.io/graphviz/svg/' + result;
-//    console.log(imageUrl)
