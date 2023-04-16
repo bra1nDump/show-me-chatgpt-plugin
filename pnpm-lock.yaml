@@ -88,6 +88,9 @@ importers:
       itty-cors:
         specifier: ^0.3.6
         version: 0.3.6
+      pako:
+        specifier: ^2.1.0
+        version: 2.1.0
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -5178,6 +5181,10 @@ packages:
       - bluebird
       - supports-color
     dev: true
+
+  /pako@2.1.0:
+    resolution: {integrity: sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug==}
+    dev: false
 
   /parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
