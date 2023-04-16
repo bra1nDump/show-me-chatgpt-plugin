@@ -1,8 +1,26 @@
 import { OpenAPIRoute, Query, Str } from '@cloudflare/itty-router-openapi'
 import { isValidChatGPTIPAddress } from 'chatgpt-plugin'
+import * as pako from 'pako'
 
 import * as types from '../types'
 import { omit } from '../utils'
+
+function compressAndEncodeBase64(input: string) {
+  // Convert the input string to a Uint8Array
+  const textEncoder = new TextEncoder();
+  const inputUint8Array = textEncoder.encode(input);
+
+  // Compress the Uint8Array using pako's deflate function
+  const compressedUint8Array = pako.deflate(inputUint8Array)//, { level: 8 });
+
+  // Encode the compressed Uint8Array to a Base64 string
+  const base64Encoded = btoa(String.fromCharCode.apply(null, compressedUint8Array)).replace(/\+/g, '-').replace(/\//g, '_')
+
+  return base64Encoded;
+}
+
+console.log(compressAndEncodeBase64('digraph G {Hello->World}'));
+
 
 export class MermaidRoute extends OpenAPIRoute {
   /// 2. Creates /openapi.json route under the hood. Injects this into gpt prompt to teach about how to use the plugin.
@@ -61,25 +79,54 @@ mindmap
 
   /// 3. Handles the API request
   async handle(request: Request, env: any, _ctx, data: Record<string, any>) {
-    console.log(data)
-    const { mermaid } = data
+    console.log('handling MermaidRoute', data)
+    let { mermaid } = data
+    mermaid = mermaid.replace(/\+/g, ' ')
 
     const url = new URL(request.url)
+    
+    // eNpLyUwvSizIUHBXqPZIzcnJ17ULzy_KSanlAgB1EAjQ
+    // eNpLyUwvSizIUHBXqPZIzcnJ17ULzy/KSakFAGxACMY=
+    //
+    //const imageUrl = 'https://kroki.io/graphviz/svg/eJxLyUwvSizIUHBXqPZIzcnJ17ULzy/KSakFAGxACMY=';
+    const imageUrl = 'https://kroki.io/mermaid/svg/' + compressAndEncodeBase64(mermaid)
+    //try {
+    //  const response = await fetch('https://kroki.io/mermaid/svg', {
+    //    headers: {
+    //      'Accept': 'image/svg+xml',
+    //      'Context-Type': 'text/plain',
+    //    },
+    //    method: 'POST',
+    //    body: mermaid
+    //  }
+    //  );
+    //}
 
-    const imageGen = encodeURIComponent(`${url.href}/render?mermaid=` + mermaid)
-    const apiResponse = await fetch(
-      `https://v2.convertapi.com/convert/web/to/jpg?Secret=VrvzgfsXZmsQy80d&Url=${imageGen}&StoreFile=true&ConversionDelay=2`
-    )
-    const jsonResponse: any = await apiResponse.json()
+    //const imageGen = encodeURIComponent(`${url.href}/render?mermaid=` + mermaid)
+    //console.log("trying to get an image");
+    //let jsonResponse: any;
+    //try {
+    //  const downstreamURL =  `https://v2.convertapi.com/convert/web/to/jpg?Secret=VrvzgfsXZmsQy80d&Url=${imageGen}&StoreFile=true&ConversionDelay=2`;
+    //  console.log(downstreamURL);
+    //  const apiResponse = await fetch(downstreamURL)
+    //  if (apiResponse.status !== 200) {
+    //    console.log("did not get a good response", apiResponse);
+    //  }
+    //  jsonResponse = await apiResponse.json()
+    //} catch (err) {
+    //  console.log("got an error, falling back")
+    //  jsonResponse.Files = [ {Url: 'https://placekitten.com/200/200'} ];
+    //}
+    //console.log("got an JSON response")
 
     // Get the URL from the API response
-    const imageUrl = jsonResponse.Files[0].Url
+    //const imageUrl = jsonResponse.Files[0].Url
     return new Response(
       JSON.stringify({
         results: [
           {
             image: imageUrl,
-            previewUrl: imageGen
+            previewUrl: 'https://example.com'
           }
         ]
       }),
@@ -132,3 +179,29 @@ export function richPreview(request: Request) {
     }
   })
 }
+
+// TODO make this work
+//    mermaid = 'digraph G {Hello->World}'
+//    const buffer = new TextEncoder().encode(mermaid)
+//    console.log("going back", new TextDecoder().decode(buffer));
+//    //const buffer = Buffer.from(mermaid);
+//    console.log("orginal buffer", buffer);
+//    const compressed = pako.deflate(buffer)//, { raw: true })
+//    //const compressed = zlib.deflate(buffer);
+//    console.log("compressed", compressed)
+//    console.log("compressed form", btoa(compressed))
+//    const result = btoa(compressed).replace(/\+/g, '-').replace(/\//g, '_')
+//
+//    const raw = atob(result.replace(/\-/g, '+').replace(/_/g, '/'));
+//    console.log("decoded raw to", raw);
+//    
+//  
+//    
+//
+//    const expect = 'eJxLyUwvSizIUHBXqPZIzcnJ17ULzy_KSakFAGxACMY=';
+//    console.log({result, expect});
+//
+//    const imageUrl = 'https://kroki.io/graphviz/svg/eNpLyUwvSizIUHBXqPZIzcnJ17ULzy_KSanlAgB1EAjQ';
+//    //const imageUrl = 'https://kroki.io/mermaid/svg/' + result;
+//    //const imageUrl = 'https://kroki.io/graphviz/svg/' + result;
+//    console.log(imageUrl)
