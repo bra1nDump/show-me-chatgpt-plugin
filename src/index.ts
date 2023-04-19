@@ -42,7 +42,7 @@ router.get('/.well-known/ai-plugin.json', (request: Request) => {
     {
       description_for_human:
         'Render any Diagram using Mermaid, GraphViz, and many more.',
-      name_for_human: 'Diagram',
+      name_for_human: 'Show Me How',
       logo_url:
         'https://res.cloudinary.com/deepwave-org/image/upload/v1681620862/Heye.earth/Projects/PinClipart.com_venn-diagram-clipart_5480153_hk80cf.png',
       contact_email: 'kirill2003de@gmail.com',
@@ -89,7 +89,8 @@ Examples of user prompts in which you should use this plugin:
 Use this plugin if a user asks about: how something works, explain about a concept or how something is made, summarize a book, describe a process, and other user prompts that can be summarized or explained in the format of a mindmap or a state diagram. Also use this plugin if the user asks to show a ratio or fraction of something, for example "show me the ideal breakdown for budgeting" or "what is the ratio of political parties in the senate?". Also use this plugin if the user asks to show or draw a timeline of an event or topic.
 
 How to create a request to the plugin API:
-Pass the user prompt as a query parameter to the reqeust.
+Pass the entire user prompt as a query parameter to the reqeust.
+For example, if the user asks to sumarize or explain a large text, you should pass the entire text as a query parameter to the request.
 
 Example requests:
 {

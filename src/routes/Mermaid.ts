@@ -2,13 +2,10 @@ import * as mermaid from 'mermaid'
 import * as pako from 'pako'
 import { OpenAPIRoute, Query, Str } from '@cloudflare/itty-router-openapi'
 import { isValidChatGPTIPAddress } from 'chatgpt-plugin'
-import ConvertAPI from 'convertapi'
 
 import * as types from '../types'
 import { omit } from '../utils'
 import { saveShortLink } from './Shorten'
-
-const convertapi = new ConvertAPI('zZdknV6AQWeiGzji')
 
 function compressAndEncodeBase64(input: string) {
   // Convert the input string to a Uint8Array
@@ -148,6 +145,8 @@ export class MermaidRoute extends OpenAPIRoute {
 
   /// 3. Handles the API request
   async handle(request: Request, env: any, _ctx, data: Record<string, any>) {
+    const start = new Date()
+
     console.log(data)
     console.log(_ctx)
     console.log(request)
@@ -163,6 +162,10 @@ export class MermaidRoute extends OpenAPIRoute {
       console.log('key', env)
       // GPT Plugins encoded spaces as +
       mermaidNoPluses = await getGPTResponse(queryNoPluses, env)
+      console.log(
+        'time gpt responded: ',
+        (new Date().getTime() - start.getTime()) / 1000
+      )
     } else {
       // GPT Plugins encoded spaces as +
       mermaidNoPluses = mermaid.replace(/\+/g, ' ')
@@ -196,6 +199,11 @@ export class MermaidRoute extends OpenAPIRoute {
 
     const imageUrl = await convertToImage(request, diagramSource)
 
+    console.log(
+      'time page to image: ',
+      (new Date().getTime() - start.getTime()) / 1000
+    )
+
     // var resultPromise = convertapi.convert('pdf', { File: 'https://website/my_file' }, 'html');
 
     console.log('Generated mermaid image URL: ' + imageUrl)
@@ -210,12 +218,22 @@ export class MermaidRoute extends OpenAPIRoute {
     const slug = await saveShortLink(env.SHORTEN, imageUrl)
     let shortenedURL = `${new URL(request.url).origin}/s/${slug}`
 
+    console.log(
+      'time save link 1: ',
+      (new Date().getTime() - start.getTime()) / 1000
+    )
+
     const editorSlug = await saveShortLink(env.SHORTEN, editDiagramOnline)
     let shortenedEditDiagramURL = `${
       new URL(request.url).origin
     }/s/${editorSlug}`
 
     console.log({ shortenedURL })
+
+    console.log(
+      'time completed: ',
+      (new Date().getTime() - start.getTime()) / 1000
+    )
 
     return new Response(
       JSON.stringify({
@@ -235,14 +253,18 @@ export class MermaidRoute extends OpenAPIRoute {
   }
 }
 
-async function convertToImage(request: Request, diagramSource: string): string {
+async function convertToImage(
+  request: Request,
+  diagramSource: string
+): Promise<string> {
   const imageGen =
     encodeURIComponent(`${new URL(request.url).origin}/render?mermaid=`) +
     encodeURIComponent(diagramSource)
   console.log('imageGen', imageGen)
-  const apiResponse = await fetch(
-    `https://v2.convertapi.com/convert/web/to/jpg?Secret=zZdknV6AQWeiGzji&Url=${imageGen}&StoreFile=true&ConversionDelay=2`
-  )
+
+  const convertapiPath = `https://v2.convertapi.com/convert/web/to/jpg?Secret=zZdknV6AQWeiGzji&Url=${imageGen}&StoreFile=true&ConversionDelay=2`
+  console.log('\nconvertapiPath', convertapiPath)
+  const apiResponse = await fetch(convertapiPath)
   const jsonResponse: any = await apiResponse.json()
   console.log('jsonResponse', jsonResponse)
   // Get the URL from the API response
@@ -278,7 +300,7 @@ export function preview(request: Request, data: Record<string, any>) {
 
   const html = `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="background: rgb(247, 247, 248)">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -290,11 +312,12 @@ export function preview(request: Request, data: Record<string, any>) {
   <meta property="og:image" content="https://dexa.ai/resources/chunk/image/chunk_9725.png">
   <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 </head>
 <script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
   </script>
-  <body>
+  <body style="background: rgb(247, 247, 248)">
     <pre class="mermaid" style="width: 100vw">
         ${mermaid.replace(/\+/g, ' ')}
     </pre>
@@ -313,6 +336,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
   })
 }
 
+/// NO ICONS
 function systemPrompt(userQuestion: string): string {
   return `
 You should create a mermaid diagram to answer the user's question. As your output only return the mermaid code snippet, not the mermaid.js code block using \`\`\`mermaid\`\`\`.
@@ -327,28 +351,19 @@ To show a breakdown or fractional representation of an item, use a pie chart.
 
 For element names such as "Lab-on-a-chip", use spaces instead of dashes so that the new element name will be "Lab on a chip". Another example is the name "State-specific regulations" which should be instead "State specific regulations". Another example is "T-Cells" would be "T Cells". Another example is "COVID-19" make this "COVID 19". Follow this pattern for other names that fall into this category.
 
-Use a state diagram to explain processes and systems that have a specific order. simplify to a maximum of 10 elements for a state diagram. use a mindmap to summarize content such as books or generally explain broad concepts. for mind maps, simplify to: maximum of 4 connections per element. only chain at most 2 elements away from the root.
+Use a state diagram to explain processes and systems that have a specific order. simplify to a maximum of 10 elements for a state diagram. use a mindmap to summarize content such as books or generally explain broad concepts. for mind maps, simplify to: maximum of 4 connections per element. only chain at most 2 elements away from the root. for timeline, maximum of 5 elements. for pie charts, maximum of 10 elements. 
 
-when outputs are given to a user and then a user asks for more detail (or if user specifically asks to explain a concept in depth or in more detail), increase the first output from 2 sentence summary to a 4 sentence synopsis or detailed description of the user's original prompt. For the second output, expand so that the maximum items for a state diagram is 30 elements. If rearranging the location of a element will allow for less crossing of arrow lines, then use this formation. Expand so that a mindmap is up to 4 levels from the root.
+when outputs are given to a user and then a user asks for more detail (or if user specifically asks to explain a concept in depth or in more detail), increase the first output from 2 sentence summary to a 4 sentence synopsis or detailed description of the user's original prompt. For the second output, expand so that the maximum items for a state diagram is 30 elements. If rearranging the location of a element will allow for less crossing of arrow lines, then use this formation. Expand so that a mindmap is up to 4 levels from the root. for timeline that is in detail, maximum of 10 elements. for pie charts that is in detail, maximum of 15 elements.
 
-For the code snippet, generate a mermaid.js snippet that only uses fa v4.7 icons as listed in this link: [https://www.fontawesomecheatsheet.com/font-awesome-cheatsheet-4x/](https://www.fontawesomecheatsheet.com/font-awesome-cheatsheet-4x/). Do not use the same icon more than once. Try to only use element titles that have icons to correlate. Use colors to color code labels when appropriate. If an icon does not exist in the fa v4.7 list, then do not use it.
+For pie charts, don't use colors.
 
-If icons do not make sense for a diagram or mindmap because the names do not have good correlating icons, then do not use any icons.
+Don't use icons.
 
 here is example of syntax for state diagram:
 
 stateDiagram
     %% Define different styles
     classDef customStyle fill:lightblue,stroke:blue,stroke-width:2px
-
-    state "fa:fa-file-text-o Idea" as Idea
-    state "fa:fa-pencil-square-o Drafting" as Drafting
-    state "fa:fa-gavel Review" as Review
-    state "fa:fa-comments-o Debate" as Debate
-    state "fa:fa-check-square-o Vote" as Vote
-    state "fa:fa-exchange Conference" as Conference
-    state "fa:fa-legal Presidential\\nAction" as PresidentialAction
-    state "fa:fa-balance-scale Law" as Law
 
     Idea --> Drafting
     Drafting --> Review
@@ -369,32 +384,22 @@ mindmap
   root((Great Gatsby))
     Characters
       Jay Gatsby
-      ::icon(fa fa-user)
       Daisy Buchanan
-      ::icon(fa fa-female)
       Tom Buchanan
-      ::icon(fa fa-male)
       Nick Carraway
-      ::icon(fa fa-user)
     Themes
       Wealth
-      ::icon(fa fa-money)
       Love
-      ::icon(fa fa-heart)
       American Dream
-      ::icon(fa fa-flag)
     Setting
       1920s
-      ::icon(fa fa-clock-o)
       Long Island
-      ::icon(fa fa-map-marker)
     Author
       F. Scott Fitzgerald
-      ::icon(fa fa-pencil)
 
 For pie charts, here is example syntax:
 
-%%{init: {"pie": {"textPosition": 0.5}, "themeVariables": {"pieOuterStrokeWidth": "5px"}} }%%
+%%{init: {"pie": {"textPosition": 0.5 }, "themeVariables": {"pieOuterStrokeWidth": "5px", }} }%%
 pie showData
     title Key elements in Product X
    "Calcium" : 42.96
@@ -418,3 +423,110 @@ Createa a diagram for the following prompt:
 ${userQuestion}
 `
 }
+
+// function systemPrompt(userQuestion: string): string {
+//   return `
+// You should create a mermaid diagram to answer the user's question. As your output only return the mermaid code snippet, not the mermaid.js code block using \`\`\`mermaid\`\`\`.
+
+// Limit output to mermaid.js code snippet to a single diagram.
+
+// Rules for creating the mermaid.js code snippet for input to the API:
+// If the user wants to know about a fractional breakdown, then you can use a pie chart instead of a mindmap or state diagram.
+// If the user wants the timeline of an event of topic, use a timeline.
+// If generating a timeline, then for the first output that consists of 2 sentences, summarize the trend of the timeline.
+// To show a breakdown or fractional representation of an item, use a pie chart.
+
+// For element names such as "Lab-on-a-chip", use spaces instead of dashes so that the new element name will be "Lab on a chip". Another example is the name "State-specific regulations" which should be instead "State specific regulations". Another example is "T-Cells" would be "T Cells". Another example is "COVID-19" make this "COVID 19". Follow this pattern for other names that fall into this category.
+
+// Use a state diagram to explain processes and systems that have a specific order. simplify to a maximum of 10 elements for a state diagram. use a mindmap to summarize content such as books or generally explain broad concepts. for mind maps, simplify to: maximum of 4 connections per element. only chain at most 2 elements away from the root. for timeline, maximum of 5 elements. for pie charts, maximum of 10 elements.
+
+// when outputs are given to a user and then a user asks for more detail (or if user specifically asks to explain a concept in depth or in more detail), increase the first output from 2 sentence summary to a 4 sentence synopsis or detailed description of the user's original prompt. For the second output, expand so that the maximum items for a state diagram is 30 elements. If rearranging the location of a element will allow for less crossing of arrow lines, then use this formation. Expand so that a mindmap is up to 4 levels from the root. for timeline that is in detail, maximum of 10 elements. for pie charts that is in detail, maximum of 15 elements.
+
+// For pie charts, don't use colors.
+
+// For the code snippet, generate a mermaid.js snippet that only uses fa v4.7 icons as listed in this link: [https://www.fontawesomecheatsheet.com/font-awesome-cheatsheet-4x/](https://www.fontawesomecheatsheet.com/font-awesome-cheatsheet-4x/). Do not use the same icon more than once. Try to only use element titles that have icons to correlate. Use colors to color code labels when appropriate. If an icon does not exist in the fa v4.7 list, then do not use it.
+
+// If icons do not make sense for a diagram or mindmap because the names do not have good correlating icons, then do not use any icons.
+
+// here is example of syntax for state diagram:
+
+// stateDiagram
+//     %% Define different styles
+//     classDef customStyle fill:lightblue,stroke:blue,stroke-width:2px
+
+//     state "fa:fa-file-text-o Idea" as Idea
+//     state "fa:fa-pencil-square-o Drafting" as Drafting
+//     state "fa:fa-gavel Review" as Review
+//     state "fa:fa-comments-o Debate" as Debate
+//     state "fa:fa-check-square-o Vote" as Vote
+//     state "fa:fa-exchange Conference" as Conference
+//     state "fa:fa-legal Presidential\\nAction" as PresidentialAction
+//     state "fa:fa-balance-scale Law" as Law
+
+//     Idea --> Drafting
+//     Drafting --> Review
+//     Review --> Debate
+//     Debate --> Vote
+//     Vote --> Conference
+//     Vote --> Law: Passes
+//     Conference --> PresidentialAction
+//     PresidentialAction --> Law: Signed
+//     PresidentialAction --> Review: Veto
+
+//     %% Apply the style (aka class)
+//     class Idea, Drafting, Review, Debate, Vote, Conference, PresidentialAction, Law customStyle
+
+// Example of mindmap syntax:
+
+// mindmap
+//   root((Great Gatsby))
+//     Characters
+//       Jay Gatsby
+//       ::icon(fa fa-user)
+//       Daisy Buchanan
+//       ::icon(fa fa-female)
+//       Tom Buchanan
+//       ::icon(fa fa-male)
+//       Nick Carraway
+//       ::icon(fa fa-user)
+//     Themes
+//       Wealth
+//       ::icon(fa fa-money)
+//       Love
+//       ::icon(fa fa-heart)
+//       American Dream
+//       ::icon(fa fa-flag)
+//     Setting
+//       1920s
+//       ::icon(fa fa-clock-o)
+//       Long Island
+//       ::icon(fa fa-map-marker)
+//     Author
+//       F. Scott Fitzgerald
+//       ::icon(fa fa-pencil)
+
+// For pie charts, here is example syntax:
+
+// %%{init: {"pie": {"textPosition": 0.5 }, "themeVariables": {"pieOuterStrokeWidth": "5px", }} }%%
+// pie showData
+//     title Key elements in Product X
+//    "Calcium" : 42.96
+//    "Potassium" : 50.05
+//    "Magnesium" : 10.01
+//    "Iron" :  5
+
+// For timeline, here is example syntax:
+
+// timeline
+//     title History of Social Media Platform
+//     2002 : LinkedIn
+//     2004 : Facebook
+//          : Google
+//     2005 : Youtube
+//     2006 : Twitter
+
+// Task:
+// Createa a diagram for the following prompt:
+// ${userQuestion}
+// `
+// }

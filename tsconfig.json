@@ -1,8 +1,15 @@
 {
   "compilerOptions": {
-    "composite": true
+    "composite": true,
+    "outDir": "build",
+    "tsBuildInfoFile": "build/.tsbuildinfo",
+    "emitDeclarationOnly": true,
+    "types": [
+      "@cloudflare/workers-types"
+    ]
   },
-  "files": [],
-  "include": [],
-  "references": [{ "path": "./packages/chatgpt-plugin/tsconfig.json" }]
+  "include": [
+    "src/**/*.ts",
+    "package.json"
+  ],
 }

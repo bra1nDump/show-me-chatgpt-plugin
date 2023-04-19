@@ -1,58 +1,47 @@
 {
-  "name": "chatgpt-plugin-ts",
+  "name": "diagram-chatgpt-plugin",
+  "version": "0.1",
   "private": true,
-  "description": "Examples and resources for creating ChatGPT plugins in TypeScript.",
-  "author": "Travis Fischer <travis@transitivebullsh.it>",
-  "repository": "transitive-bullshit/chatgpt-plugin-ts",
-  "license": "MIT",
+  "description": "Create Diagrams with Kroki, using Mermaid, GraphViz, Excalidraw, and more",
+  "author": "Hazardous Economist",
+  "repository": "bra1ndump/show-me-chatgpt-plugin",
+  "license": "AGPL-3.0",
   "type": "module",
   "engines": {
     "node": ">=14"
   },
-  "workspaces": [
-    "packages/*",
-    "examples/*"
-  ],
   "scripts": {
-    "build": "run-s build:*",
-    "build:tsup": "lerna run build --no-private",
-    "build:tsc": "tsc --build",
-    "deploy": "lerna run deploy",
-    "clean": "del packages/*/build",
-    "prebuild": "run-s clean",
-    "pre-commit": "lint-staged",
-    "pretest": "run-s build",
-    "test": "run-p test:*",
-    "test:prettier": "prettier '**/*.{js,jsx,ts,tsx}' --check"
+    "dev": "wrangler dev",
+    "deploy": "wrangler publish",
+    "tsc": "tsc"
   },
-  "devDependencies": {
+  "dependencies": {
+    "@cloudflare/itty-router-openapi": "^0.0.15",
     "@cloudflare/workers-types": "^4.20230321.0",
-    "@trivago/prettier-plugin-sort-imports": "^4.1.1",
-    "@types/node": "^18.15.11",
-    "del-cli": "^5.0.0",
-    "lerna": "^6.6.1",
-    "lint-staged": "^13.2.0",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^2.8.7",
-    "tsup": "^6.7.0",
-    "tsx": "^3.12.6",
-    "typescript": "^5.0.3",
-    "wrangler": "^2.14.0"
+    "chatgpt-plugin": "^0.1.2",
+    "itty-cors": "^0.3.6",
+    "mermaid": "^10.1.0",
+    "nanoid": "^4.0.2",
+    "pako": "^2.1.0",
+    "zod": "^3.21.4"
   },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "prettier --write"
-    ]
+  "aiPlugin": {
+    "name": "Mermaid",
+    "logo_url": "https://assets.standardresume.co/image/upload/c_fill,w_392,h_392,f_auto,q_auto/dexa/accounts/lex",
+    "contact_email": "kirill2003de@gmail.com",
+    "legal_info_url": "https://dexa.ai"
   },
   "keywords": [
+    "openai",
     "chatgpt",
     "plugin",
-    "ai",
-    "well-known",
-    "openai",
     "openapi",
     "cloudflare",
-    "cf",
-    "worker"
-  ]
+    "lex fridman",
+    "podcast",
+    "search"
+  ],
+  "devDependencies": {
+    "wrangler": "^2.16.0"
+  }
 }
