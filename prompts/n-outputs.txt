@@ -1,0 +1,95 @@
+User's question: How are us laws passed? State diagram
+
+Diagrams:
+stateDiagram-v2
+    [*] --> Introduction
+    Introduction --> Committee: Referred to Committee
+    Committee --> Subcommittee: Assigned to Subcommittee
+    Subcommittee --> FullCommittee: Subcommittee Hearing
+    FullCommittee --> Committee: Approval by Full Committee
+    Committee --> Rules: Reported to Rules Committee
+    Rules --> House: Placed on House Calendar
+    House --> Debate: House Floor Debate
+    Debate --> Vote: House Floor Vote
+    Vote --> Senate: Sent to Senate
+    Senate --> Committee: Referred to Committee
+    Committee --> Subcommittee: Assigned to Subcommittee
+    Subcommittee --> FullCommittee: Subcommittee Hearing
+    FullCommittee --> Committee: Approval by Full Committee
+    Committee --> Rules: Reported to Rules Committee
+    Rules --> Senate: Placed on Senate Calendar
+    Senate --> Debate: Senate Floor Debate
+    Debate --> Vote: Senate Floor Vote
+    Vote --> Conference: Conference Committee
+    Conference --> House: Final House Vote
+    House --> Senate: Final Senate Vote
+    Senate --> [*]: Sent to President
+    [*] --> Law: Signed by President
+
+stateDiagram-v2
+    [*] --> Introduction
+    Introduction --> Committee: Referral to Committee
+    Committee --> Debate: Committee Action
+    Debate --> Vote: Debate and Amend
+    Vote --> Conference: Vote in one Chamber
+    Conference --> SecondVote: Conference Committee
+    SecondVote --> FinalVote: Second Vote in one Chamber
+    FinalVote --> OtherChamber: Passage in one Chamber
+    OtherChamber --> OtherDebate: Referral to other Chamber
+    OtherDebate --> OtherVote: Debate and Amend in other Chamber
+    OtherVote --> OtherConference: Vote in other Chamber
+    OtherConference --> OtherSecondVote: Conference Committee in other Chamber
+    OtherSecondVote --> OtherFinalVote: Second Vote in other Chamber
+    FinalVote --> Approval: Approval of both Chambers
+    Approval --> [*]
+
+stateDiagram-v2
+    [*] --> Introduced: Bill is introduced in either the House or the Senate
+    Introduced --> Committee: Referred to committee in originating chamber
+    Committee --> Subcommittee: Referred to subcommittee with jurisdiction
+    Subcommittee --> Committee: Returned to committee after review
+    Committee --> Rules: Reported by committee to chamber's Rules Committee
+    Rules --> Floor: Placed on calendar for consideration by full chamber
+    Floor --> Vote: Passed by chamber
+    Vote --> Conference: Differences between House and Senate versions are resolved in conference committee
+    Conference --> Vote2: Conference report is approved by both chambers
+    Vote2 --> President: Sent to President for signature or veto
+    President --> Law: Becomes law if signed by President, or veto overridden by Congress
+    President --> PocketVeto: Bill is not signed or vetoed within 10 days of receipt and Congress has adjourned, bill does not become law
+    Vote --> PresidentialVeto: Bill is vetoed by the President
+    PresidentialVeto --> House: Bill is returned to the chamber of origin
+    House --> Vote3: House votes on whether to override the veto
+    Vote3 --> Senate: Senate votes on whether to override the veto
+    Senate --> Law2: If both chambers override the veto, the bill becomes law
+    PresidentialVeto --> PocketVeto: If Congress adjourns during the 10-day review period and the President does not sign the bill, it does not become law (pocket veto)
+    Vote --> PocketVeto2: If Congress adjourns during the 10-day review period and the President does not sign the bill, it does not become law (pocket veto)
+
+stateDiagram-v2
+    [*] --> Introduction
+    Introduction --> Committee: Referred to Committee
+    Committee --> Debate: Reported by Committee
+    Debate --> **Passed by both houses**: Passed by both houses
+    Debate --> Conference: Rejected by either house
+    Conference --> Debate: Returned to house(s)
+    **Passed by both houses** --> President: Sent to President
+    President --> Law: Signed by President
+    President --> Veto: Vetoed by President
+    Veto --> Debate: Returned to Congress
+    Law --> [*]
+
+stateDiagram-v2
+    [*] --> introduce
+    introduce --> committee: Assigned to Committee
+    committee --> subcommittee: Assigned to a Subcommittee
+    subcommittee --> committee: Sent to the full Committee with a negative recommendation
+    committee --> debate: Debated on the House/Senate Floor
+    debate --> vote: Voted on by the House/Senate
+    vote --> pass: Passed by House/Senate
+    vote --> conference: Sent to Conference Committee
+    conference --> compromise: Compromise Reached
+    compromise --> vote: Voted on by House/Senate
+    vote --> signature: Sent to President to Sign or Veto
+    signature --> law: Becomes Law
+    veto --> vote2: Veto Override by 2/3 of House/Senate
+    vote2 --> override: Veto Override, Becomes Law
+    override --> law: Becomes Law
