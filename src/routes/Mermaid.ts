@@ -151,7 +151,8 @@ export class MermaidRoute extends OpenAPIRoute {
 
   /// 3. Handles the API request
   async handle(request: Request, env: any, _ctx, data: Record<string, any>) {
-    const start = new Date()
+    const BASE_URL = new URL(request.url).origin
+    const timeline = new Timeline();
 
     console.log(data)
     console.log(_ctx)
@@ -165,13 +166,9 @@ export class MermaidRoute extends OpenAPIRoute {
       const { query } = data
       const queryNoPluses = query.replace(/\+/g, ' ')
 
-      console.log('key', env)
       // GPT Plugins encoded spaces as +
       mermaidNoPluses = await getGPTResponse(queryNoPluses, env)
-      console.log(
-        'time gpt responded: ',
-        (new Date().getTime() - start.getTime()) / 1000
-      )
+      timeline.finishGPTResponse()
     } else {
       // GPT Plugins encoded spaces as +
       mermaidNoPluses = mermaid.replace(/\+/g, ' ')
@@ -195,26 +192,21 @@ export class MermaidRoute extends OpenAPIRoute {
       console.log('\nmermaidNoHyphenatedWords', mermaidNoHyphenatedWords)
 
       diagramSource = mermaidNoHyphenatedWords
+    }
 
-      // Encode the mermaid diagram to a Base64 string
-      const mermaidEditorJson = {
-        code: mermaidNoHyphenatedWords,
-        mermaid: { theme: 'default' },
-        updateEditor: false
-      }
-      const mermaidEditorJsonString = JSON.stringify(mermaidEditorJson)
-      const buffer = encodeBase64(mermaidEditorJsonString)
-
-      editDiagramOnline = 'https://mermaid.live/edit#' + buffer
-      console.log('editDiagramOnline', editDiagramOnline)
+    switch (diagramLanguage) {
+      case "default": /* fallthrough */
+      case "mermaid":
+        editDiagramOnline = mermaidEditorLink(diagramSource);
+    
     }
 
     // TODO: Add graphvis editor https://www.devtoolsdaily.com/graphviz/?#%7B%22dot%22%3A%22digraph%20MessageArchitecture%20%7B%5Cn%20%20messageClient%5Cn%20%20messageQueue%5Bshape%3Drarrow%5D%5Cn%7D%22%7D
 
-    console.log(
-      'time page to image: ',
-      (new Date().getTime() - start.getTime()) / 1000
-    )
+    //console.log(
+    //  'time page to image: ',
+    //  (new Date().getTime() - start.getTime()) / 1000
+    //)
 
     // Does not support mindmaps
     const imageUrl =
@@ -223,27 +215,24 @@ export class MermaidRoute extends OpenAPIRoute {
        '/svg/' +
        compressAndEncodeBase64(diagramSource)
 
-    console.log('Generated mermaid image URL: ' + imageUrl)
-
     const slug = await saveShortLink(env.SHORTEN, imageUrl)
-    let shortenedURL = `${new URL(request.url).origin}/s/${slug}`
+    let shortenedURL = `${BASE_URL}/s/${slug}`
 
-    console.log(
-      'time save link 1: ',
-      (new Date().getTime() - start.getTime()) / 1000
-    )
+    //console.log(
+    //  'time save link 1: ',
+    //  (new Date().getTime() - start.getTime()) / 1000
+    //)
 
     const editorSlug = await saveShortLink(env.SHORTEN, editDiagramOnline)
-    let shortenedEditDiagramURL = `${
-      new URL(request.url).origin
-    }/s/${editorSlug}`
+
+    let shortenedEditDiagramURL = `${BASE_URL}/s/${editorSlug}`
 
     console.log({ shortenedURL })
 
-    console.log(
-      'time completed: ',
-      (new Date().getTime() - start.getTime()) / 1000
-    )
+    //console.log(
+    //  'time completed: ',
+    //  (new Date().getTime() - start.getTime()) / 1000
+    //)
 
     return new Response(
       JSON.stringify({
@@ -263,16 +252,29 @@ export class MermaidRoute extends OpenAPIRoute {
   }
 }
 
+function mermaidEditorLink(code: string): string {
+    const mermaidEditorJson = {
+      code,
+      mermaid: { theme: 'default' },
+      updateEditor: false
+    }
+    const mermaidEditorJsonString = JSON.stringify(mermaidEditorJson)
+    const buffer = encodeBase64(mermaidEditorJsonString)
+
+    return 'https://mermaid.live/edit#' + buffer
+}
+
 function processString(input: string): string {
   // Step 1: Replace all '-->' occurrences with the keyword 'ARRRROW'
   const step1 = input.replace(/-->/g, 'ARRRROW')
 
   // Step 2: Replace all 'fa-some-word-lol' patterns with 'fa__some__word__lol'
   var step2 = String(step1)
-  step1.match(/fa-(\S+)/g)?.forEach((match) => {
-    const replacement = match.replace(/-/g, '__')
-    step2 = step2.replace(match, replacement)
-  })
+  // We updated the prompt to stop using dashes
+  //step1.match(/fa-(\S+)/g)?.forEach((match) => {
+  //  const replacement = match.replace(/-/g, '__')
+  //  step2 = step2.replace(match, replacement)
+  //})
 
   // Step 3: Replace all '-' with a space
   const step3 = step2.replace(/-/g, ' ')
@@ -349,6 +351,8 @@ when outputs are given to a user and then a user asks for more detail (or if use
 For pie charts, don't use colors.
 
 Don't use icons.
+
+When generating a state diagram for a {process_name} process, make sure to replace any spaces in the state names with underscores to ensure compatibility with Mermaid.js. Also make sure to replace any hyphenations in the state names with underscores to ensure compatibility with Mermaid.js. The states are: {list_of_states_separated_by_commas}.
 
 here is example of syntax for state diagram:
 
@@ -524,11 +528,22 @@ ${userQuestion}
 
 class Timeline {
   private start: Date;
+  private endOfGPTResponse: Maybe<Date>;
   constructor() {
     this.start = new Date();
+  }
+
+  finishGPTResponse() {
+    this.endOfGPTResponse = new Date();
+    console.log(
+      'time gpt responded: ',
+      (this.endOfGPTResponse.getTime() - this.start.getTime()) / 1000
+    )
   }
 
   finish() {
 
   }
 }
+
+type Maybe<T> = T | null;
