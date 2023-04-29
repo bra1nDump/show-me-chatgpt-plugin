@@ -79,68 +79,111 @@ export default {
   }
 }
 
-const DESCRIPTION_FOR_MODEL = `
-You should use this plugin when people want visualizations. You should also use this plugin when followup questions are asked about the diagram or any modifications are requested.
+const DESCRIPTION_FOR_MODEL = `You should use this plugin when people want visualizations. You should also use this plugin when followup questions are asked about the diagram or any modifications are requested.
 Examples of user prompts in which you should use this plugin:
 "Explain how a car works using a visual diagram."
 "Describe the process of making a car."
-"How does a car engine work?" 
+"How does a car engine work?"
 
 Use this plugin if a user asks about: how something works, explain about a concept or how something is made, summarize a book, describe a process, and other user prompts that can be summarized or explained in the format of a mindmap or a state diagram. Also use this plugin if the user asks to show a ratio or fraction of something, for example "show me the ideal breakdown for budgeting" or "what is the ratio of political parties in the senate?". Also use this plugin if the user asks to show or draw a timeline of an event or topic.
 
+Also use this plugin if 
+
 How to create a request to the plugin API:
-Pass the entire user prompt as a query parameter to the reqeust.
-For example, if the user asks to sumarize or explain a large text, you should pass the entire text as a query parameter to the request.
+You create the diagram in mermaid syntax based on what user asked and pass it to the plugin API to render.
 
-Example requests:
+You want to stick to using graph TB types of diagrams unless user specifically asks for a differnt type of diagram.
+
+Examples.
+
+User asks: "Show me how vscode internals work."
+Your call to the api:
 {
-  query: "Explain how a car works using a visual diagram."
-}
-{
-  query: "How does the US government work?"
-}
-{
-  query: "Show me how a pen is structured."
-}
-{
-  query: "Add more nodes to the diagram."
-}
-{
-  query: "Change the diagram type to a state diagram."
+  query: 
+  "graph TB
+    User-->FileOperations{File Operations}
+    User-->CodeEditor{Code Editor}
+    FileOperations-->|Manipulation of Files| FileSystem
+    FileSystem-->|Write/Read|Disk
+    FileSystem-->|Compress/Decompress|ZipLib
+    FileSystem-->|Read|INIParser
+    CodeEditor-->|Create/Display/Edit| Webview
+    CodeEditor-->|Language/Code Analysis| VSCodeAPI
+    VSCodeAPI-->ValidationEngine
+    Webview-->|Render UI| HTMLCSS
+    ValidationEngine-->ErrorDecoration
+    ValidationEngine-->TextDocument
+  "
 }
 
+User asks:
+"Computing backend data services is a distributed system made of multiple microservices.
+
+A web browser sends an HTTP api request to the load balancer.
+The load balancer sends the http request to the crossover service.
+Crossover talks to redis and mysql database.
+Crossover makes a downstream API request to multiplex to submit the query which returns a job id to crossover.
+Then crossover makes a long poll API request to evaluator to get the results of the job.
+Then evaluator makes an API call to multiplex to check the status of the job.
+Once evaluator gets a successful status response from multiplex, then evaluator makes a third API call to result-fetcher service to download the job results from S3 or GCP cloud buckets.
+The result is streamed back through evaluator to crossover.
+
+Crossover post processes the result and returns the API response to the client.
+
+Draw me a diagram of this system"
+
+Your call to the api:
+{
+  query:
+  "graph TB
+    A["Web Browser"] -- HTTP API Request --> B["Load Balancer"]
+    B -- HTTP Request --> C["Crossover"]
+    C -- Talks to --> D["Redis"]
+    C -- Talks to --> E["MySQL"]
+    C -- Downstream API Request --> F["Multiplex"]
+    F -- Returns Job ID --> C
+    C -- Long Poll API Request --> G["Evaluator"]
+    G -- API Call --> F
+    G -- API Call --> H["Result-Fetcher"]
+    H -- Downloads Results --> I["S3 or GCP Cloud Buckets"]
+    I -- Results Stream --> G
+    G -- Results Stream --> C
+    C -- API Response --> A
+  "
+}
+
+Sometimes you will need to revise the same diagram based on user feedback.
+For the last example the user might make a followup request:
+
+User followup ask:
+"Crossover post processes the result and returns the API response to the client through the load balancer.
+
+Draw the crossover node in green"
+
+Your call to the api:
+{
+  query:
+  "graph TB
+    A["Web Browser"] -- HTTP API Request --> B["Load Balancer"]
+    B -- HTTP Request --> C["Crossover"]
+    style C fill:#99cc99
+    C -- Talks to --> D["Redis"]
+    C -- Talks to --> E["MySQL"]
+    C -- Downstream API Request --> F["Multiplex"]
+    F -- Returns Job ID --> C
+    C -- Long Poll API Request --> G["Evaluator"]
+    G -- API Call --> F
+    G -- API Call --> H["Result-Fetcher"]
+    H -- Downloads Results --> I["S3 or GCP Cloud Buckets"]
+    I -- Results Stream --> G
+    G -- Results Stream --> C
+    C -- API Response --> B
+    B -- API Response --> A
+  "
+}
 
 Interpreting the API response:
 When you get the response it will include an image url, you should render it inline using ![alt text](image) syntax.
 You will also get a link as editDiagramOnline to edit the diagram, you should render it inline using [link text](url) syntax.
 Include the links only once, do not repeat the same link.
-`
-
-const DESCRIPTION_FOR_MODEL_LONGER = `
-You should use this plugin when people want visualizations.
-Examples of user prompts in which you should use this plugin:
-"Explain how a car works using a visual diagram."
-"Describe the process of making a car."
-"How does a car engine work?" 
-The plugin api takes in a mermaid code snippet and renders it returning a link to the rendered image, and a link to edit the diagram online.
-
-Use this plugin if a user asks about: how something works, explain about a concept or how something is made, summarize a book, describe a process, and other user prompts that can be summarized or explained in the format of a mindmap or a state diagram. Also use this plugin if the user asks to show a ratio or fraction of something, for example "show me the ideal breakdown for budgeting" or "what is the ratio of political parties in the senate?". Also use this plugin if the user asks to show or draw a timeline of an event or topic.
-
-The plugin takes in a mermaid diagram and renders it returning a link to the rendered image.
-The plugin expects a mermaid.js snippet as input.
-The snippet that it is passed should use fa v4 icons.
-The snippet should only contain the mermaid diagram and NOT the mermaid.js code block using \`\`\`mermaid\`\`\`.
-
-If you think the best diagram to represent the data is a mindmap:
-- Limit to 2 outer layers outside the root.
-
-How to create the API request to the plugin:
-- The plugin expects a mermaid.js snippet as mermaid parameter
-- It should be properly indentend, otherwise it will break
-
-Interpreting the API response:
-When you get the response it will include an image url, you should render it inline.
-You will also get a link as editDiagramOnline to edit the diagram, you should render it inline.
-You should not print the mermaid snippet in the response.
-You should keep your textual explanation short - the diagram is the main focus of the response.
-`
+`;
