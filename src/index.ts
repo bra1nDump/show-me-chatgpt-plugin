@@ -1,6 +1,7 @@
 import { OpenAPIRouter } from '@cloudflare/itty-router-openapi'
 import { KVNamespace, ExecutionContext } from '@cloudflare/workers-types'
 import { defineAIPluginManifest } from 'chatgpt-plugin'
+import { isValidChatGPTIPAddress } from 'chatgpt-plugin'
 import { createCors } from 'itty-cors'
 
 import pkg from '../package.json'
@@ -27,16 +28,19 @@ router.all('*', preflight)
 // 2. Expose magic openapi.json, expose API itself
 router.get('/', MermaidRoute)
 
-router.get('/render', RenderRoute)
+//router.get('/render', RenderRoute)
 
-router.post('/debug/links', debugCreateLink)
+//router.post('/debug/links', debugCreateLink)
 router.get('/s/:id', ShortLinkRoute)
 
 // 1. Define the plugin manifest
+
 router.get('/.well-known/ai-plugin.json', (request: Request) => {
+  console.log("got plugin metadata");
   const url = new URL(request.url)
   const host = request.headers.get('host')
   const openAPIUrl = `${url.protocol}//${host}/openapi.json`
+  const legalUrl = `${url.protocol}//${host}/legal`
 
   const pluginManifest = defineAIPluginManifest(
     {
@@ -46,11 +50,13 @@ router.get('/.well-known/ai-plugin.json', (request: Request) => {
       logo_url:
         'https://res.cloudinary.com/deepwave-org/image/upload/v1681620862/Heye.earth/Projects/PinClipart.com_venn-diagram-clipart_5480153_hk80cf.png',
       contact_email: 'kirill2003de@gmail.com',
-      legal_info_url: 'https://example.com',
+      legal_info_url: legalUrl,
       description_for_model: DESCRIPTION_FOR_MODEL
     },
     { openAPIUrl }
   )
+  console.log("returned manifest");
+  console.log({manifest: pluginManifest});
 
   return new Response(JSON.stringify(pluginManifest, null, 2), {
     headers: {
@@ -75,6 +81,18 @@ export default {
         }
       })
     }
+
+    const ip = request.headers.get('Cf-Connecting-Ip')
+    if (!ip) {
+      console.warn('search error missing IP address')
+      return new Response('invalid source IP', { status: 500 })
+    }
+
+    if (!isValidChatGPTIPAddress(ip)) {
+      console.warn('search error invalid IP address', ip)
+      return new Response(`Forbidden`, { status: 403 })
+    }
+
     return router.handle(request, env, ctx).then(corsify)
   }
 }

@@ -1,7 +1,6 @@
 import * as mermaid from 'mermaid'
 import * as pako from 'pako'
 import { OpenAPIRoute, Query, Str, Enumeration } from '@cloudflare/itty-router-openapi'
-import { isValidChatGPTIPAddress } from 'chatgpt-plugin'
 
 import * as types from '../types'
 import { omit } from '../utils'
@@ -196,13 +195,61 @@ export class MermaidRoute extends OpenAPIRoute {
 
     let editDiagramOnline = None;
     switch (diagramLanguage) {
-      case "default": /* fallthrough */
-      case "mermaid":
+      case 'blockdiag':
+        break;
+      case 'bpmn':
+        break;
+      case 'bytefield':
+        break;
+      case 'seqdiag':
+        break;
+      case 'actdiag':
+        break;
+      case 'nwdiag':
+        break;
+      case 'packetdiag':
+        break;
+      case 'rackdiag':
+        break;
+      case 'c4-with-plantuml':
+        break;
+      case 'd2':
+        break;
+      case 'dbml':
+        break;
+      case 'ditaa':
+        break;
+      case 'erd':
+        break;
+      case 'excalidraw':
+        break;
+      case 'graphviz':
+        break;
+      case 'mermaid':
         editDiagramOnline = Some(mermaidEditorLink(diagramSource));
         break;
-      case "PlantUML": 
+      case 'nomnoml':
+        break;
+      case 'pikchr':
+        break;
+      case 'plantuml':
+        break;
+      case 'structurizr':
+        break;
+      case 'svgbob':
+        break;
+      case 'umlet':
+        break;
+      case 'vega':
+        break;
+      case 'vega-lite':
+        break;
+      case 'wavedrom':
+        break;
+      case 'wireviz':
         break;
     }
+
 
     // TODO: Add graphvis editor https://www.devtoolsdaily.com/graphviz/?#%7B%22dot%22%3A%22digraph%20MessageArchitecture%20%7B%5Cn%20%20messageClient%5Cn%20%20messageQueue%5Bshape%3Drarrow%5D%5Cn%7D%22%7D
 
