@@ -116,21 +116,20 @@ export class MermaidRoute extends OpenAPIRoute {
       mermaid: Query(
         new Str({
           description: "Diagram to render",
-          example: `
-          graph LR
-            User-->FileOperations{File Operations}
-            User-->CodeEditor{Code Editor}
-            FileOperations-->|Manipulation of Files| FileSystem
-            FileSystem-->|Write/Read|Disk
-            FileSystem-->|Compress/Decompress|ZipLib
-            FileSystem-->|Read|INIParser
-            CodeEditor-->|Create/Display/Edit| Webview
-            CodeEditor-->|Language/Code Analysis| VSCodeAPI
-            VSCodeAPI-->ValidationEngine
-            Webview-->|Render UI| HTMLCSS
-            ValidationEngine-->ErrorDecoration
-            ValidationEngine-->TextDocument
-          `,
+          example: `graph TB
+  U[\\"User\\"] -- \\"File Operations\\" --> FO[\\"File Operations\\"]
+  U -- \\"Code Editor\\" --> CE[\\"Code Editor\\"]
+  FO -- \\"Manipulation of Files\\" --> FS[\\"FileSystem\\"]
+  FS -- \\"Write/Read\\" --> D[\\"Disk\\"]
+  FS -- \\"Compress/Decompress\\" --> ZL[\\"ZipLib\\"]
+  FS -- \\"Read\\" --> IP[\\"INIParser\\"]
+  CE -- \\"Create/Display/Edit\\" --> WV[\\"Webview\\"]
+  CE -- \\"Language/Code Analysis\\" --> VCA[\\"VSCodeAPI\\"]
+  VCA -- \\"Talks to\\" --> VE[\\"ValidationEngine\\"]
+  WV -- \\"Render UI\\" --> HC[\\"HTMLCSS\\"]
+  VE -- \\"Decorate Errors\\" --> ED[\\"ErrorDecoration\\"]
+  VE -- \\"Analyze Document\\" --> TD[\\"TextDocument\\"]
+`,
         }),
         {
           required: true,
@@ -181,6 +180,9 @@ export class MermaidRoute extends OpenAPIRoute {
       mermaidNoPluses = mermaid.replace(/\+/g, ' ')
     }
 
+    console.log('mermaidNoPluses before styling')
+    console.log(mermaidNoPluses)
+
     // TODO hoist regex to only generate once
     const MERMAID_LINK_PATTERN = /-->/g;
     const linksCount = (mermaidNoPluses.match(MERMAID_LINK_PATTERN) || []).length;
@@ -188,6 +190,9 @@ export class MermaidRoute extends OpenAPIRoute {
     for (let i = 0; i  < linksCount; i++) {
       mermaidNoPluses += `  linkStyle ${i} stroke:#2ecd71,stroke-width:2px;\n`;
     }
+
+    console.log('mermaidNoPluses after styling')
+    console.log(mermaidNoPluses)
 
     diagramLanguage = diagramLanguage || 'mermaid'
 

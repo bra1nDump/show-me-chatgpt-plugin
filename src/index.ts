@@ -114,6 +114,7 @@ You create the diagram in mermaid syntax based on what user asked and pass it to
 Important rules when creating the diagram:
 - Always use graph TB types of diagrams.
 - Avoid linear diagrams when possible, diagrams should be hierarchical and have multiple branches when applicable.
+- Never use the ampersand (&) symbol in the diagram, it will break the diagram. Use the word "and" instead. For example use "User and Admin" instead of "User & Admin".
 - Use short node identifiers, for example U for User or FS for File System.
 - Always use double quotes for node labels, for example U["User"].
 - Always use double quotes for edge labels, for example U["User"] -- "User enters email" --> V["Verification"].
