@@ -1,6 +1,6 @@
 import * as mermaid from 'mermaid'
 import * as pako from 'pako'
-import { OpenAPIRoute, Query, Str } from '@cloudflare/itty-router-openapi'
+import { OpenAPIRoute, Query, Str, Enumeration } from '@cloudflare/itty-router-openapi'
 import { isValidChatGPTIPAddress } from 'chatgpt-plugin'
 
 import * as types from '../types'
@@ -114,16 +114,22 @@ export class MermaidRoute extends OpenAPIRoute {
     tags: ['Diagram', 'Mermaid'],
     summary: `The API takes in a request to learn something, returns a link to an image of the diagram and a link to edit the diagram online.`,
     parameters: {
-      query: Query(
-        new Str({
+      query: Query(Str, {
           description:
             "A textual request to learn about something, usaully the user's prompt",
-          example: `Explain how the US government works`
-        }),
-        {
+          example: `Explain how the US government works`,
           required: true
-        }
-      )
+        },
+      ),
+      theme: Query(Enumeration, {
+        description: 'Indicate a preference for a light or dark color theme.',
+        default: 'light',
+        required: false,
+        values: {
+          light: 'light',
+          dark: 'dark',
+        },
+      }),
     },
     responses: {
       '200': {
@@ -171,6 +177,14 @@ export class MermaidRoute extends OpenAPIRoute {
       mermaidNoPluses = mermaid.replace(/\+/g, ' ')
     }
 
+    // TODO hoist regex to only generate once
+    const MERMAID_LINK_PATTERN = /-->/g;
+    const linksCount = (mermaidNoPluses.match(MERMAID_LINK_PATTERN) || []).length;
+    mermaidNoPluses += '\n';
+    for (let i = 0; i  < linksCount; i++) {
+      mermaidNoPluses += `  linkStyle ${i} stroke:#2ecd71,stroke-width:2px;\n`;
+    }
+
     diagramLanguage = diagramLanguage || 'mermaid'
 
     let diagramSource = mermaidNoPluses
@@ -197,23 +211,19 @@ export class MermaidRoute extends OpenAPIRoute {
 
     // TODO: Add graphvis editor https://www.devtoolsdaily.com/graphviz/?#%7B%22dot%22%3A%22digraph%20MessageArchitecture%20%7B%5Cn%20%20messageClient%5Cn%20%20messageQueue%5Bshape%3Drarrow%5D%5Cn%7D%22%7D
 
-    const imageUrl = await convertToImage(request, diagramSource)
-
     console.log(
       'time page to image: ',
       (new Date().getTime() - start.getTime()) / 1000
     )
 
-    // var resultPromise = convertapi.convert('pdf', { File: 'https://website/my_file' }, 'html');
+    // Does not support mindmaps
+    const imageUrl =
+       'https://kroki.io/' +
+       diagramLanguage +
+       '/svg/' +
+       compressAndEncodeBase64(diagramSource)
 
     console.log('Generated mermaid image URL: ' + imageUrl)
-
-    // Does not support mindmaps
-    // const imageUrl =
-    //   'https://kroki.io/' +
-    //   diagramLanguage +
-    //   '/svg/' +
-    //   compressAndEncodeBase64(diagramSource)
 
     const slug = await saveShortLink(env.SHORTEN, imageUrl)
     let shortenedURL = `${new URL(request.url).origin}/s/${slug}`
@@ -253,25 +263,6 @@ export class MermaidRoute extends OpenAPIRoute {
   }
 }
 
-async function convertToImage(
-  request: Request,
-  diagramSource: string
-): Promise<string> {
-  const imageGen =
-    encodeURIComponent(`${new URL(request.url).origin}/render?mermaid=`) +
-    encodeURIComponent(diagramSource)
-  console.log('imageGen', imageGen)
-
-  const convertapiPath = `https://v2.convertapi.com/convert/web/to/jpg?Secret=zZdknV6AQWeiGzji&Url=${imageGen}&StoreFile=true&ConversionDelay=2`
-  console.log('\nconvertapiPath', convertapiPath)
-  const apiResponse = await fetch(convertapiPath)
-  const jsonResponse: any = await apiResponse.json()
-  console.log('jsonResponse', jsonResponse)
-  // Get the URL from the API response
-  const imageUrl = jsonResponse.Files[0].Url
-  return imageUrl
-}
-
 function processString(input: string): string {
   // Step 1: Replace all '-->' occurrences with the keyword 'ARRRROW'
   const step1 = input.replace(/-->/g, 'ARRRROW')
@@ -292,7 +283,7 @@ function processString(input: string): string {
   return step4
 }
 
-export function preview(request: Request, data: Record<string, any>) {
+export function RenderRoute(request: Request, data: Record<string, any>) {
   console.log('\n\nPreview')
   console.log(request.url)
   const searchParams = new URL(request.url).searchParams
@@ -419,7 +410,7 @@ timeline
 
 
 Task:
-Createa a diagram for the following prompt:
+Create a diagram for the following prompt:
 ${userQuestion}
 `
 }
@@ -526,7 +517,18 @@ ${userQuestion}
 //     2006 : Twitter
 
 // Task:
-// Createa a diagram for the following prompt:
+// Create a diagram for the following prompt:
 // ${userQuestion}
 // `
 // }
+
+class Timeline {
+  private start: Date;
+  constructor() {
+    this.start = new Date();
+  }
+
+  finish() {
+
+  }
+}
