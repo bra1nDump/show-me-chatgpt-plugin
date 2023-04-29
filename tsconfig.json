@@ -1,9 +1,18 @@
 {
   "compilerOptions": {
     "composite": true,
-    "outDir": "build",
-    "tsBuildInfoFile": "build/.tsbuildinfo",
     "emitDeclarationOnly": true,
+    "esModuleInterop": true,
+    "incremental": true,
+    "isolatedModules": true,
+    "lib": ["esnext"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "outDir": "build",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "target": "esnext",
+    "tsBuildInfoFile": "build/.tsbuildinfo",
     "types": [
       "@cloudflare/workers-types"
     ]
@@ -11,5 +20,5 @@
   "include": [
     "src/**/*.ts",
     "package.json"
-  ],
+  ]
 }

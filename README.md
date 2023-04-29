@@ -1,5 +1,7 @@
 # ChatGPT Show Me Plugin
 
+https://docs.kroki.io/kroki/setup/use-docker-or-podman/
+
 ## License
 
 AGPL-3.0

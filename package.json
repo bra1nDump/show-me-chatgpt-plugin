@@ -3,7 +3,7 @@
   "version": "0.1",
   "private": true,
   "description": "Create Diagrams with Kroki, using Mermaid, GraphViz, Excalidraw, and more",
-  "author": "Hazardous Economist",
+  "author": "InfoHazard Economist",
   "repository": "bra1ndump/show-me-chatgpt-plugin",
   "license": "AGPL-3.0",
   "type": "module",
@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@cloudflare/itty-router-openapi": "^0.0.15",
-    "@cloudflare/workers-types": "^4.20230321.0",
+    "@cloudflare/workers-types": "^4.20230404.0",
     "chatgpt-plugin": "^0.1.2",
     "itty-cors": "^0.3.6",
     "mermaid": "^10.1.0",
@@ -25,23 +25,20 @@
     "pako": "^2.1.0",
     "zod": "^3.21.4"
   },
-  "aiPlugin": {
-    "name": "Mermaid",
-    "logo_url": "https://assets.standardresume.co/image/upload/c_fill,w_392,h_392,f_auto,q_auto/dexa/accounts/lex",
-    "contact_email": "kirill2003de@gmail.com",
-    "legal_info_url": "https://dexa.ai"
-  },
   "keywords": [
     "openai",
     "chatgpt",
     "plugin",
     "openapi",
     "cloudflare",
-    "lex fridman",
-    "podcast",
-    "search"
+    "diagram",
+    "mindmap",
+    "state chart",
+    "flow chart",
+    "timeline"
   ],
   "devDependencies": {
+    "typescript": "^5.0.4",
     "wrangler": "^2.16.0"
   }
 }

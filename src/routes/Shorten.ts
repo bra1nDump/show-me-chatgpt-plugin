@@ -12,7 +12,7 @@ export async function saveShortLink(
 ): Promise<string> {
   let slug = nanoid()
   // Add slug to our KV store so it can be retrieved later:
-  await store.put(slug, url, { expirationTtl: 86400 })
+  await store.put(slug, url)
   return slug
 }
 

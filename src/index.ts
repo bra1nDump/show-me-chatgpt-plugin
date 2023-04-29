@@ -1,5 +1,5 @@
 import { OpenAPIRouter } from '@cloudflare/itty-router-openapi'
-import { KVNamespace } from '@cloudflare/workers-types'
+import { KVNamespace, ExecutionContext } from '@cloudflare/workers-types'
 import { defineAIPluginManifest } from 'chatgpt-plugin'
 import { createCors } from 'itty-cors'
 
@@ -15,7 +15,7 @@ export interface Env {
 const router = OpenAPIRouter({
   schema: {
     info: {
-      title: pkg.aiPlugin.name,
+      title: "Show Me How",
       version: pkg.version
     }
   }
