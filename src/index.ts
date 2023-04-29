@@ -84,15 +84,22 @@ Examples of user prompts in which you should use this plugin:
 "Explain how a car works using a visual diagram."
 "Describe the process of making a car."
 "How does a car engine work?"
+"Show me how ... works."
+"Show me a diagram of ... ."
+"Show me how UIView lifecycle works."
 
 Use this plugin if a user asks about: how something works, explain about a concept or how something is made, summarize a book, describe a process, and other user prompts that can be summarized or explained in the format of a mindmap or a state diagram. Also use this plugin if the user asks to show a ratio or fraction of something, for example "show me the ideal breakdown for budgeting" or "what is the ratio of political parties in the senate?". Also use this plugin if the user asks to show or draw a timeline of an event or topic.
-
-Also use this plugin if 
 
 How to create a request to the plugin API:
 You create the diagram in mermaid syntax based on what user asked and pass it to the plugin API to render.
 
-You want to stick to using graph TB types of diagrams unless user specifically asks for a differnt type of diagram.
+Important rules when creating the diagram:
+- Always use graph TB types of diagrams.
+- Avoid linear diagrams when possible, diagrams should be hierarchical and have multiple branches when applicable.
+- Use short node identifiers, for example U for User or FS for File System.
+- Always use double quotes for node labels, for example U["User"].
+- Always use double quotes for edge labels, for example U["User"] -- "User enters email" --> V["Verification"].
+- Indentation is very important, always indent according to the examples below.
 
 Examples.
 
@@ -101,18 +108,18 @@ Your call to the api:
 {
   query: 
   "graph TB
-    User-->FileOperations{File Operations}
-    User-->CodeEditor{Code Editor}
-    FileOperations-->|Manipulation of Files| FileSystem
-    FileSystem-->|Write/Read|Disk
-    FileSystem-->|Compress/Decompress|ZipLib
-    FileSystem-->|Read|INIParser
-    CodeEditor-->|Create/Display/Edit| Webview
-    CodeEditor-->|Language/Code Analysis| VSCodeAPI
-    VSCodeAPI-->ValidationEngine
-    Webview-->|Render UI| HTMLCSS
-    ValidationEngine-->ErrorDecoration
-    ValidationEngine-->TextDocument
+    U[\\"User\\"] -- \\"File Operations\\" --> FO[\\"File Operations\\"]
+    U -- \\"Code Editor\\" --> CE[\\"Code Editor\\"]
+    FO -- \\"Manipulation of Files\\" --> FS[\\"FileSystem\\"]
+    FS -- \\"Write/Read\\" --> D[\\"Disk\\"]
+    FS -- \\"Compress/Decompress\\" --> ZL[\\"ZipLib\\"]
+    FS -- \\"Read\\" --> IP[\\"INIParser\\"]
+    CE -- \\"Create/Display/Edit\\" --> WV[\\"Webview\\"]
+    CE -- \\"Language/Code Analysis\\" --> VCA[\\"VSCodeAPI\\"]
+    VCA -- \\"Talks to\\" --> VE[\\"ValidationEngine\\"]
+    WV -- \\"Render UI\\" --> HC[\\"HTMLCSS\\"]
+    VE -- \\"Decorate Errors\\" --> ED[\\"ErrorDecoration\\"]
+    VE -- \\"Analyze Document\\" --> TD[\\"TextDocument\\"]
   "
 }
 
@@ -136,19 +143,19 @@ Your call to the api:
 {
   query:
   "graph TB
-    A["Web Browser"] -- HTTP API Request --> B["Load Balancer"]
-    B -- HTTP Request --> C["Crossover"]
-    C -- Talks to --> D["Redis"]
-    C -- Talks to --> E["MySQL"]
-    C -- Downstream API Request --> F["Multiplex"]
-    F -- Returns Job ID --> C
-    C -- Long Poll API Request --> G["Evaluator"]
-    G -- API Call --> F
-    G -- API Call --> H["Result-Fetcher"]
-    H -- Downloads Results --> I["S3 or GCP Cloud Buckets"]
-    I -- Results Stream --> G
-    G -- Results Stream --> C
-    C -- API Response --> A
+    A[\\"Web Browser\\"] -- \\"HTTP API Request\\" --> B[\\"Load Balancer\\"]
+    B -- \\"HTTP Request\\" --> C[\\"Crossover\\"]
+    C -- \\"Talks to\\" --> D[\\"Redis\\"]
+    C -- \\"Talks to\\" --> E[\\"MySQL\\"]
+    C -- \\"Downstream API Request\\" --> F[\\"Multiplex\\"]
+    F -- \\"Returns Job ID\\" --> C
+    C -- \\"Long Poll API Request\\" --> G[\\"Evaluator\\"]
+    G -- \\"API Call\\" --> F
+    G -- \\"API Call\\" --> H[\\"Result-Fetcher\\"]
+    H -- \\"Downloads Results\\" --> I[\\"S3 or GCP Cloud Buckets\\"]
+    I -- \\"Results Stream\\" --> G
+    G -- \\"Results Stream\\" --> C
+    C -- \\"API Response\\" --> A
   "
 }
 
@@ -164,21 +171,21 @@ Your call to the api:
 {
   query:
   "graph TB
-    A["Web Browser"] -- HTTP API Request --> B["Load Balancer"]
-    B -- HTTP Request --> C["Crossover"]
+    A[\\"Web Browser\\"] -- \\"HTTP API Request\\" --> B[\\"Load Balancer\\"]
+    B -- \\"HTTP Request\\" --> C[\\"Crossover\\"]
     style C fill:#99cc99
-    C -- Talks to --> D["Redis"]
-    C -- Talks to --> E["MySQL"]
-    C -- Downstream API Request --> F["Multiplex"]
-    F -- Returns Job ID --> C
-    C -- Long Poll API Request --> G["Evaluator"]
-    G -- API Call --> F
-    G -- API Call --> H["Result-Fetcher"]
-    H -- Downloads Results --> I["S3 or GCP Cloud Buckets"]
-    I -- Results Stream --> G
-    G -- Results Stream --> C
-    C -- API Response --> B
-    B -- API Response --> A
+    C -- \\"Talks to\\" --> D[\\"Redis\\"]
+    C -- \\"Talks to\\" --> E[\\"MySQL\\"]
+    C -- \\"Downstream API Request\\" --> F[\\"Multiplex\\"]
+    F -- \\"Returns Job ID\\" --> C
+    C -- \\"Long Poll API Request\\" --> G[\\"Evaluator\\"]
+    G -- \\"API Call\\" --> F
+    G -- \\"API Call\\" --> H[\\"Result-Fetcher\\"]
+    H -- \\"Downloads Results\\" --> I[\\"S3 or GCP Cloud Buckets\\"]
+    I -- \\"Results Stream\\" --> G
+    G -- \\"Results Stream\\" --> C
+    C -- \\"API Response\\" --> B
+    B -- \\"API Response\\" --> A
   "
 }
 

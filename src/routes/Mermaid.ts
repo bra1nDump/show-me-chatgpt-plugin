@@ -194,13 +194,6 @@ export class MermaidRoute extends OpenAPIRoute {
 
     let diagramSource = mermaidNoPluses
 
-    if (diagramLanguage === 'mermaid') {
-      const mermaidNoHyphenatedWords = processString(mermaidNoPluses)
-      console.log('\nmermaidNoHyphenatedWords', mermaidNoHyphenatedWords)
-
-      diagramSource = mermaidNoHyphenatedWords
-    }
-
     let editDiagramOnline = None;
     switch (diagramLanguage) {
       case "default": /* fallthrough */
@@ -272,27 +265,6 @@ function mermaidEditorLink(code: string): string {
     const buffer = encodeBase64(mermaidEditorJsonString)
 
     return 'https://mermaid.live/edit#' + buffer
-}
-
-function processString(input: string): string {
-  // Step 1: Replace all '-->' occurrences with the keyword 'ARRRROW'
-  const step1 = input.replace(/-->/g, 'ARRRROW')
-
-  // Step 2: Replace all 'fa-some-word-lol' patterns with 'fa__some__word__lol'
-  var step2 = String(step1)
-  // We updated the prompt to stop using dashes
-  //step1.match(/fa-(\S+)/g)?.forEach((match) => {
-  //  const replacement = match.replace(/-/g, '__')
-  //  step2 = step2.replace(match, replacement)
-  //})
-
-  // Step 3: Replace all '-' with a space
-  const step3 = step2.replace(/-/g, ' ')
-
-  // Step 4: Reverse the replacements made in the first 2 steps
-  const step4 = step3.replace(/ARRRROW/g, '-->').replace(/__/g, '-')
-
-  return step4
 }
 
 export function RenderRoute(request: Request, data: Record<string, any>) {
