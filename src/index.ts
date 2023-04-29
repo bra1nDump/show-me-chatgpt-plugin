@@ -35,7 +35,9 @@ router.get('/s/:id', ShortLinkRoute)
 
 // 1. Define the plugin manifest
 
-router.get('/.well-known/ai-plugin.json', (request: Request) => {
+router.get('/.well-known/ai-plugin.json', ManifestRoute);
+
+function ManifestRoute(request: Request): Response {
   console.log("got plugin metadata");
   const url = new URL(request.url)
   const host = request.headers.get('host')
@@ -56,21 +58,23 @@ router.get('/.well-known/ai-plugin.json', (request: Request) => {
     { openAPIUrl }
   )
   console.log("returned manifest");
-  console.log({manifest: pluginManifest});
+  console.log(JSON.stringify({manifest: pluginManifest}));
 
   return new Response(JSON.stringify(pluginManifest, null, 2), {
     headers: {
       'content-type': 'application/json;charset=UTF-8'
     }
   })
-})
+}
 
 // 404 for everything else
 router.all('*', () => new Response('404 Not Found...', { status: 200 }))
 
 export default {
   fetch: (request: Request, env: Env, ctx: ExecutionContext) => {
+
     if (request.method === 'OPTIONS') {
+      //return preflight(request);
       return new Response(null, {
         status: 200,
         headers: {
@@ -90,8 +94,16 @@ export default {
 
     if (!isValidChatGPTIPAddress(ip)) {
       console.warn('search error invalid IP address', ip)
-      return new Response(`Forbidden`, { status: 403 })
     }
+      //return new Response(`Forbidden`, { status: 403 })
+
+    //const url = new URL(request.url);
+    //if (url.pathname === '/.well-known/ai-plugin.json') {
+    //  return corsify(ManifestRoute(request))
+    //}
+    //if (url.pathname.startsWith('/s/')) {
+    //  return ShortLinkRoute(request, env).then(corsify);
+    //}
 
     return router.handle(request, env, ctx).then(corsify)
   }
