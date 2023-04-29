@@ -15,7 +15,7 @@ export interface Env {
 const router = OpenAPIRouter({
   schema: {
     info: {
-      title: "Show Me How",
+      title: "Show Me",
       version: pkg.version
     }
   }
@@ -42,7 +42,7 @@ router.get('/.well-known/ai-plugin.json', (request: Request) => {
     {
       description_for_human:
         'Render any Diagram using Mermaid, GraphViz, and many more.',
-      name_for_human: 'Show Me How',
+      name_for_human: 'Show Me',
       logo_url:
         'https://res.cloudinary.com/deepwave-org/image/upload/v1681620862/Heye.earth/Projects/PinClipart.com_venn-diagram-clipart_5480153_hk80cf.png',
       contact_email: 'kirill2003de@gmail.com',
