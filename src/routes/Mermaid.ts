@@ -185,7 +185,6 @@ export class MermaidRoute extends OpenAPIRoute {
     diagramLanguage = diagramLanguage || 'mermaid'
 
     let diagramSource = mermaidNoPluses
-    let editDiagramOnline: string | undefined
 
     if (diagramLanguage === 'mermaid') {
       const mermaidNoHyphenatedWords = processString(mermaidNoPluses)
@@ -194,11 +193,14 @@ export class MermaidRoute extends OpenAPIRoute {
       diagramSource = mermaidNoHyphenatedWords
     }
 
+    let editDiagramOnline = None;
     switch (diagramLanguage) {
       case "default": /* fallthrough */
       case "mermaid":
-        editDiagramOnline = mermaidEditorLink(diagramSource);
-    
+        editDiagramOnline = Some(mermaidEditorLink(diagramSource));
+        break;
+      case "PlantUML": 
+        break;
     }
 
     // TODO: Add graphvis editor https://www.devtoolsdaily.com/graphviz/?#%7B%22dot%22%3A%22digraph%20MessageArchitecture%20%7B%5Cn%20%20messageClient%5Cn%20%20messageQueue%5Bshape%3Drarrow%5D%5Cn%7D%22%7D
@@ -528,7 +530,7 @@ ${userQuestion}
 
 class Timeline {
   private start: Date;
-  private endOfGPTResponse: Maybe<Date>;
+  private endOfGPTResponse: Option<Date>;
   constructor() {
     this.start = new Date();
   }
@@ -546,4 +548,6 @@ class Timeline {
   }
 }
 
-type Maybe<T> = T | null;
+type Option<T> = T | null;
+const None: Option<any> = null;
+function Some<T>(a: T): Option<T> { return a }
