@@ -161,9 +161,11 @@ export class MermaidRoute extends OpenAPIRoute {
     const timeline = new Timeline();
 
     console.log(data)
-    console.log(_ctx)
     console.log(request)
-    let { mermaid, diagramLanguage } = data
+
+
+    let { diagramLanguage } = data
+    let mermaid = new URL(request.url).searchParams.get("mermaid");
     console.log('snippet', mermaid)
 
     let mermaidNoPluses: string
