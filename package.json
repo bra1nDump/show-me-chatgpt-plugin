@@ -11,7 +11,7 @@
     "node": ">=14"
   },
   "scripts": {
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --env=local",
     "deploy": "wrangler publish",
     "tsc": "tsc"
   },

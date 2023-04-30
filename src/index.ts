@@ -11,6 +11,8 @@ import { ShortLinkRoute, debugCreateLink } from './routes/Shorten'
 export interface Env {
   SHORTEN: KVNamespace
   CHAT_HISTORY: KVNamespace
+  OPENAI_KEY: string
+  WORKER_ENV: 'production' | 'local'
 }
 
 const router = OpenAPIRouter({
@@ -26,19 +28,15 @@ const { preflight, corsify } = createCors({ origins: ['*'] })
 router.all('*', preflight)
 
 // 2. Expose magic openapi.json, expose API itself
-router.get('/', MermaidRoute)
+router.get('/render', MermaidRoute)
 
 //router.get('/render', RenderRoute)
 
 //router.post('/debug/links', debugCreateLink)
-router.get('/s/:id', ShortLinkRoute)
-
-// 1. Define the plugin manifest
-
-router.get('/.well-known/ai-plugin.json', ManifestRoute);
+router.original.get('/s/:id', ShortLinkRoute)
+router.original.get('/.well-known/ai-plugin.json', ManifestRoute);
 
 function ManifestRoute(request: Request): Response {
-  console.log("got plugin metadata");
   const url = new URL(request.url)
   const host = request.headers.get('host')
   const openAPIUrl = `${url.protocol}//${host}/openapi.json`
@@ -57,12 +55,11 @@ function ManifestRoute(request: Request): Response {
     },
     { openAPIUrl }
   )
-  console.log("returned manifest");
-  console.log(JSON.stringify({manifest: pluginManifest}));
-
   return new Response(JSON.stringify(pluginManifest, null, 2), {
     headers: {
-      'content-type': 'application/json;charset=UTF-8'
+      'content-type': 'application/json;charset=UTF-8',
+      'access-control-allow-origin': '*',
+      'access-control-allow-methods': 'GET',
     }
   })
 }
@@ -72,38 +69,21 @@ router.all('*', () => new Response('404 Not Found...', { status: 200 }))
 
 export default {
   fetch: (request: Request, env: Env, ctx: ExecutionContext) => {
-
-    if (request.method === 'OPTIONS') {
-      //return preflight(request);
-      return new Response(null, {
-        status: 200,
-        headers: {
-          'access-control-allow-origin': '*',
-          'access-control-allow-headers': request.headers.get(
-            'Access-Control-Request-Headers'
-          )
-        }
-      })
-    }
-
     const ip = request.headers.get('Cf-Connecting-Ip')
     if (!ip) {
       console.warn('search error missing IP address')
       return new Response('invalid source IP', { status: 500 })
     }
-
-    if (!isValidChatGPTIPAddress(ip)) {
-      console.warn('search error invalid IP address', ip)
+    if (env.WORKER_ENV !== 'local') {
+      if (!isValidChatGPTIPAddress(ip)) {
+        console.warn('search error invalid IP address', ip)
+        return new Response(`Forbidden`, { status: 403 })
+      }
     }
-      //return new Response(`Forbidden`, { status: 403 })
 
-    //const url = new URL(request.url);
-    //if (url.pathname === '/.well-known/ai-plugin.json') {
-    //  return corsify(ManifestRoute(request))
-    //}
-    //if (url.pathname.startsWith('/s/')) {
-    //  return ShortLinkRoute(request, env).then(corsify);
-    //}
+    if (request.method === 'OPTIONS') {
+      return preflight(request);
+    }
 
     return router.handle(request, env, ctx).then(corsify)
   }
