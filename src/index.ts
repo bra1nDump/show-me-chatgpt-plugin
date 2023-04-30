@@ -7,6 +7,7 @@ import { createCors } from 'itty-cors'
 import pkg from '../package.json'
 import { MermaidRoute, RenderRoute } from './routes/Mermaid'
 import { ShortLinkRoute, debugCreateLink } from './routes/Shorten'
+import { logoSvg } from './logo'
 
 export interface Env {
   SHORTEN: KVNamespace
@@ -35,20 +36,30 @@ router.get('/render', MermaidRoute)
 //router.post('/debug/links', debugCreateLink)
 router.original.get('/s/:id', ShortLinkRoute)
 router.original.get('/.well-known/ai-plugin.json', ManifestRoute);
+router.original.get('/logo.svg', (request: Request) => {
+  console.log('logo')
+  return new Response(logoSvg, {
+    headers: {
+      'content-type': 'image/svg+xml',
+      'access-control-allow-origin': '*',
+      'access-control-allow-methods': 'GET',
+    }
+  });
+})
 
 function ManifestRoute(request: Request): Response {
   const url = new URL(request.url)
   const host = request.headers.get('host')
   const openAPIUrl = `${url.protocol}//${host}/openapi.json`
   const legalUrl = `${url.protocol}//${host}/legal`
+  const logoUrl = `${url.protocol}//${host}/logo.svg`
 
   const pluginManifest = defineAIPluginManifest(
     {
       description_for_human:
-        'Render any Diagram using Mermaid, GraphViz, and many more.',
+        'Create and edit diagrams directly in chat',
       name_for_human: 'Show Me',
-      logo_url:
-        'https://res.cloudinary.com/deepwave-org/image/upload/v1681620862/Heye.earth/Projects/PinClipart.com_venn-diagram-clipart_5480153_hk80cf.png',
+      logo_url: logoUrl,
       contact_email: 'kirill2003de@gmail.com',
       legal_info_url: legalUrl,
       description_for_model: DESCRIPTION_FOR_MODEL
@@ -70,16 +81,16 @@ router.all('*', () => new Response('404 Not Found...', { status: 200 }))
 export default {
   fetch: (request: Request, env: Env, ctx: ExecutionContext) => {
     const ip = request.headers.get('Cf-Connecting-Ip')
-    if (!ip) {
-      console.warn('search error missing IP address')
-      return new Response('invalid source IP', { status: 500 })
-    }
-    if (env.WORKER_ENV !== 'local') {
-      if (!isValidChatGPTIPAddress(ip)) {
-        console.warn('search error invalid IP address', ip)
-        return new Response(`Forbidden`, { status: 403 })
-      }
-    }
+    // if (!ip) {
+    //   console.warn('search error missing IP address')
+    //   return new Response('invalid source IP', { status: 500 })
+    // }
+    // if (env.WORKER_ENV !== 'local') {
+    //   if (!isValidChatGPTIPAddress(ip)) {
+    //     console.warn('search error invalid IP address', ip)
+    //     return new Response(`Forbidden`, { status: 403 })
+    //   }
+    // }
 
     if (request.method === 'OPTIONS') {
       return preflight(request);
