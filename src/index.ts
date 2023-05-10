@@ -57,7 +57,7 @@ function ManifestRoute(request: Request): Response {
   const pluginManifest = defineAIPluginManifest(
     {
       description_for_human:
-        'Create and edit diagrams directly in chat',
+        'Create and edit diagrams directly in chat.',
       name_for_human: 'Show Me',
       logo_url: logoUrl,
       contact_email: 'kirill2003de@gmail.com',
