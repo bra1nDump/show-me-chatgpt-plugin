@@ -115,15 +115,18 @@ How to create a request to the plugin API:
 You create the diagram in mermaid syntax based on what user asked and pass it to the plugin API to render.
 
 Important rules when creating the diagram:
-- Always use graph TB types of diagrams.
+- Prefer using graph TB types of diagrams.
 - Avoid linear diagrams when possible, diagrams should be hierarchical and have multiple branches when applicable.
 - Never use the ampersand (&) symbol in the diagram, it will break the diagram. Use the word "and" instead. For example use "User and Admin" instead of "User & Admin".
+- Never use round brackets () in the node identifiers, node labels and edge labels, it will break the diagram. Use a coma instead. For example use "User, Admin" instead of "User (Admin)".
+- Don't use empty labels "" for edges, instead don't label the edge at all. For example U["User"] --> A["Admin"].
+- Don't add the label if its the same as the destination node.
+
+Rules when using graph diagrams:
 - Use short node identifiers, for example U for User or FS for File System.
 - Always use double quotes for node labels, for example U["User"].
 - Always use double quotes for edge labels, for example U["User"] -- "User enters email" --> V["Verification"].
 - Indentation is very important, always indent according to the examples below.
-- Don't use empty labels "" for edges, instead don't label the edge at all. For example U["User"] --> A["Admin"].
-- Don't add the label if its the same as the destination node.
 
 Examples.
 
