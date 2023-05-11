@@ -116,19 +116,7 @@ export class MermaidRoute extends OpenAPIRoute {
       mermaid: Query(
         new Str({
           description: "Diagram to render",
-          example: `graph TB
-  U[\\"User\\"] -- \\"File Operations\\" --> FO[\\"File Operations\\"]
-  U -- \\"Code Editor\\" --> CE[\\"Code Editor\\"]
-  FO -- \\"Manipulation of Files\\" --> FS[\\"FileSystem\\"]
-  FS -- \\"Write/Read\\" --> D[\\"Disk\\"]
-  FS -- \\"Compress/Decompress\\" --> ZL[\\"ZipLib\\"]
-  FS -- \\"Read\\" --> IP[\\"INIParser\\"]
-  CE -- \\"Create/Display/Edit\\" --> WV[\\"Webview\\"]
-  CE -- \\"Language/Code Analysis\\" --> VCA[\\"VSCodeAPI\\"]
-  VCA -- \\"Talks to\\" --> VE[\\"ValidationEngine\\"]
-  WV -- \\"Render UI\\" --> HC[\\"HTMLCSS\\"]
-  VE -- \\"Decorate Errors\\" --> ED[\\"ErrorDecoration\\"]
-  VE -- \\"Analyze Document\\" --> TD[\\"TextDocument\\"]
+          example: `graph TB\\n  U[\\"User\\"] -- \\"File Operations\\" --> FO[\\"File Operations\\"]\\n  U -- \\"Code Editor\\" --> CE[\\"Code Editor\\"]\\n  FO -- \\"Manipulation of Files\\" --> FS[\\"FileSystem\\"]\\n  FS -- \\"Write/Read\\" --> D[\\"Disk\\"]\\n  FS -- \\"Compress/Decompress\\" --> ZL[\\"ZipLib\\"]\\n  FS -- \\"Read\\" --> IP[\\"INIParser\\"]\\n  CE -- \\"Create/Display/Edit\\" --> WV[\\"Webview\\"]\\n  CE -- \\"Language/Code Analysis\\" --> VCA[\\"VSCodeAPI\\"]\\n  VCA -- \\"Talks to\\" --> VE[\\"ValidationEngine\\"]\\n  WV -- \\"Render UI\\" --> HC[\\"HTMLCSS\\"]\\n  VE -- \\"Decorate Errors\\" --> ED[\\"ErrorDecoration\\"]\\n  VE -- \\"Analyze Document\\" --> TD[\\"TextDocument\\"]\\n
 `,
         }),
         {
@@ -147,6 +135,9 @@ export class MermaidRoute extends OpenAPIRoute {
               editDiagramOnline: new Str({
                 description:
                   "URL to the editor where the diagram can be edited",
+              }),
+              contributeToOpenSourceProject: new Str({
+                description: "GitHub URL to the open source project for this plugin",
               }),
             },
           ],
@@ -296,7 +287,8 @@ export class MermaidRoute extends OpenAPIRoute {
         results: [
           {
             image: shortenedURL,
-            editDiagramOnline: shortenedEditDiagramURL
+            editDiagramOnline: shortenedEditDiagramURL,
+            contributeToOpenSourceProject: 'https://github.com/bra1nDump/show-me-chatgpt-plugin/issues'
           }
         ]
       }),
