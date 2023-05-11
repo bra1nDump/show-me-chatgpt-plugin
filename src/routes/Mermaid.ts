@@ -238,12 +238,15 @@ export class MermaidRoute extends OpenAPIRoute {
     console.log('mermaidNoPluses before styling')
     console.log(mermaidNoPluses)
 
-    // TODO hoist regex to only generate once
-    const MERMAID_LINK_PATTERN = /-->/g;
-    const linksCount = (mermaidNoPluses.match(MERMAID_LINK_PATTERN) || []).length;
-    mermaidNoPluses += '\n';
-    for (let i = 0; i  < linksCount; i++) {
-      mermaidNoPluses += `  linkStyle ${i} stroke:#2ecd71,stroke-width:2px;\n`;
+    // Breaks for other diagram styles, for instance sequence diagrams
+    if (mermaidNoPluses.startsWith('graph')) {
+      // TODO hoist regex to only generate once
+      const MERMAID_LINK_PATTERN = /-->/g;
+      const linksCount = (mermaidNoPluses.match(MERMAID_LINK_PATTERN) || []).length;
+      mermaidNoPluses += '\n';
+      for (let i = 0; i  < linksCount; i++) {
+        mermaidNoPluses += `  linkStyle ${i} stroke:#2ecd71,stroke-width:2px;\n`;
+      }
     }
 
     console.log('mermaidNoPluses after styling')
