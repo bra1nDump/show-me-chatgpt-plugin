@@ -58,7 +58,7 @@ function ManifestRoute(request: Request): Response {
     {
       description_for_human:
         'Create and edit diagrams directly in chat.',
-      name_for_human: 'Show Me',
+      name_for_human: 'Diagram It',
       logo_url: logoUrl,
       contact_email: 'kirill2003de@gmail.com',
       legal_info_url: legalUrl,
