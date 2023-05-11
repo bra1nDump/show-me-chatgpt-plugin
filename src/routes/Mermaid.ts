@@ -6,6 +6,41 @@ import * as types from '../types'
 import { omit } from '../utils'
 import { saveShortLink } from './Shorten'
 
+type MixpanelEventProperties = {
+  [key: string]: any;
+}
+
+async function sendMixpanelEvent(token: string, eventName: string, userId: string, properties: MixpanelEventProperties) {
+  let mixpanelEvent = {
+    "event": eventName,
+    "properties": {
+      // Mixpanel system properties
+      "distinct_id": userId,
+      "token": token,
+      "time": Date.now(),
+
+      ...properties
+    }
+  }
+
+  console.log("Sending mixpanel event: ", mixpanelEvent)
+
+  let response = await fetch("https://api.mixpanel.com/track", {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'accept': 'text/plain',
+    },
+    // Note: we need to send an array of events
+    body: JSON.stringify([mixpanelEvent])
+  })
+
+  if (!response.ok) {
+    // handle error
+    console.error("Mixpanel event tracking failed")
+  }
+}
+
 function compressAndEncodeBase64(input: string) {
   // Convert the input string to a Uint8Array
   const textEncoder = new TextEncoder()
@@ -116,8 +151,7 @@ export class MermaidRoute extends OpenAPIRoute {
       mermaid: Query(
         new Str({
           description: "Diagram to render",
-          example: `graph TB\\n  U[\\"User\\"] -- \\"File Operations\\" --> FO[\\"File Operations\\"]\\n  U -- \\"Code Editor\\" --> CE[\\"Code Editor\\"]\\n  FO -- \\"Manipulation of Files\\" --> FS[\\"FileSystem\\"]\\n  FS -- \\"Write/Read\\" --> D[\\"Disk\\"]\\n  FS -- \\"Compress/Decompress\\" --> ZL[\\"ZipLib\\"]\\n  FS -- \\"Read\\" --> IP[\\"INIParser\\"]\\n  CE -- \\"Create/Display/Edit\\" --> WV[\\"Webview\\"]\\n  CE -- \\"Language/Code Analysis\\" --> VCA[\\"VSCodeAPI\\"]\\n  VCA -- \\"Talks to\\" --> VE[\\"ValidationEngine\\"]\\n  WV -- \\"Render UI\\" --> HC[\\"HTMLCSS\\"]\\n  VE -- \\"Decorate Errors\\" --> ED[\\"ErrorDecoration\\"]\\n  VE -- \\"Analyze Document\\" --> TD[\\"TextDocument\\"]\\n
-`,
+          example: `graph TB\\n  U[\\"User\\"] -- \\"File Operations\\" --> FO[\\"File Operations\\"]\\n  U -- \\"Code Editor\\" --> CE[\\"Code Editor\\"]\\n  FO -- \\"Manipulation of Files\\" --> FS[\\"FileSystem\\"]\\n  FS -- \\"Write/Read\\" --> D[\\"Disk\\"]\\n  FS -- \\"Compress/Decompress\\" --> ZL[\\"ZipLib\\"]\\n  FS -- \\"Read\\" --> IP[\\"INIParser\\"]\\n  CE -- \\"Create/Display/Edit\\" --> WV[\\"Webview\\"]\\n  CE -- \\"Language/Code Analysis\\" --> VCA[\\"VSCodeAPI\\"]\\n  VCA -- \\"Talks to\\" --> VE[\\"ValidationEngine\\"]\\n  WV -- \\"Render UI\\" --> HC[\\"HTMLCSS\\"]\\n  VE -- \\"Decorate Errors\\" --> ED[\\"ErrorDecoration\\"]\\n  VE -- \\"Analyze Document\\" --> TD[\\"TextDocument\\"]\\n`,
         }),
         {
           required: true,
@@ -151,19 +185,47 @@ export class MermaidRoute extends OpenAPIRoute {
     const BASE_URL = new URL(request.url).origin
     const timeline = new Timeline();
 
+    // Extract data from request
     console.log(data)
-    console.log(request)
-
-
-    let { diagramLanguage } = data
+    
+    const diagramLanguage = 'mermaid' as string
     let mermaid = new URL(request.url).searchParams.get("mermaid");
     console.log('snippet', mermaid)
 
+    // Print headers
+    const headers = Object.fromEntries(request.headers)
+    console.log('headers', headers)
+
+    const conversationId = headers['openai-conversation-id']
+    const ephemeralUserId = headers['openai-ephemeral-user-id']
+    const realIP = headers['x-real-ip']
+
+    // Track render event
+    const track = async (event: string, properties: Record<string, any>) => {
+      try {
+        const adjustedProperties = {
+          ...properties,
+          'conversation_id': conversationId,
+
+          ip: realIP,
+          'worker_environment': env.WORKER_ENV,
+        }
+        await sendMixpanelEvent(env.MIXPANEL_TOKEN as string, event, ephemeralUserId, adjustedProperties)
+        console.log('Sent mixpanel event', event, properties)
+      } catch (e) {
+        console.log('Error sending mixpanel event', e)
+      }
+    }
+    void track('render', {
+      'diagram_language': diagramLanguage,
+      'diagram': mermaid,
+    })
+
     let mermaidNoPluses: string
-    // Means we are in gpt-4 mode
+    // Means we are in gpt-4 mode 
+    // TODO: Clean this up - GPT-4 mode is unused
     if (mermaid === undefined) {
-      const { query } = data
-      const queryNoPluses = query.replace(/\+/g, ' ')
+      const queryNoPluses = mermaid.replace(/\+/g, ' ')
 
       // GPT Plugins encoded spaces as +
       mermaidNoPluses = await getGPTResponse(queryNoPluses, env)
@@ -186,8 +248,6 @@ export class MermaidRoute extends OpenAPIRoute {
 
     console.log('mermaidNoPluses after styling')
     console.log(mermaidNoPluses)
-
-    diagramLanguage = diagramLanguage || 'mermaid'
 
     let diagramSource = mermaidNoPluses
 
@@ -251,11 +311,6 @@ export class MermaidRoute extends OpenAPIRoute {
 
     // TODO: Add graphvis editor https://www.devtoolsdaily.com/graphviz/?#%7B%22dot%22%3A%22digraph%20MessageArchitecture%20%7B%5Cn%20%20messageClient%5Cn%20%20messageQueue%5Bshape%3Drarrow%5D%5Cn%7D%22%7D
 
-    //console.log(
-    //  'time page to image: ',
-    //  (new Date().getTime() - start.getTime()) / 1000
-    //)
-
     // Does not support mindmaps
     const imageUrl =
        'https://kroki.io/' +
@@ -266,21 +321,22 @@ export class MermaidRoute extends OpenAPIRoute {
     const slug = await saveShortLink(env.SHORTEN, imageUrl)
     let shortenedURL = `${BASE_URL}/s/${slug}`
 
-    //console.log(
-    //  'time save link 1: ',
-    //  (new Date().getTime() - start.getTime()) / 1000
-    //)
-
     const editorSlug = await saveShortLink(env.SHORTEN, editDiagramOnline)
 
     let shortenedEditDiagramURL = `${BASE_URL}/s/${editorSlug}`
 
     console.log({ shortenedURL })
 
-    //console.log(
-    //  'time completed: ',
-    //  (new Date().getTime() - start.getTime()) / 1000
-    //)
+    void track('render_complete', {
+      'diagram_language': diagramLanguage,
+      'diagram': mermaid,
+
+      'kroki_url': imageUrl,
+      'shortened_url': shortenedURL,
+
+      'edit_diagram_url': editDiagramOnline,
+      'shortened_edit_diagram_url': shortenedEditDiagramURL,
+    })
 
     return new Response(
       JSON.stringify({
