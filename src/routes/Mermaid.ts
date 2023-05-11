@@ -1,4 +1,3 @@
-import * as mermaid from 'mermaid'
 import * as pako from 'pako'
 import { OpenAPIRoute, Query, Str, Enumeration } from '@cloudflare/itty-router-openapi'
 
@@ -39,6 +38,22 @@ async function sendMixpanelEvent(token: string, eventName: string, userId: strin
     // handle error
     console.error("Mixpanel event tracking failed")
   }
+}
+
+async function fetchMermaidSVG(link: string): Promise<string> {
+  const response = await fetch(link);
+
+  if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const data = await response.text();
+
+  if (data.includes("Syntax error in graph")) {
+      throw new Error('SVG contains "Syntax error in graph"');
+  }
+
+  return data;
 }
 
 function compressAndEncodeBase64(input: string) {
@@ -186,11 +201,11 @@ export class MermaidRoute extends OpenAPIRoute {
     const timeline = new Timeline();
 
     // Extract data from request
-    console.log(data)
-    
     const diagramLanguage = 'mermaid' as string
     let mermaid = new URL(request.url).searchParams.get("mermaid");
     console.log('snippet', mermaid)
+
+    const diagramType = mermaid.split('\n')[0]
 
     // Print headers
     const headers = Object.fromEntries(request.headers)
@@ -220,6 +235,7 @@ export class MermaidRoute extends OpenAPIRoute {
       'diagram_language': diagramLanguage,
 
       // Mixpanel truncates all strings https://developer.mixpanel.com/reference/import-events#common-issues
+      'diagram_type': diagramType,
       'diagram': mermaid.length > 255 ? mermaid.substring(0, 200) + " -- truncated" : mermaid,
     })
 
@@ -323,6 +339,15 @@ export class MermaidRoute extends OpenAPIRoute {
        '/svg/' +
        compressAndEncodeBase64(diagramSource)
 
+    let mermaidIsValid = false
+    try {
+      const mermaidSVG = await fetchMermaidSVG(imageUrl)
+      mermaidIsValid = true
+      // TODO: Put the svg in the KV store instead of putting the link
+    } catch (error) {
+      console.error(`Error rendering or fetching mermaid svg: ${error}`)
+    }
+
     const slug = await saveShortLink(env.SHORTEN, imageUrl)
     let shortenedURL = `${BASE_URL}/s/${slug}`
 
@@ -331,10 +356,15 @@ export class MermaidRoute extends OpenAPIRoute {
     let shortenedEditDiagramURL = `${BASE_URL}/s/${editorSlug}`
 
     console.log({ shortenedURL })
+    console.log('kroki url', imageUrl)
 
-    void track('render_complete', {
+    // NOTE: Seems like render_complete are being sent based on logs, but not showing up in mixpanel
+    // suspecting that the response is being sent before the event is sent and all promises are being cleaned up
+    await track('render_complete', {
       'diagram_language': diagramLanguage,
+      'diagram_syntax_is_valid': mermaidIsValid,
 
+      'diagram_type': diagramType,
       'diagram_url': shortenedURL,
       'edit_diagram_url': shortenedEditDiagramURL,
     })
