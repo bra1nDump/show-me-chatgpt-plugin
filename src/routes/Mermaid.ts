@@ -218,7 +218,9 @@ export class MermaidRoute extends OpenAPIRoute {
     }
     void track('render', {
       'diagram_language': diagramLanguage,
-      'diagram': mermaid,
+
+      // Mixpanel truncates all strings https://developer.mixpanel.com/reference/import-events#common-issues
+      'diagram': mermaid.length > 255 ? mermaid.substring(0, 200) + " -- truncated" : mermaid,
     })
 
     let mermaidNoPluses: string
@@ -332,13 +334,9 @@ export class MermaidRoute extends OpenAPIRoute {
 
     void track('render_complete', {
       'diagram_language': diagramLanguage,
-      'diagram': mermaid,
 
-      'kroki_url': imageUrl,
-      'shortened_url': shortenedURL,
-
-      'edit_diagram_url': editDiagramOnline,
-      'shortened_edit_diagram_url': shortenedEditDiagramURL,
+      'diagram_url': shortenedURL,
+      'edit_diagram_url': shortenedEditDiagramURL,
     })
 
     return new Response(
