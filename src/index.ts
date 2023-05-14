@@ -79,7 +79,7 @@ function ManifestRoute(request: Request): Response {
 router.all('*', () => new Response('404 Not Found...', { status: 200 }))
 
 export default {
-  fetch: (request: Request, env: Env, ctx: ExecutionContext) => {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext) {
     const ip = request.headers.get('Cf-Connecting-Ip')
     // if (!ip) {
     //   console.warn('search error missing IP address')
@@ -91,6 +91,8 @@ export default {
     //     return new Response(`Forbidden`, { status: 403 })
     //   }
     // }
+
+    console.log('request', request.url)
 
     if (request.method === 'OPTIONS') {
       return preflight(request);
