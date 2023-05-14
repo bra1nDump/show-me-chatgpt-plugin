@@ -1,44 +1,10 @@
 import * as pako from 'pako'
 import { OpenAPIRoute, Query, Str, Enumeration } from '@cloudflare/itty-router-openapi'
 
-import * as types from '../types'
-import { omit } from '../utils'
 import { saveShortLink } from './Shorten'
 
-type MixpanelEventProperties = {
-  [key: string]: any;
-}
-
-async function sendMixpanelEvent(token: string, eventName: string, userId: string, properties: MixpanelEventProperties) {
-  let mixpanelEvent = {
-    "event": eventName,
-    "properties": {
-      // Mixpanel system properties
-      "distinct_id": userId,
-      "token": token,
-      "time": Date.now(),
-
-      ...properties
-    }
-  }
-
-  console.log("Sending mixpanel event: ", mixpanelEvent)
-
-  let response = await fetch("https://api.mixpanel.com/track", {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'accept': 'text/plain',
-    },
-    // Note: we need to send an array of events
-    body: JSON.stringify([mixpanelEvent])
-  })
-
-  if (!response.ok) {
-    // handle error
-    console.error("Mixpanel event tracking failed")
-  }
-}
+import { sendMixpanelEvent }  from '../mixpanel'
+import { Env } from '..';
 
 async function fetchMermaidSVG(link: string): Promise<string> {
   const response = await fetch(link);
@@ -180,6 +146,11 @@ export class MermaidRoute extends OpenAPIRoute {
             {
               image: new Str({
                 description: "URL to the rendered image",
+                required: false,
+              }),
+              errorMessage: new Str({
+                description: "Error message if there was an error",
+                required: false,
               }),
               editDiagramOnline: new Str({
                 description:
@@ -196,7 +167,7 @@ export class MermaidRoute extends OpenAPIRoute {
   }
 
   /// 3. Handles the API request
-  async handle(request: Request, env: any, _ctx, data: Record<string, any>) {
+  async handle(request: Request, env: Env, _ctx, data: Record<string, any>) {
     const BASE_URL = new URL(request.url).origin
     const timeline = new Timeline();
 
@@ -369,8 +340,9 @@ export class MermaidRoute extends OpenAPIRoute {
       'edit_diagram_url': shortenedEditDiagramURL,
     })
 
-    return new Response(
-      JSON.stringify({
+    let responseBody: any
+    if (mermaidIsValid) {
+      responseBody = {
         results: [
           {
             image: shortenedURL,
@@ -378,7 +350,21 @@ export class MermaidRoute extends OpenAPIRoute {
             contributeToOpenSourceProject: 'https://github.com/bra1nDump/show-me-chatgpt-plugin/issues'
           }
         ]
-      }),
+      }
+    } else {
+      responseBody = {
+        results: [
+          {
+            errorMessage: "GPT created an invalid mermaid.js diagram, you can try again or edit it online",
+            editDiagramOnline: shortenedEditDiagramURL,
+            contributeToOpenSourceProject: 'https://github.com/bra1nDump/show-me-chatgpt-plugin/issues'
+          }
+        ]
+      }
+    }
+
+    return new Response(
+      JSON.stringify(responseBody),
       {
         headers: {
           'content-type': 'application/json;charset=UTF-8'
