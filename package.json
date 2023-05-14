@@ -11,16 +11,17 @@
     "node": ">=14"
   },
   "scripts": {
-    "dev": "wrangler dev --env=local",
+    "dev": "npm run build && miniflare --wrangler-config wrangler.local.toml --kv SHORTEN --kv-persist --modules build/index.js",
+    "_comment": "NOTE: Only use wrangler when deploying or testing in the cloud. Use miniflare for local development (npm run dev).",
+    "dev:wrangler": "wrangler dev --env=local",
     "deploy": "wrangler publish",
-    "tsc": "tsc"
+    "build": "npx esbuild --bundle --target=esnext --format=esm --sourcemap --outdir=build src/index.ts"
   },
   "dependencies": {
     "@cloudflare/itty-router-openapi": "^0.0.15",
     "@cloudflare/workers-types": "^4.20230404.0",
     "chatgpt-plugin": "^0.1.2",
     "itty-cors": "^0.3.6",
-    "mermaid": "^10.1.0",
     "nanoid": "^4.0.2",
     "pako": "^2.1.0",
     "zod": "^3.21.4"
@@ -39,6 +40,7 @@
   ],
   "devDependencies": {
     "typescript": "^5.0.4",
-    "wrangler": "^2.16.0"
+    "miniflare": "^2.10.0",
+    "esbuild": "^0.17.19"
   }
 }

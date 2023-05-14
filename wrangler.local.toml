@@ -1,0 +1,5 @@
+name = "chatgpt-plugin-mermaid"
+
+[vars]
+WORKER_ENV="local"
+MIXPANEL_TOKEN="6d7564ea078166181f8fe0b9856b19be"
