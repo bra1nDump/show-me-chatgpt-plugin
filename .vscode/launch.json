@@ -7,16 +7,18 @@
         {
             "type": "node",
             "request": "launch",
-            "runtimeExecutable": "pnpm",
-            "args": [
+            "name": "Dev",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
                 "run",
                 "dev"
             ],
-            "console": "integratedTerminal",
-            "name": "Launch Program",
-            "skipFiles": [
-                "<node_internals>/**"
+            "outFiles": [
+                "${workspaceFolder}/build/**/*.js",
+                "${workspaceFolder}/build/**/*.js.map"
             ],
+            "outputCapture": "std",
+            "console": "integratedTerminal",
         }
     ]
 }
