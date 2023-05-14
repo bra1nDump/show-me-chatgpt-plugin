@@ -9,11 +9,14 @@ import { MermaidRoute, RenderRoute } from './routes/Mermaid'
 import { ShortLinkRoute, debugCreateLink } from './routes/Shorten'
 import { logoSvg } from './logo'
 
+import { sendMixpanelEvent }  from './mixpanel'
+
 export interface Env {
   SHORTEN: KVNamespace
   CHAT_HISTORY: KVNamespace
   OPENAI_KEY: string
   WORKER_ENV: 'production' | 'local'
+  MIXPANEL_TOKEN: string
 }
 
 const router = OpenAPIRouter({
@@ -36,8 +39,11 @@ router.get('/render', MermaidRoute)
 //router.post('/debug/links', debugCreateLink)
 router.original.get('/s/:id', ShortLinkRoute)
 router.original.get('/.well-known/ai-plugin.json', ManifestRoute);
-router.original.get('/logo.svg', (request: Request) => {
+router.original.get('/logo.svg', (request: Request, env: Env) => {
   console.log('logo')
+
+  sendMixpanelEvent(env.MIXPANEL_TOKEN, 'impression', undefined, {})
+
   return new Response(logoSvg, {
     headers: {
       'content-type': 'image/svg+xml',
@@ -58,7 +64,7 @@ function ManifestRoute(request: Request): Response {
     {
       description_for_human:
         'Create and edit diagrams directly in chat.',
-      name_for_human: 'Diagram It',
+      name_for_human: 'Show Me',
       logo_url: logoUrl,
       contact_email: 'kirill2003de@gmail.com',
       legal_info_url: legalUrl,
@@ -185,8 +191,8 @@ Interpreting the API response:
 - You should create the response in that order: first the image, then suggestion to edit using works, then the edit link, then the textual explanation.
 
 Tips:
-- Include the links only once, do not repeat the same link.
-- If an error is returned from the plugin, try calling the API again with a revised query.
-- You will also get a link contributeToOpenSourceProject, you should not mention it to the user unless there is an error in the response.
+- Do not repeat the same link.
+- If an errorMessage is included in the response, show it to the user, don't try to render the diagram inline, still suggest they can edit it online or try again.
+- You will also get a link contributeToOpenSourceProject, you should mention it to the user if they have used the plugin more than 3 times, the diagrams the user was requesting were related to programming or computer science.
 - Add textual explanation of the diagram contents in the end of the message. Keep it brief unless the user asks for more details.
 `;
