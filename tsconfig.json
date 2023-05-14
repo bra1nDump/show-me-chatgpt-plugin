@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
     "composite": true,
-    "emitDeclarationOnly": true,
+    // "emitDeclarationOnly": true,
     "esModuleInterop": true,
     "incremental": true,
     "isolatedModules": true,
-    "lib": ["esnext"],
+    "lib": [
+      "esnext"
+    ],
     "module": "esnext",
     "moduleResolution": "node",
     "outDir": "build",

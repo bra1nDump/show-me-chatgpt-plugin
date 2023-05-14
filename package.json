@@ -11,16 +11,19 @@
     "node": ">=14"
   },
   "scripts": {
+    "dev:miniflare": "npm run build && miniflare --modules build/index.js --kv SHORTEN --kv-persist",
     "dev": "wrangler dev --env=local",
     "deploy": "wrangler publish",
-    "tsc": "tsc"
+    "build": "npx esbuild --bundle --target=esnext --format=esm --sourcemap --outdir=build src/index.ts"
   },
   "dependencies": {
     "@cloudflare/itty-router-openapi": "^0.0.15",
     "@cloudflare/workers-types": "^4.20230404.0",
     "chatgpt-plugin": "^0.1.2",
+    "esbuild": "^0.17.19",
     "itty-cors": "^0.3.6",
     "mermaid": "^10.1.0",
+    "miniflare": "^2.14.0",
     "nanoid": "^4.0.2",
     "pako": "^2.1.0",
     "zod": "^3.21.4"

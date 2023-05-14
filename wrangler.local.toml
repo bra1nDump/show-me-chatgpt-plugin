@@ -1,0 +1,13 @@
+name = "chatgpt-plugin-mermaid"
+main = "src/index.ts"
+compatibility_date = "2023-04-04"
+
+[env.local]
+kv_namespaces = [
+    { "binding" = "SHORTEN", "id" = "" },
+    { "binding" = "CHAT_HISTORY", "id" = "" }
+]
+
+[env.local.vars]
+WORKER_ENV="local"
+MIXPANEL_TOKEN="6d7564ea078166181f8fe0b9856b19be"
