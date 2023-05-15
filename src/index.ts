@@ -8,6 +8,7 @@ import pkg from '../package.json'
 import { MermaidRoute, RenderRoute } from './routes/Mermaid'
 import { ShortLinkRoute, debugCreateLink } from './routes/Shorten'
 import { logoSvg } from './logo'
+import { html as privacyPageHtml } from './privacy-page'
 
 import { sendMixpanelEvent }  from './mixpanel'
 
@@ -34,9 +35,28 @@ router.all('*', preflight)
 // 2. Expose magic openapi.json, expose API itself
 router.get('/render', MermaidRoute)
 
-//router.get('/render', RenderRoute)
+// Privacy policy
+router.original.get('/', () => 
+  new Response(
+    privacyPageHtml, 
+    { headers: { 
+      'content-type': 'text/html', 
+      'access-control-allow-origin': '*',
+      'access-control-allow-methods': 'GET', 
+    }
+  })
+)
+router.original.get('/legal', () => 
+  new Response(
+    privacyPageHtml, 
+    { headers: { 
+      'content-type': 'text/html', 
+      'access-control-allow-origin': '*',
+      'access-control-allow-methods': 'GET', 
+    }
+  })
+)
 
-//router.post('/debug/links', debugCreateLink)
 router.original.get('/s/:id', ShortLinkRoute)
 router.original.get('/.well-known/ai-plugin.json', ManifestRoute);
 router.original.get('/logo.svg', (request: Request, env: Env) => {
