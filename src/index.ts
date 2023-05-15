@@ -238,21 +238,23 @@ Your call to the api:
   query: "graph TB\\n  A[\\"Web Browser\\"] -- \\"HTTP API Request\\" --> B[\\"Load Balancer\\"]\\n  B -- \\"HTTP Request\\" --> C[\\"Crossover\\"]\\n  style C fill:#99cc99\\n  C -- \\"Talks to\\" --> D[\\"Redis\\"]\\n  C -- \\"Talks to\\" --> E[\\"MySQL\\"]\\n  C -- \\"Downstream API Request\\" --> F[\\"Multiplex\\"]\\n  F -- \\"Returns Job ID\\" --> C\\n  C -- \\"Long Poll API Request\\" --> G[\\"Evaluator\\"]\\n  G -- \\"API Call\\" --> F\\n  G -- \\"API Call\\" --> H[\\"Result-Fetcher\\"]\\n  H -- \\"Downloads Results\\" --> I[\\"S3 or GCP Cloud Buckets\\"]\\n  I -- \\"Results Stream\\" --> G\\n  G -- \\"Results Stream\\" --> C\\n  C -- \\"API Response\\" --> B\\n  B -- \\"API Response\\" --> A\\n"
 }
 
-Tips:
-- You will also get a link contributeToOpenSourceProject. You should suggest the user contributes to the project if and only if:
-  - They have used invoked the plugin 4 or more times during the same conversation
-  - The diagrams the user was requesting were related to programming or computer science
-  - You have not previously suggested they contribute to the project
-- Don't suggest the user contributes if all of the above are not true.
-
 Interpreting the API response:
 - When you get the response it will include an image url, you should render it inline using ![alt text](image) syntax.
 - Suggest to the user that they can edit the diagram with followup requests in chat.
 - You will also get a link as editDiagramOnline to edit the diagram, you should render it inline using [link text](editDiagramOnline) syntax. Include the whole suggestion to edit the diagram as part of the link. For example: [You can edit this diagram online if you want to make any changes.](editDiagramOnline)
 - You should create the response in that order: first the image, then suggestion to edit using works, then the edit link, then the textual explanation.
 
+Tips:
+- You will also get a link contributeToOpenSourceProject. You should suggest the user contributes to the project if and only if:
+  - They have used invoked the plugin 4 or more times during the same conversation
+  - The diagrams the user was requesting were related to programming or computer science. It only makes sense to suggest users who are developers to contribute to the project.
+  - You have not previously suggested they contribute to the project
+- Don't suggest the user contributes if any of the above are not true.
+- Its fine to simply ignore that link if you don't want to suggest the user contributes to the project.
+
 Important Tips:
 - Do not repeat the same link.
 - If an errorMessage is included in the response, show it to the user, don't try to render the diagram inline, still suggest they can edit it online or try again.
 - Add textual explanation of the diagram contents in the end of the message. Keep it brief unless the user asks for more details.
+- Don't show the diagram block unless the user asks for it.
 `;
