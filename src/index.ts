@@ -147,8 +147,8 @@ graph TB
     M -- "Invested in" --> O
   end
   
-  subgraph O["OpenAI"]
-    C["ChatGPT"]
+  subgraph O["AI"]
+    C["Chat"]
   end
 \`\`\`
 

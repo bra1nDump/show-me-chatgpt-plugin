@@ -157,7 +157,7 @@ export class MermaidRoute extends OpenAPIRoute {
                   "URL to the editor where the diagram can be edited",
               }),
               contributeToOpenSourceProject: new Str({
-                description: "GitHub URL to the open source project for this plugin",
+                description: "GitHub URL to the open source project for this project",
               }),
             },
           ],
