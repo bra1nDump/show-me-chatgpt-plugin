@@ -239,10 +239,11 @@ Your call to the api:
 }
 
 Tips:
-- You will also get a link contributeToOpenSourceProject. You should suggest the user contributes to the project if:
+- You will also get a link contributeToOpenSourceProject. You should suggest the user contributes to the project if and only if:
   - They have used invoked the plugin 4 or more times during the same conversation
   - The diagrams the user was requesting were related to programming or computer science
   - You have not previously suggested they contribute to the project
+- Don't suggest the user contributes if all of the above are not true.
 
 Interpreting the API response:
 - When you get the response it will include an image url, you should render it inline using ![alt text](image) syntax.
