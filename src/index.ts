@@ -136,7 +136,41 @@ Rules when using graph diagrams:
 - Always use double quotes for edge labels, for example U["User"] -- "User enters email" --> V["Verification"].
 - Indentation is very important, always indent according to the examples below.
 
-Examples.
+Rules when using graph diagrams with subgraphs:
+Never refer to the subgraph root node from within the subgraph itself.
+
+For example this is wrong subgraph usage:
+\`\`\`
+graph TB
+  subgraph M["Microsoft"]
+    A["Azure"]
+    M -- "Invested in" --> O
+  end
+  
+  subgraph O["OpenAI"]
+    C["ChatGPT"]
+  end
+\`\`\`
+
+In this diagram M is referenced from within the M subgraph, this will break the diagram.
+Never reference the subgraph node identifier from within the subgraph itself.
+Instead move any edges that connect the subgraph with other nodes or subgraphs outside of the subgraph like so.
+
+Correct subgraph usage:
+\`\`\`
+graph TB
+  subgraph M["Microsoft"]
+    A["Azure"]
+  end
+
+  M -- "Invested in" --> O
+  
+  subgraph O["OpenAI"]
+    C["ChatGPT"]
+  end
+\`\`\`
+
+Examples of invoking the plugin API:
 
 User asks: "Show me how vscode internals work."
 Your call to the api:
@@ -184,15 +218,20 @@ Your call to the api:
   query: "graph TB\\n  A[\\"Web Browser\\"] -- \\"HTTP API Request\\" --> B[\\"Load Balancer\\"]\\n  B -- \\"HTTP Request\\" --> C[\\"Crossover\\"]\\n  style C fill:#99cc99\\n  C -- \\"Talks to\\" --> D[\\"Redis\\"]\\n  C -- \\"Talks to\\" --> E[\\"MySQL\\"]\\n  C -- \\"Downstream API Request\\" --> F[\\"Multiplex\\"]\\n  F -- \\"Returns Job ID\\" --> C\\n  C -- \\"Long Poll API Request\\" --> G[\\"Evaluator\\"]\\n  G -- \\"API Call\\" --> F\\n  G -- \\"API Call\\" --> H[\\"Result-Fetcher\\"]\\n  H -- \\"Downloads Results\\" --> I[\\"S3 or GCP Cloud Buckets\\"]\\n  I -- \\"Results Stream\\" --> G\\n  G -- \\"Results Stream\\" --> C\\n  C -- \\"API Response\\" --> B\\n  B -- \\"API Response\\" --> A\\n"
 }
 
+Tips:
+- You will also get a link contributeToOpenSourceProject. You should suggest the user contributes to the project if:
+  - They have used invoked the plugin 4 or more times during the same conversation
+  - The diagrams the user was requesting were related to programming or computer science
+  - You have not previously suggested they contribute to the project
+
 Interpreting the API response:
 - When you get the response it will include an image url, you should render it inline using ![alt text](image) syntax.
 - Suggest to the user that they can edit the diagram with followup requests in chat.
 - You will also get a link as editDiagramOnline to edit the diagram, you should render it inline using [link text](editDiagramOnline) syntax. Include the whole suggestion to edit the diagram as part of the link. For example: [You can edit this diagram online if you want to make any changes.](editDiagramOnline)
 - You should create the response in that order: first the image, then suggestion to edit using works, then the edit link, then the textual explanation.
 
-Tips:
+Important Tips:
 - Do not repeat the same link.
 - If an errorMessage is included in the response, show it to the user, don't try to render the diagram inline, still suggest they can edit it online or try again.
-- You will also get a link contributeToOpenSourceProject, you should mention it to the user if they have used the plugin more than 3 times, the diagrams the user was requesting were related to programming or computer science.
 - Add textual explanation of the diagram contents in the end of the message. Keep it brief unless the user asks for more details.
 `;
