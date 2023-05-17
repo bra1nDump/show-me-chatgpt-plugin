@@ -5,7 +5,7 @@ import { isValidChatGPTIPAddress } from 'chatgpt-plugin'
 import { createCors } from 'itty-cors'
 
 import pkg from '../package.json'
-import { MermaidRoute, RenderRoute } from './routes/Mermaid'
+import { DiagramRoute, RenderRoute } from './routes/Diagram'
 import { ShortLinkRoute, debugCreateLink } from './routes/Shorten'
 import { logoSvg } from './logo'
 import { html as privacyPageHtml } from './privacy-page'
@@ -33,7 +33,7 @@ const { preflight, corsify } = createCors({ origins: ['*'] })
 router.all('*', preflight)
 
 // 2. Expose magic openapi.json, expose API itself
-router.get('/render', MermaidRoute)
+router.get('/render', DiagramRoute)
 
 // Privacy policy
 router.original.get('/', () => 
@@ -140,9 +140,9 @@ Examples of user prompts in which you should use this plugin:
 Use this plugin if a user asks about: how something works, explain about a concept or how something is made, summarize a book, describe a process, and other user prompts that can be summarized or explained in the format of a mindmap or a state diagram. Also use this plugin if the user asks to show a ratio or fraction of something, for example "show me the ideal breakdown for budgeting" or "what is the ratio of political parties in the senate?". Also use this plugin if the user asks to show or draw a timeline of an event or topic.
 
 How to create a request to the plugin API:
-You create the diagram in mermaid syntax based on what user asked and pass it to the plugin API to render.
+You create the diagram based on what user asked and pass it to the plugin API to render. Mermaid is the preferred language.
 
-Important rules when creating the diagram:
+Important rules when creating the diagram in mermaid syntax:
 - Prefer using graph TB types of diagrams.
 - Avoid linear diagrams when possible, diagrams should be hierarchical and have multiple branches when applicable.
 - Never use the ampersand (&) symbol in the diagram, it will break the diagram. Use the word "and" instead. For example use "User and Admin" instead of "User & Admin".
@@ -150,13 +150,13 @@ Important rules when creating the diagram:
 - Don't use empty labels "" for edges, instead don't label the edge at all. For example U["User"] --> A["Admin"].
 - Don't add the label if its the same as the destination node.
 
-Rules when using graph diagrams:
+Rules when using graph diagrams in mermaid syntax:
 - Use short node identifiers, for example U for User or FS for File System.
 - Always use double quotes for node labels, for example U["User"].
 - Always use double quotes for edge labels, for example U["User"] -- "User enters email" --> V["Verification"].
 - Indentation is very important, always indent according to the examples below.
 
-Rules when using graph diagrams with subgraphs:
+Rules when using graph diagrams with subgraphs in mermaid syntax:
 Never refer to the subgraph root node from within the subgraph itself.
 
 For example this is wrong subgraph usage:
@@ -225,6 +225,12 @@ Your call to the api:
   query: "graph TB\\n  A[\\"Web Browser\\"] -- \\"HTTP API Request\\" --> B[\\"Load Balancer\\"]\\n  B -- \\"HTTP Request\\" --> C[\\"Crossover\\"]\\n  C -- \\"Talks to\\" --> D[\\"Redis\\"]\\n  C -- \\"Talks to\\" --> E[\\"MySQL\\"]\\n  C -- \\"Downstream API Request\\" --> F[\\"Multiplex\\"]\\n  F -- \\"Returns Job ID\\" --> C\\n  C -- \\"Long Poll API Request\\" --> G[\\"Evaluator\\"]\\n  G -- \\"API Call\\" --> F\\n  G -- \\"API Call\\" --> H[\\"Result-Fetcher\\"]\\n  H -- \\"Downloads Results\\" --> I[\\"S3 or GCP Cloud Buckets\\"]\\n  I -- \\"Results Stream\\" --> G\\n  G -- \\"Results Stream\\" --> C\\n  C -- \\"API Response\\" --> A\\n"
 }
 
+User asks: "Show me how a food critic can interact with a restaurant using plantuml"
+Your call to the api:
+{
+  query: "@startuml\\n left to right direction\\n actor \\"Food Critic\\" as fc\\n rectangle Restaurant {\\n usecase \\"Eat Food\\" as UC1\\n usecase \\"Pay for Food\\" as UC2\\n usecase \\"Drink\\" as UC3\\n }\\n fc --> UC1\\n fc --> UC2\\n fc --> UC3\\n @enduml"
+}
+
 Sometimes you will need to revise the same diagram based on user feedback.
 For the last example the user might make a followup request:
 
@@ -241,7 +247,7 @@ Your call to the api:
 Interpreting the API response:
 - When you get the response it will include an image url, you should render it inline using ![alt text](image) syntax.
 - Suggest to the user that they can edit the diagram with followup requests in chat.
-- You will also get a link as editDiagramOnline to edit the diagram, you should render it inline using [link text](editDiagramOnline) syntax. Include the whole suggestion to edit the diagram as part of the link. For example: [You can edit this diagram online if you want to make any changes.](editDiagramOnline)
+- You will also get a link as editDiagramOnline to edit the diagram, you should render it inline using [link text](editDiagramOnline) syntax. Include the whole suggestion to edit the diagram as part of the link. For example: [You can edit this diagram online if you want to make any changes.](editDiagramOnline). If the link value is unknown then say: Please note that the link to edit this diagram online is not implemented yet.
 - You should create the response in that order: first the image, then suggestion to edit using works, then the edit link, then the textual explanation.
 
 Tips:
@@ -256,5 +262,6 @@ Important Tips:
 - Do not repeat the same link.
 - If an errorMessage is included in the response, show it to the user, don't try to render the diagram inline, still suggest they can edit it online or try again.
 - Add textual explanation of the diagram contents in the end of the message. Keep it brief unless the user asks for more details.
+- Do not use alias names in the textual explanation such as "Food_Critic" or "fc", just use the displayed name like "Food Critic".
 - Don't show the diagram block unless the user asks for it.
 `;
