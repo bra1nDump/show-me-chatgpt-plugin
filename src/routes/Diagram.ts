@@ -134,7 +134,7 @@ export class DiagramRoute extends OpenAPIRoute {
           }
         ] : [
           {
-            errorMessage: "GPT created an invalid diagramParam.js diagramParam, you can try again or edit it online",
+            errorMessage: "GPT created an invalid diagram, you can try again or edit it online",
             editDiagramOnline: shortenedEditDiagramURL,
             contributeToOpenSourceProject: 'https://github.com/bra1nDump/show-me-chatgpt-plugin/issues'
           }
