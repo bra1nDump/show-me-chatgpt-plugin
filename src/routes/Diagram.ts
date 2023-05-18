@@ -115,8 +115,6 @@ export class DiagramRoute extends OpenAPIRoute {
     console.log({ shortenedURL })
     console.log('diagram svg', diagram.diagramSVG)
 
-    // NOTE: Seems like render_complete are being sent based on logs, but not showing up in mixpanel
-    // suspecting that the response is being sent before the event is sent and all promises are being cleaned up
     await track('render_complete', {
       'diagram_language': diagramLanguage,
       'diagram_syntax_is_valid': diagram.isValid,
