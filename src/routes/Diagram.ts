@@ -106,14 +106,14 @@ export class DiagramRoute extends OpenAPIRoute {
       'diagram': diagramParam.length > 255 ? diagramParam.substring(0, 200) + " -- truncated" : diagramParam,
     })
 
-    const slug = await saveShortLink(env.SHORTEN, diagram.imageUrl)
+    const slug = await saveShortLink(env.SHORTEN, diagram.diagramSVG)
     const shortenedURL = `${BASE_URL}/s/${slug}`
 
     const editorSlug = diagram.editorLink ? await saveShortLink(env.SHORTEN, diagram.editorLink) : "";
     const shortenedEditDiagramURL = diagram.editorLink ? `${BASE_URL}/s/${editorSlug}` : "unknown"
 
     console.log({ shortenedURL })
-    console.log('kroki url', diagram.imageUrl)
+    console.log('diagram svg', diagram.diagramSVG)
 
     // NOTE: Seems like render_complete are being sent based on logs, but not showing up in mixpanel
     // suspecting that the response is being sent before the event is sent and all promises are being cleaned up

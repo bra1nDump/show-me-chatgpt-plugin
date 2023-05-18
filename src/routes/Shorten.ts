@@ -21,16 +21,14 @@ export async function ShortLinkRoute(request, env) {
   if (!slug) {
     return new Response('404 Not Found...', { status: 200 })
   }
-  const targetUrl = await env.SHORTEN.get(slug)
-  if (!targetUrl) {
+  const imageSVG = await env.SHORTEN.get(slug)
+  if (!imageSVG) {
     return new Response('404 Not Found...', { status: 200 })
   }
 
-  return new Response(null, {
-    status: 301,
-    statusText: 'Moved Permanently',
+  return new Response(imageSVG, {
     headers: {
-      Location: targetUrl
+      'content-type': 'image/svg+xml'
     }
   })
 }

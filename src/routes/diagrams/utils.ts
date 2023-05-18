@@ -78,12 +78,11 @@ async function fetchSVG(link: string): Promise<string> {
   return data;
 }
 
-export async function syntaxIsValid(imageUrl: string): Promise<boolean> {
+export async function getSVG(imageUrl: string): Promise<string | null> {
   try {
-    const svg = await fetchSVG(imageUrl) // TODO: Put the svg in the KV store instead of putting the link
-    return true
+    return await fetchSVG(imageUrl)
   } catch (error) {
     console.error(`Error rendering or fetching svg: ${error}`)
-    return false
+    return null
   }
 }

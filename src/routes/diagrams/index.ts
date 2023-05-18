@@ -1,4 +1,4 @@
-import { compressAndEncodeBase64, DiagramLanguage, syntaxIsValid } from "./utils";
+import { compressAndEncodeBase64, DiagramLanguage, getSVG } from "./utils";
 import { mermaidDiagramType, mermaidEditorLink, mermaidFormat } from "./mermaid";
 import { plantumlEditorLink } from "./plantuml";
 
@@ -6,7 +6,7 @@ type DiagramDetails = {
   type: string,
   editorLink: string,
   isValid: boolean,
-  imageUrl: string,
+  diagramSVG: string,
 };
 
 export async function diagramDetails(diagram: string, diagramLanguage: DiagramLanguage): Promise<DiagramDetails> {
@@ -14,7 +14,6 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
     type: ((diagram: string) => string) | null,
     format: ((diagram: string) => string) | null,
     editorLink: (diagram: string) => string | null
-    isValid: (imageUrl: string) => Promise<boolean>,
   };
 
   const getDiagramFunctions: Partial<Record<DiagramLanguage, DiagramFunctions>> = {
@@ -22,13 +21,11 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
       type: mermaidDiagramType,
       format: mermaidFormat,
       editorLink: mermaidEditorLink,
-      isValid: syntaxIsValid,
     },
     "plantuml": {
       type: null,
       format: null,
       editorLink: plantumlEditorLink,
-      isValid: syntaxIsValid,
     },
     // TODO: add other diagram languages
   }
@@ -37,7 +34,6 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
     type: null,
     format: null,
     editorLink: null,
-    isValid: syntaxIsValid,
   }
   const diagramFunctions = getDiagramFunctions[diagramLanguage] ?? defaultDiagramFunctions
 
@@ -49,11 +45,13 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
     '/svg/' +
     compressAndEncodeBase64(formattedDiagram)
 
+  const diagramSVG = await getSVG(imageUrl);
+
   return {
     type: diagramFunctions.type?.(formattedDiagram) ?? "unknown",
     editorLink: diagramFunctions.editorLink?.(formattedDiagram) ?? "",
-    isValid: await diagramFunctions.isValid(imageUrl),
-    imageUrl
+    isValid: Boolean(diagramSVG),
+    diagramSVG
   }
 }
 
