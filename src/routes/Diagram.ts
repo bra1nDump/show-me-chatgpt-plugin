@@ -33,7 +33,16 @@ export class DiagramRoute extends OpenAPIRoute {
             diagramLanguages.map(language => [language, language])
           )
         })
-      )
+      ),
+      topic: Query(
+        new Str({
+          description: "Topic of the diagram",
+          example: "Software Architecture",
+        }),
+        {
+          required: true,
+        }
+      ),
     },
     responses: {
       "200": {
@@ -70,7 +79,9 @@ export class DiagramRoute extends OpenAPIRoute {
     // Extract data from request
     const diagramLanguage = new URL(request.url).searchParams.get("diagramLanguage") as DiagramLanguage
     const diagramParam = new URL(request.url).searchParams.get("diagram");
+    const topic  = new URL(request.url).searchParams.get("topic");
     console.log('diagram', diagramParam)
+    console.log('topic', topic)
 
     const diagram = await diagramDetails(diagramParam, diagramLanguage)
 
@@ -104,6 +115,8 @@ export class DiagramRoute extends OpenAPIRoute {
       // Mixpanel truncates all strings https://developer.mixpanel.com/reference/import-events#common-issues
       'diagram_type': diagram.type,
       'diagram': diagramParam.length > 255 ? diagramParam.substring(0, 200) + " -- truncated" : diagramParam,
+
+      'topic': topic,
     })
 
     const slug = await saveShortLink(env.SHORTEN, diagram.diagramSVG)
@@ -122,6 +135,8 @@ export class DiagramRoute extends OpenAPIRoute {
       'diagram_type': diagram.type,
       'diagram_url': shortenedURL,
       'edit_diagram_url': shortenedEditDiagramURL,
+
+      'topic': topic,
     })
 
     const responseBody =
