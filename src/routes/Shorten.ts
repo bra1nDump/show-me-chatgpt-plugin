@@ -16,7 +16,7 @@ export async function saveShortLink(
   return slug
 }
 
-export async function ShortLinkRoute(request, env) {
+export async function DiagramLinkRoute(request, env) {
   const slug = request.params.id
   if (!slug) {
     return new Response('404 Not Found...', { status: 200 })
@@ -29,6 +29,25 @@ export async function ShortLinkRoute(request, env) {
   return new Response(imageSVG, {
     headers: {
       'content-type': 'image/svg+xml'
+    }
+  })
+}
+
+export async function ShortLinkRoute(request, env) {
+  const slug = request.params.id
+  if (!slug) {
+    return new Response('404 Not Found...', { status: 200 })
+  }
+  const targetUrl = await env.SHORTEN.get(slug)
+  if (!targetUrl) {
+    return new Response('404 Not Found...', { status: 200 })
+  }
+
+  return new Response(null, {
+    status: 301,
+    statusText: 'Moved Permanently',
+    headers: {
+      Location: targetUrl
     }
   })
 }

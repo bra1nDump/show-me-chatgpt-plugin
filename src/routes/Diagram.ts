@@ -130,12 +130,12 @@ export class DiagramRoute extends OpenAPIRoute {
     })
 
     const slug = await saveShortLink(env.SHORTEN, diagram.diagramSVG)
-    const shortenedURL = `${BASE_URL}/s/${slug}`
+    const diagramURL = `${BASE_URL}/d/${slug}`
 
     const editorSlug = diagram.editorLink ? await saveShortLink(env.SHORTEN, diagram.editorLink) : "";
     const shortenedEditDiagramURL = diagram.editorLink ? `${BASE_URL}/s/${editorSlug}` : "unknown"
 
-    console.log({ shortenedURL })
+    console.log({ diagramURL })
     console.log('diagram svg', diagram.diagramSVG)
 
     await track('render_complete', {
@@ -143,7 +143,7 @@ export class DiagramRoute extends OpenAPIRoute {
       'diagram_syntax_is_valid': diagram.isValid,
 
       'diagram_type': diagramType,
-      'diagram_url': shortenedURL,
+      'diagram_url': diagramURL,
       'edit_diagram_url': shortenedEditDiagramURL,
 
       'topic': topic,
@@ -153,7 +153,7 @@ export class DiagramRoute extends OpenAPIRoute {
       {
         results: diagram.isValid ? [
           {
-            image: shortenedURL,
+            image: diagramURL,
             editDiagramOnline: shortenedEditDiagramURL,
             contributeToOpenSourceProject: 'https://github.com/bra1nDump/show-me-chatgpt-plugin/issues'
           }

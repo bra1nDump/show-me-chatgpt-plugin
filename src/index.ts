@@ -6,7 +6,7 @@ import { createCors } from 'itty-cors'
 
 import pkg from '../package.json'
 import { DiagramRoute, RenderRoute } from './routes/Diagram'
-import { ShortLinkRoute, debugCreateLink } from './routes/Shorten'
+import { ShortLinkRoute, DiagramLinkRoute, debugCreateLink } from './routes/Shorten'
 import { logoSvg } from './logo'
 import { html as privacyPageHtml } from './privacy-page'
 
@@ -58,6 +58,7 @@ router.original.get('/legal', () =>
 )
 
 router.original.get('/s/:id', ShortLinkRoute)
+router.original.get('/d/:id', DiagramLinkRoute)
 router.original.get('/.well-known/ai-plugin.json', ManifestRoute);
 router.original.get('/logo.svg', (request: Request, env: Env) => {
   console.log('logo')
