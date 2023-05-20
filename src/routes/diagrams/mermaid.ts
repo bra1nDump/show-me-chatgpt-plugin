@@ -23,10 +23,6 @@ export function mermaidFormat(diagram: string): string {
   return mermaidNoPluses
 }
 
-export function mermaidDiagramType(diagram: string): string {
-  return diagram.split('\n')[0]
-}
-
 export function mermaidEditorLink(code: string): string {
   const mermaidEditorJson = {
     code,

@@ -1,9 +1,8 @@
 import { compressAndEncodeBase64, DiagramLanguage, getSVG } from "./utils";
-import { mermaidDiagramType, mermaidEditorLink, mermaidFormat } from "./mermaid";
+import { mermaidEditorLink, mermaidFormat } from "./mermaid";
 import { plantumlEditorLink } from "./plantuml";
 
 type DiagramDetails = {
-  type: string,
   editorLink: string,
   isValid: boolean,
   diagramSVG: string,
@@ -11,19 +10,16 @@ type DiagramDetails = {
 
 export async function diagramDetails(diagram: string, diagramLanguage: DiagramLanguage): Promise<DiagramDetails> {
   type DiagramFunctions = {
-    type: ((diagram: string) => string) | null,
     format: ((diagram: string) => string) | null,
     editorLink: (diagram: string) => string | null
   };
 
   const getDiagramFunctions: Partial<Record<DiagramLanguage, DiagramFunctions>> = {
     "mermaid": {
-      type: mermaidDiagramType,
       format: mermaidFormat,
       editorLink: mermaidEditorLink,
     },
     "plantuml": {
-      type: null,
       format: null,
       editorLink: plantumlEditorLink,
     },
@@ -31,7 +27,6 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
   }
 
   const defaultDiagramFunctions: DiagramFunctions = {
-    type: null,
     format: null,
     editorLink: null,
   }
@@ -48,7 +43,6 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
   const diagramSVG = await getSVG(imageUrl);
 
   return {
-    type: diagramFunctions.type?.(formattedDiagram) ?? "unknown",
     editorLink: diagramFunctions.editorLink?.(formattedDiagram) ?? "",
     isValid: Boolean(diagramSVG),
     diagramSVG
