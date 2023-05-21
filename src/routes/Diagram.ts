@@ -69,6 +69,7 @@ export class DiagramRoute extends OpenAPIRoute {
               editDiagramOnline: new Str({
                 description:
                   "URL to the editor where the diagram can be edited",
+                required: false,
               }),
               contributeToOpenSourceProject: new Str({
                 description: "GitHub URL to the open source project for this project",
@@ -133,7 +134,7 @@ export class DiagramRoute extends OpenAPIRoute {
     const diagramURL = `${BASE_URL}/d/${slug}`
 
     const editorSlug = diagram.editorLink ? await saveShortLink(env.SHORTEN, diagram.editorLink) : "";
-    const shortenedEditDiagramURL = diagram.editorLink ? `${BASE_URL}/s/${editorSlug}` : "unknown"
+    const shortenedEditDiagramURL = diagram.editorLink ? `${BASE_URL}/s/${editorSlug}` : null
 
     console.log({ diagramURL })
     console.log('diagram svg', diagram.diagramSVG)
@@ -144,23 +145,18 @@ export class DiagramRoute extends OpenAPIRoute {
 
       'diagram_type': diagramType,
       'diagram_url': diagramURL,
-      'edit_diagram_url': shortenedEditDiagramURL,
+      'edit_diagram_url': shortenedEditDiagramURL ?? "not implemented yet",
 
       'topic': topic,
     })
 
     const responseBody =
       {
-        results: diagram.isValid ? [
+        results:  [
           {
-            image: diagramURL,
-            editDiagramOnline: shortenedEditDiagramURL,
-            contributeToOpenSourceProject: 'https://github.com/bra1nDump/show-me-chatgpt-plugin/issues'
-          }
-        ] : [
-          {
-            errorMessage: "GPT created an invalid diagram, you can try again or edit it online",
-            editDiagramOnline: shortenedEditDiagramURL,
+            ...diagram.isValid && { image: diagramURL },
+            ...!diagram.isValid && { errorMessage: "GPT created an invalid diagram, you can try again or edit it online" },
+            ...shortenedEditDiagramURL && { editDiagramOnline: shortenedEditDiagramURL },
             contributeToOpenSourceProject: 'https://github.com/bra1nDump/show-me-chatgpt-plugin/issues'
           }
         ]
