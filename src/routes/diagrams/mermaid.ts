@@ -1,6 +1,10 @@
-import { encodeBase64 } from "./utils";
+import { DiagramType, encodeBase64 } from "./utils";
 
-export function mermaidFormat(diagram: string): string {
+export function mermaidFormat(diagram: string, diagramType: DiagramType): string {
+  if (diagramType !== "graph") {
+    return diagram
+  }
+
   let mermaidNoPluses = diagram.replace(/\+/g, ' ')
 
   console.log('mermaidNoPluses before styling')

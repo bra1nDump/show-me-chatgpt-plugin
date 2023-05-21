@@ -1,16 +1,16 @@
-import { compressAndEncodeBase64, DiagramLanguage, getSVG } from "./utils";
+import { compressAndEncodeBase64, DiagramLanguage, DiagramType, getSVG } from "./utils";
 import { mermaidEditorLink, mermaidFormat } from "./mermaid";
 import { plantumlEditorLink } from "./plantuml";
 
 type DiagramDetails = {
   editorLink: string,
   isValid: boolean,
-  diagramSVG: string,
+  diagramSVG: string | null,
 };
 
-export async function diagramDetails(diagram: string, diagramLanguage: DiagramLanguage): Promise<DiagramDetails> {
+export async function diagramDetails(diagram: string, diagramLanguage: DiagramLanguage, diagramType: DiagramType): Promise<DiagramDetails> {
   type DiagramFunctions = {
-    format: ((diagram: string) => string) | null,
+    format: ((diagram: string, diagramType: DiagramType) => string) | null,
     editorLink: (diagram: string) => string | null
   };
 
@@ -28,17 +28,19 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
 
   const defaultDiagramFunctions: DiagramFunctions = {
     format: null,
-    editorLink: null,
+    editorLink: () => null,
   }
   const diagramFunctions = getDiagramFunctions[diagramLanguage] ?? defaultDiagramFunctions
 
-  const formattedDiagram = diagramFunctions.format?.(diagram) ?? diagram;
+  const formattedDiagram = diagramFunctions.format?.(diagram, diagramType) ?? diagram;
 
   const imageUrl =
     'https://kroki.io/' +
     diagramLanguage +
     '/svg/' +
     compressAndEncodeBase64(formattedDiagram)
+
+  console.log("imageUrl", imageUrl);
 
   const diagramSVG = await getSVG(imageUrl);
 

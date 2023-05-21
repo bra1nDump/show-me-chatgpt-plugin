@@ -62,6 +62,59 @@ export const diagramLanguages = [
 
 export type DiagramLanguage = typeof diagramLanguages[number];
 
+export const diagramTypes = [
+  "sequence",
+  "use-case",
+  "class",
+  "object",
+  "activity",
+  "component",
+  "deployment",
+  "state",
+  "timing",
+  "graph",
+  "entity-relationship",
+  "user-journey",
+  "gantt",
+  "pie-chart",
+  "requirement",
+  "gitgraph",
+  "mindmap",
+  "timeline-diagram",
+  "block",
+  "network",
+  "json",
+  "yaml",
+  "ebnf",
+  "salt-wireframe",
+  "rack",
+  "grid",
+  "dbml",
+  "uml",
+  "ascii",
+  "digital-timing"
+] as const
+
+export type DiagramType = typeof diagramTypes[number]
+
+export const diagramLanguagesAndTypes: [DiagramLanguage, DiagramType[]][] = [
+  ["mermaid", ["sequence", "class", "state", "graph", "entity-relationship", "user-journey", "gantt", "pie-chart", "requirement", "gitgraph", "mindmap", "timeline-diagram", ]],
+  ["plantuml", ["sequence", "use-case", "class", "object", "activity", "component", "deployment", "state", "timing", "entity-relationship", "gantt", "mindmap", "network", "json", "yaml", "ebnf", "salt-wireframe"]],
+  ["d2", ["sequence", "class", "graph", "entity-relationship", "grid"]],
+  ["nomnoml", ["class", "activity", "graph", "entity-relationship", "uml"]],
+  ["graphviz", ["graph"]],
+  ["seqdiag", ["sequence"]],
+  ["actdiag", ["activity"]],
+  ["blockdiag", ["block"]],
+  ["nwdiag", ["network"]],
+  ["rackdiag", ["rack"]],
+  ["dbml", ["dbml"]],
+  ["erd", ["entity-relationship"]],
+  ["ditaa", ["ascii"]],
+  ["svgbob", ["ascii"]],
+  ["wavedrom", ["digital-timing"]],
+]
+
 async function fetchSVG(link: string): Promise<string> {
   const response = await fetch(link);
 

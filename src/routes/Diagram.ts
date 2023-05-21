@@ -5,7 +5,8 @@ import { saveShortLink } from './Shorten'
 import { sendMixpanelEvent } from '../mixpanel'
 import { Env } from '..';
 import { diagramDetails } from "./diagrams";
-import { DiagramLanguage, diagramLanguages } from "./diagrams/utils";
+import { DiagramLanguage, diagramLanguages, DiagramType, diagramTypes } from "./diagrams/utils";
+import { getTrack } from "./utils";
 
 // TODO: Add graphvis editor https://www.devtoolsdaily.com/graphviz/?#%7B%22dot%22%3A%22digraph%20MessageArchitecture%20%7B%5Cn%20%20messageClient%5Cn%20%20messageQueue%5Bshape%3Drarrow%5D%5Cn%7D%22%7D
 
@@ -13,7 +14,7 @@ export class DiagramRoute extends OpenAPIRoute {
   /// 2. Creates /openapi.json route under the hood. Injects this into gpt prompt to teach about how to use the plugin.
   static schema = {
     tags: ["Diagram"],
-    summary: `Taking in a mermaid graph diagram, renders it and returns a link to the rendered image.`,
+    summary: `Taking a diagram, renders it and returns a link to the rendered image.`,
     parameters: {
       diagram: Query(
         new Str({
@@ -27,17 +28,19 @@ export class DiagramRoute extends OpenAPIRoute {
       diagramLanguage: Query(
         new Enumeration({
           description: 'Language of the diagram',
-          default: 'mermaid',
-          required: false,
+          required: true,
           values: Object.fromEntries(
             diagramLanguages.map(language => [language, language])
           )
         })
       ),
       diagramType: Query(
-        new Str({
+        new Enumeration({
           description: "Type of the diagram",
-          example: "graph",
+          required: true,
+          values: Object.fromEntries(
+            diagramTypes.map(language => [language, language])
+          )
         }),
         {
           required: true,
@@ -82,44 +85,25 @@ export class DiagramRoute extends OpenAPIRoute {
   }
 
   /// 3. Handles the API request
-  async handle(request: Request, env: Env, _ctx, data: Record<string, any>) {
+  async handle(request: Request, env: Env, _ctx : unknown, data: Record<string, any>) {
     const BASE_URL = new URL(request.url).origin
     const timeline = new Timeline();
 
     // Extract data from request
     const diagramLanguage = new URL(request.url).searchParams.get("diagramLanguage") as DiagramLanguage
-    const diagramParam = new URL(request.url).searchParams.get("diagram");
-    const topic  = new URL(request.url).searchParams.get("topic");
-    const diagramType  = new URL(request.url).searchParams.get("diagramType");
+    const diagramParam = new URL(request.url).searchParams.get("diagram") as string;
+    const topic  = new URL(request.url).searchParams.get("topic") as string;
+    const diagramType  = new URL(request.url).searchParams.get("diagramType") as DiagramType;
     console.log('diagram', diagramParam)
     console.log('topic', topic)
 
-    const diagram = await diagramDetails(diagramParam, diagramLanguage)
+    const diagram = await diagramDetails(diagramParam, diagramLanguage, diagramType)
 
-    // Print headers
     const headers = Object.fromEntries(request.headers)
     console.log('headers', headers)
 
-    const conversationId = headers['openai-conversation-id']
-    const ephemeralUserId = headers['openai-ephemeral-user-id']
-    const realIP = headers['x-real-ip']
+    const track = getTrack(headers, env)
 
-    // Track render event
-    const track = async (event: string, properties: Record<string, any>) => {
-      try {
-        const adjustedProperties = {
-          ...properties,
-          'conversation_id': conversationId,
-
-          ip: realIP,
-          'worker_environment': env.WORKER_ENV,
-        }
-        await sendMixpanelEvent(env.MIXPANEL_TOKEN as string, event, ephemeralUserId, adjustedProperties)
-        console.log('Sent mixpanel event', event, properties)
-      } catch (e) {
-        console.log('Error sending mixpanel event', e)
-      }
-    }
     void track('render', {
       'diagram_language': diagramLanguage,
 
@@ -130,7 +114,7 @@ export class DiagramRoute extends OpenAPIRoute {
       'topic': topic,
     })
 
-    const slug = await saveShortLink(env.SHORTEN, diagram.diagramSVG)
+    const slug = diagram.diagramSVG? await saveShortLink(env.SHORTEN, diagram.diagramSVG): null
     const diagramURL = `${BASE_URL}/d/${slug}`
 
     const editorSlug = diagram.editorLink ? await saveShortLink(env.SHORTEN, diagram.editorLink) : "";
@@ -200,7 +184,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
   </script>
   <body style="background: rgb(247, 247, 248)">
     <pre class="mermaid" style="width: 100vw">
-        ${mermaid.replace(/\+/g, ' ')}
+        ${mermaid?.replace(/\+/g, ' ')}
     </pre>
   </body>
   <style>svg {
@@ -219,6 +203,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
 
 class Timeline {
   private start: Date;
+  // @ts-ignore
   private endOfGPTResponse: Option<Date>;
 
   constructor() {

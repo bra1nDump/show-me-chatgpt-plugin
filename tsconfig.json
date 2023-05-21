@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "strict": true,
     "composite": true,
     // "emitDeclarationOnly": true,
     "esModuleInterop": true,

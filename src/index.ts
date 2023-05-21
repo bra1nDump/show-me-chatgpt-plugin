@@ -6,11 +6,13 @@ import { createCors } from 'itty-cors'
 
 import pkg from '../package.json'
 import { DiagramRoute, RenderRoute } from './routes/Diagram'
+import { GuidelinesRoute } from "./routes/Guidelines";
 import { ShortLinkRoute, DiagramLinkRoute, debugCreateLink } from './routes/Shorten'
 import { logoSvg } from './logo'
 import { html as privacyPageHtml } from './privacy-page'
 
 import { sendMixpanelEvent }  from './mixpanel'
+import { diagramLanguagesAndTypes } from "./routes/diagrams/utils";
 
 export interface Env {
   SHORTEN: KVNamespace
@@ -34,6 +36,8 @@ router.all('*', preflight)
 
 // 2. Expose magic openapi.json, expose API itself
 router.get('/render', DiagramRoute)
+
+router.get('/get-guidelines', GuidelinesRoute)
 
 // Privacy policy
 router.original.get('/', () => 
@@ -140,116 +144,33 @@ Examples of user prompts in which you should use this plugin:
 
 Use this plugin if a user asks about: how something works, explain about a concept or how something is made, summarize a book, describe a process, and other user prompts that can be summarized or explained in the format of a mindmap or a state diagram. Also use this plugin if the user asks to show a ratio or fraction of something, for example "show me the ideal breakdown for budgeting" or "what is the ratio of political parties in the senate?". Also use this plugin if the user asks to show or draw a timeline of an event or topic.
 
-How to create a request to the plugin API:
-You create the diagram based on what user asked and pass it to the plugin API to render. Mermaid is the preferred language.
+Before rendering diagrams to the plugin API:
+If there are established guidelines for the diagram you are about to create, make sure to request them. Otherwise, refrain from requesting them.
 
-Important rules when creating the diagram in mermaid syntax:
-- Prefer using graph TB types of diagrams.
-- Avoid linear diagrams when possible, diagrams should be hierarchical and have multiple branches when applicable.
-- Never use the ampersand (&) symbol in the diagram, it will break the diagram. Use the word "and" instead. For example use "User and Admin" instead of "User & Admin".
-- Never use round brackets () in the node identifiers, node labels and edge labels, it will break the diagram. Use a coma instead. For example use "User, Admin" instead of "User (Admin)".
-- Don't use empty labels "" for edges, instead don't label the edge at all. For example U["User"] --> A["Admin"].
-- Don't add the label if its the same as the destination node.
-
-Rules when using graph diagrams in mermaid syntax:
-- Use short node identifiers, for example U for User or FS for File System.
-- Always use double quotes for node labels, for example U["User"].
-- Always use double quotes for edge labels, for example U["User"] -- "User enters email" --> V["Verification"].
-- Indentation is very important, always indent according to the examples below.
-
-Rules when using graph diagrams with subgraphs in mermaid syntax:
-Never refer to the subgraph root node from within the subgraph itself.
-
-For example this is wrong subgraph usage:
-\`\`\`
-graph TB
-  subgraph M["Microsoft"]
-    A["Azure"]
-    M -- "Invested in" --> O
-  end
-  
-  subgraph O["AI"]
-    C["Chat"]
-  end
-\`\`\`
-
-In this diagram M is referenced from within the M subgraph, this will break the diagram.
-Never reference the subgraph node identifier from within the subgraph itself.
-Instead move any edges that connect the subgraph with other nodes or subgraphs outside of the subgraph like so.
-
-Correct subgraph usage:
-\`\`\`
-graph TB
-  subgraph M["Microsoft"]
-    A["Azure"]
-  end
-
-  M -- "Invested in" --> O
-  
-  subgraph O["OpenAI"]
-    C["ChatGPT"]
-  end
-\`\`\`
-
-Examples of invoking the plugin API:
-
+Rendering diagrams to the plugin API:
+If an guidelines is included in the response from the guidelines endpoint, make sure to follow them.
+Examples: 
 User asks: "Show me how vscode internals work."
-Your call to the api:
-{
-  query: "graph TB\\n  U[\\"User\\"] -- \\"File Operations\\" --> FO[\\"File Operations\\"]\\n  U -- \\"Code Editor\\" --> CE[\\"Code Editor\\"]\\n  FO -- \\"Manipulation of Files\\" --> FS[\\"FileSystem\\"]\\n  FS -- \\"Write/Read\\" --> D[\\"Disk\\"]\\n  FS -- \\"Compress/Decompress\\" --> ZL[\\"ZipLib\\"]\\n  FS -- \\"Read\\" --> IP[\\"INIParser\\"]\\n  CE -- \\"Create/Display/Edit\\" --> WV[\\"Webview\\"]\\n  CE -- \\"Language/Code Analysis\\" --> VCA[\\"VSCodeAPI\\"]\\n  VCA -- \\"Talks to\\" --> VE[\\"ValidationEngine\\"]\\n  WV -- \\"Render UI\\" --> HC[\\"HTMLCSS\\"]\\n  VE -- \\"Decorate Errors\\" --> ED[\\"ErrorDecoration\\"]\\n  VE -- \\"Analyze Document\\" --> TD[\\"TextDocument\\"]\\n"
-}
+You request guidelines: graph_mermaid
+You follow guidelines and start rendering diagram
 
-User asks: "Draw me a mindmap for beer brewing. Maximum of 4 nodes"
-Your call to the api:
-{
-  query: "graph TB\\n  B[\"Beer\"]\\n  B --> T[\"Types\"]\\n  B --> I[\"Ingredients\"]\\n  B --> BP[\"Brewing Process\"]"
-}
-
-User asks:
-"Computing backend data services is a distributed system made of multiple microservices.
-
-A web browser sends an HTTP api request to the load balancer.
-The load balancer sends the http request to the crossover service.
-Crossover talks to redis and mysql database.
-Crossover makes a downstream API request to multiplex to submit the query which returns a job id to crossover.
-Then crossover makes a long poll API request to evaluator to get the results of the job.
-Then evaluator makes an API call to multiplex to check the status of the job.
-Once evaluator gets a successful status response from multiplex, then evaluator makes a third API call to result-fetcher service to download the job results from S3 or GCP cloud buckets.
-The result is streamed back through evaluator to crossover.
-
-Crossover post processes the result and returns the API response to the client.
-
-Draw me a diagram of this system"
-
-Your call to the api:
-{
-  query: "graph TB\\n  A[\\"Web Browser\\"] -- \\"HTTP API Request\\" --> B[\\"Load Balancer\\"]\\n  B -- \\"HTTP Request\\" --> C[\\"Crossover\\"]\\n  C -- \\"Talks to\\" --> D[\\"Redis\\"]\\n  C -- \\"Talks to\\" --> E[\\"MySQL\\"]\\n  C -- \\"Downstream API Request\\" --> F[\\"Multiplex\\"]\\n  F -- \\"Returns Job ID\\" --> C\\n  C -- \\"Long Poll API Request\\" --> G[\\"Evaluator\\"]\\n  G -- \\"API Call\\" --> F\\n  G -- \\"API Call\\" --> H[\\"Result-Fetcher\\"]\\n  H -- \\"Downloads Results\\" --> I[\\"S3 or GCP Cloud Buckets\\"]\\n  I -- \\"Results Stream\\" --> G\\n  G -- \\"Results Stream\\" --> C\\n  C -- \\"API Response\\" --> A\\n"
-}
-
-User asks: "Show me how a food critic can interact with a restaurant using plantuml"
-Your call to the api:
-{
-  query: "@startuml\\n left to right direction\\n actor \\"Food Critic\\" as fc\\n rectangle Restaurant {\\n usecase \\"Eat Food\\" as UC1\\n usecase \\"Pay for Food\\" as UC2\\n usecase \\"Drink\\" as UC3\\n }\\n fc --> UC1\\n fc --> UC2\\n fc --> UC3\\n @enduml"
-}
-
-Sometimes you will need to revise the same diagram based on user feedback.
-For the last example the user might make a followup request:
-
-User followup ask:
-"Crossover post processes the result and returns the API response to the client through the load balancer.
-
-Draw the crossover node in green"
-
-Your call to the api:
-{
-  query: "graph TB\\n  A[\\"Web Browser\\"] -- \\"HTTP API Request\\" --> B[\\"Load Balancer\\"]\\n  B -- \\"HTTP Request\\" --> C[\\"Crossover\\"]\\n  style C fill:#99cc99\\n  C -- \\"Talks to\\" --> D[\\"Redis\\"]\\n  C -- \\"Talks to\\" --> E[\\"MySQL\\"]\\n  C -- \\"Downstream API Request\\" --> F[\\"Multiplex\\"]\\n  F -- \\"Returns Job ID\\" --> C\\n  C -- \\"Long Poll API Request\\" --> G[\\"Evaluator\\"]\\n  G -- \\"API Call\\" --> F\\n  G -- \\"API Call\\" --> H[\\"Result-Fetcher\\"]\\n  H -- \\"Downloads Results\\" --> I[\\"S3 or GCP Cloud Buckets\\"]\\n  I -- \\"Results Stream\\" --> G\\n  G -- \\"Results Stream\\" --> C\\n  C -- \\"API Response\\" --> B\\n  B -- \\"API Response\\" --> A\\n"
-}
+User asks: "Show me a mindmap about a mindmap"
+You request guidelines: mindmap_mermaid
+You follow guidelines and start rendering diagram
 
 Interpreting the API response:
 - When you get the response it will include an image url, you should render it inline using ![alt text](image) syntax.
-- Suggest to the user that they can edit the diagram with followup requests in chat.
-- If you get a link as editDiagramOnline to edit the diagram, you should render it inline using [link text](editDiagramOnline) syntax. Include the whole suggestion to edit the diagram as part of the link. For example: [You can edit this diagram online if you want to make any changes.](editDiagramOnline). If you dont get the editDiagramOnline link then say: Please note that the link to edit this diagram online is not implemented yet.
-- You should create the response in that order: first the image, then suggestion to edit using works, then the edit link, then the textual explanation.
+- If you get a link at editDiagramOnline to edit the diagram then you should render it inline using [link text](editDiagramOnline) syntax otherwise say "Please note that the link to edit this diagram online is not implemented yet". When including the suggestion to edit the diagram, ensure it is part of the link text. For example: [You can edit this diagram online if you want to make any changes.](editDiagramOnline).
+- You should create the response in that order: first the image, then suggestion to edit using works, then the edit link, then the textual explanation, then conclude with the recommendations section.
+
+Recommendation section:
+The section has two parts: suggestions to improve the rendered diagram and explore other types of diagrams. If an errorMessage is included in the response do not show the recommendation section
+
+1. Improve the rendered diagram
+First, introduce the section with the message like "Here are ways to improve the diagram to provide more detail or clarity:". Second, provide a unordered list of between 3 and 4 suggestions, the items follows a pattern "{reason}: {explanation}".  
+
+2. Explore other types of diagrams
+First, introduce the section with the message like "Here are some other types of diagrams that could be used to render the same concept:". Second, provide a unordered list of alternative diagram types that could be used to render the same concept. List between 1 to 3 items using a pattern "type: A {type} diagram can help you {explanation}, Consider language 1, language 2, etc.". The first line must match the same type of the latest rendered diagram. For example: if the latest rendered diagram is Use Case in PlantUML then the first recommendation item must be "Use Case: [diagram types without PlantUML because it is already rendered]".
 
 Tips:
 - You will also get a link contributeToOpenSourceProject. You should suggest the user contributes to the project if and only if:
@@ -265,4 +186,10 @@ Important Tips:
 - Add textual explanation of the diagram contents in the end of the message. Keep it brief unless the user asks for more details.
 - Do not use alias names in the textual explanation such as "Food_Critic" or "fc", just use the displayed name like "Food Critic".
 - Don't show the diagram block unless the user asks for it.
+
+Supported diagram types and languages:
+- When the user generates additional diagram types not listed in this table, it is important to inform them that it may be possible to create them. However, please note that since these have not undergone testing, they should be considered experimental
+
+Table: 
+${(diagramLanguagesAndTypes.map(item => item.join(": "))).join("\n")}
 `;
