@@ -61,8 +61,11 @@ router.original.get('/s/:id', ShortLinkRoute)
 router.original.get('/.well-known/ai-plugin.json', ManifestRoute);
 router.original.get('/logo.svg', (request: Request, env: Env) => {
   console.log('logo')
+  const ip = request.headers.get('Cf-Connecting-Ip')
 
-  sendMixpanelEvent(env.MIXPANEL_TOKEN, 'impression', undefined, {})
+  if (Math.random() < 0.01) {
+    sendMixpanelEvent(env.MIXPANEL_TOKEN, 'impression', ip, { ip })
+  };
 
   return new Response(logoSvg, {
     headers: {
