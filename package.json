@@ -14,7 +14,7 @@
     "dev": "npm run build && miniflare --wrangler-config wrangler.local.toml --kv SHORTEN --kv-persist --modules build/index.js",
     "_comment": "NOTE: Only use wrangler when deploying or testing in the cloud. Use miniflare for local development (npm run dev).",
     "dev:wrangler": "wrangler dev --env=local",
-    "deploy": "wrangler publish",
+    "deploy": "wrangler deploy",
     "build": "npx esbuild --bundle --target=esnext --format=esm --sourcemap --outdir=build src/index.ts"
   },
   "dependencies": {
