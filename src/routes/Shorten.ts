@@ -21,12 +21,29 @@ export async function ShortLinkRoute(request, env) {
   if (!slug) {
     return new Response('404 Not Found...', { status: 200 })
   }
-  const imageSVG = await env.SHORTEN.get(slug)
-  if (!imageSVG) {
+  const data = await env.SHORTEN.get(slug)
+  if (!data) {
     return new Response('404 Not Found...', { status: 200 })
   }
 
-  return new Response(imageSVG, {
+  // Here is the deal: There still is a bug where we started passing the SVG
+  // contents to the shorten function expecting to get a link to this blob but
+  // then we also passed the editor links expecting to get redirects.
+  // Previously we always stored a redirect location. Fortunately all the SVG
+  // blobs don't start with http so we can fix this route in a backwards
+  // compatible way. If we were using a new type wrapper so that only URLs
+  // could be passed to saveShortLink then this problem would have been avoided.
+  if (data.startsWith('http')) {
+    return new Response(null, {
+      status: 301,
+      statusText: 'Moved Permenantly',
+      headers: {
+        'Location': data,
+      }
+    });
+  }
+  // Assume that the all the non link data is SVG files
+  return new Response(data, {
     headers: {
       'content-type': 'image/svg+xml'
     }
