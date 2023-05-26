@@ -33,7 +33,25 @@ export class DiagramRoute extends OpenAPIRoute {
             diagramLanguages.map(language => [language, language])
           )
         })
-      )
+      ),
+      diagramType: Query(
+        new Str({
+          description: "Type of the diagram",
+          example: "graph",
+        }),
+        {
+          required: true,
+        }
+      ),
+      topic: Query(
+        new Str({
+          description: "Topic of the diagram",
+          example: "Software Architecture",
+        }),
+        {
+          required: true,
+        }
+      ),
     },
     responses: {
       "200": {
@@ -51,6 +69,7 @@ export class DiagramRoute extends OpenAPIRoute {
               editDiagramOnline: new Str({
                 description:
                   "URL to the editor where the diagram can be edited",
+                required: false,
               }),
               contributeToOpenSourceProject: new Str({
                 description: "GitHub URL to the open source project for this project",
@@ -70,7 +89,10 @@ export class DiagramRoute extends OpenAPIRoute {
     // Extract data from request
     const diagramLanguage = new URL(request.url).searchParams.get("diagramLanguage") as DiagramLanguage
     const diagramParam = new URL(request.url).searchParams.get("diagram");
+    const topic  = new URL(request.url).searchParams.get("topic");
+    const diagramType  = new URL(request.url).searchParams.get("diagramType");
     console.log('diagram', diagramParam)
+    console.log('topic', topic)
 
     const diagram = await diagramDetails(diagramParam, diagramLanguage)
 
@@ -102,40 +124,39 @@ export class DiagramRoute extends OpenAPIRoute {
       'diagram_language': diagramLanguage,
 
       // Mixpanel truncates all strings https://developer.mixpanel.com/reference/import-events#common-issues
-      'diagram_type': diagram.type,
+      'diagram_type': diagramType,
       'diagram': diagramParam.length > 255 ? diagramParam.substring(0, 200) + " -- truncated" : diagramParam,
+
+      'topic': topic,
     })
 
     const slug = await saveShortLink(env.SHORTEN, diagram.diagramSVG)
-    const shortenedURL = `${BASE_URL}/s/${slug}`
+    const diagramURL = `${BASE_URL}/d/${slug}`
 
     const editorSlug = diagram.editorLink ? await saveShortLink(env.SHORTEN, diagram.editorLink) : "";
-    const shortenedEditDiagramURL = diagram.editorLink ? `${BASE_URL}/s/${editorSlug}` : "unknown"
+    const shortenedEditDiagramURL = diagram.editorLink ? `${BASE_URL}/s/${editorSlug}` : null
 
-    console.log({ shortenedURL })
+    console.log({ diagramURL })
     console.log('diagram svg', diagram.diagramSVG)
 
     await track('render_complete', {
       'diagram_language': diagramLanguage,
       'diagram_syntax_is_valid': diagram.isValid,
 
-      'diagram_type': diagram.type,
-      'diagram_url': shortenedURL,
-      'edit_diagram_url': shortenedEditDiagramURL,
+      'diagram_type': diagramType,
+      'diagram_url': diagramURL,
+      'edit_diagram_url': shortenedEditDiagramURL ?? "not implemented yet",
+
+      'topic': topic,
     })
 
     const responseBody =
       {
-        results: diagram.isValid ? [
+        results:  [
           {
-            image: shortenedURL,
-            editDiagramOnline: shortenedEditDiagramURL,
-            contributeToOpenSourceProject: 'https://github.com/bra1nDump/show-me-chatgpt-plugin/issues'
-          }
-        ] : [
-          {
-            errorMessage: "GPT created an invalid diagram, you can try again or edit it online",
-            editDiagramOnline: shortenedEditDiagramURL,
+            ...diagram.isValid && { image: diagramURL },
+            ...!diagram.isValid && { errorMessage: "GPT created an invalid diagram, you can try again or edit it online" },
+            ...shortenedEditDiagramURL && { editDiagramOnline: shortenedEditDiagramURL },
             contributeToOpenSourceProject: 'https://github.com/bra1nDump/show-me-chatgpt-plugin/issues'
           }
         ]

@@ -6,7 +6,7 @@ import { createCors } from 'itty-cors'
 
 import pkg from '../package.json'
 import { DiagramRoute, RenderRoute } from './routes/Diagram'
-import { ShortLinkRoute, debugCreateLink } from './routes/Shorten'
+import { ShortLinkRoute, DiagramLinkRoute, debugCreateLink } from './routes/Shorten'
 import { logoSvg } from './logo'
 import { html as privacyPageHtml } from './privacy-page'
 
@@ -58,6 +58,7 @@ router.original.get('/legal', () =>
 )
 
 router.original.get('/s/:id', ShortLinkRoute)
+router.original.get('/d/:id', DiagramLinkRoute)
 router.original.get('/.well-known/ai-plugin.json', ManifestRoute);
 router.original.get('/logo.svg', (request: Request, env: Env) => {
   console.log('logo')
@@ -250,7 +251,7 @@ Your call to the api:
 Interpreting the API response:
 - When you get the response it will include an image url, you should render it inline using ![alt text](image) syntax.
 - Suggest to the user that they can edit the diagram with followup requests in chat.
-- You will also get a link as editDiagramOnline to edit the diagram, you should render it inline using [link text](editDiagramOnline) syntax. Include the whole suggestion to edit the diagram as part of the link. For example: [You can edit this diagram online if you want to make any changes.](editDiagramOnline). If the link value is unknown then say: Please note that the link to edit this diagram online is not implemented yet.
+- If you get a link as editDiagramOnline to edit the diagram, you should render it inline using [link text](editDiagramOnline) syntax. Include the whole suggestion to edit the diagram as part of the link. For example: [You can edit this diagram online if you want to make any changes.](editDiagramOnline). If you dont get the editDiagramOnline link then say: Please note that the link to edit this diagram online is not implemented yet.
 - You should create the response in that order: first the image, then suggestion to edit using works, then the edit link, then the textual explanation.
 
 Tips:
