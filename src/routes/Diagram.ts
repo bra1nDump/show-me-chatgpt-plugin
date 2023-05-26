@@ -15,13 +15,22 @@ export class DiagramRoute extends OpenAPIRoute {
     tags: ["Diagram"],
     summary: `Taking in a mermaid graph diagram, renders it and returns a link to the rendered image.`,
     parameters: {
+      mermaid: Query(
+        new Str({
+          description: "Mermaid to render (legacy parameter name, still okay to use it tho)",
+          // Not providing an example because it's a duplicate of the one below
+        }),
+        {
+          required: false,
+        }
+      ),
       diagram: Query(
         new Str({
           description: "Diagram to render",
           example: `graph TB\\n  U[\\"User\\"] -- \\"File Operations\\" --> FO[\\"File Operations\\"]\\n  U -- \\"Code Editor\\" --> CE[\\"Code Editor\\"]\\n  FO -- \\"Manipulation of Files\\" --> FS[\\"FileSystem\\"]\\n  FS -- \\"Write/Read\\" --> D[\\"Disk\\"]\\n  FS -- \\"Compress/Decompress\\" --> ZL[\\"ZipLib\\"]\\n  FS -- \\"Read\\" --> IP[\\"INIParser\\"]\\n  CE -- \\"Create/Display/Edit\\" --> WV[\\"Webview\\"]\\n  CE -- \\"Language/Code Analysis\\" --> VCA[\\"VSCodeAPI\\"]\\n  VCA -- \\"Talks to\\" --> VE[\\"ValidationEngine\\"]\\n  WV -- \\"Render UI\\" --> HC[\\"HTMLCSS\\"]\\n  VE -- \\"Decorate Errors\\" --> ED[\\"ErrorDecoration\\"]\\n  VE -- \\"Analyze Document\\" --> TD[\\"TextDocument\\"]\\n`,
         }),
         {
-          required: true,
+          required: false,
         }
       ),
       diagramLanguage: Query(
@@ -32,7 +41,10 @@ export class DiagramRoute extends OpenAPIRoute {
           values: Object.fromEntries(
             diagramLanguages.map(language => [language, language])
           )
-        })
+        }),
+        {
+          required: false,
+        }
       ),
       diagramType: Query(
         new Str({
@@ -40,16 +52,16 @@ export class DiagramRoute extends OpenAPIRoute {
           example: "graph",
         }),
         {
-          required: true,
+          required: false,
         }
       ),
       topic: Query(
         new Str({
           description: "Topic of the diagram",
-          example: "Software Architecture",
+          example: "Software",
         }),
         {
-          required: true,
+          required: false,
         }
       ),
     },
@@ -87,14 +99,19 @@ export class DiagramRoute extends OpenAPIRoute {
     const timeline = new Timeline();
 
     // Extract data from request
-    const diagramLanguage = new URL(request.url).searchParams.get("diagramLanguage") as DiagramLanguage
-    const diagramParam = new URL(request.url).searchParams.get("diagram");
-    const topic  = new URL(request.url).searchParams.get("topic");
-    const diagramType  = new URL(request.url).searchParams.get("diagramType");
+    const diagramLanguage = 
+      new URL(request.url).searchParams.get("diagramLanguage") as DiagramLanguage
+      ?? "mermaid"; // For older versions
+    const diagramParam = 
+      new URL(request.url).searchParams.get("diagram")
+      ?? new URL(request.url).searchParams.get("mermaid"); // For older versions
+
+    const topic  = new URL(request.url).searchParams.get("topic") ?? "none";
+    const diagramType  = new URL(request.url).searchParams.get("diagramType")
+      ?? diagramParam.split('\n')[0]
+      ?? "unknown";
     console.log('diagram', diagramParam)
     console.log('topic', topic)
-
-    const diagram = await diagramDetails(diagramParam, diagramLanguage)
 
     // Print headers
     const headers = Object.fromEntries(request.headers)
@@ -130,21 +147,31 @@ export class DiagramRoute extends OpenAPIRoute {
       'topic': topic,
     })
 
-    const slug = await saveShortLink(env.SHORTEN, diagram.diagramSVG)
-    const diagramURL = `${BASE_URL}/d/${slug}`
+    const diagram = await diagramDetails(diagramParam, diagramLanguage)
 
-    const editorSlug = diagram.editorLink ? await saveShortLink(env.SHORTEN, diagram.editorLink) : "";
-    const shortenedEditDiagramURL = diagram.editorLink ? `${BASE_URL}/s/${editorSlug}` : null
+    let shortenedDiagramURL: string | undefined;
+    if (diagram.isValid) {
+      const slug = await saveShortLink(env.SHORTEN, diagram.diagramSVG)
+      shortenedDiagramURL = `${BASE_URL}/d/${slug}`
+    }
 
-    console.log({ diagramURL })
+    let shortenedEditDiagramURL: string | undefined;
+    if (diagram.editorLink) {
+      // Still show the edit link if available, even if there was an 
+      const editorSlug = await saveShortLink(env.SHORTEN, diagram.editorLink);
+      shortenedEditDiagramURL = diagram.editorLink ? `${BASE_URL}/s/${editorSlug}` : null
+    }
+
+    console.log({ shortenedDiagramURL })
     console.log('diagram svg', diagram.diagramSVG)
 
     await track('render_complete', {
       'diagram_language': diagramLanguage,
       'diagram_syntax_is_valid': diagram.isValid,
+      'rendering_error': diagram.error,
 
       'diagram_type': diagramType,
-      'diagram_url': diagramURL,
+      'diagram_url': shortenedDiagramURL ?? "diagram is invalid",
       'edit_diagram_url': shortenedEditDiagramURL ?? "not implemented yet",
 
       'topic': topic,
@@ -154,13 +181,15 @@ export class DiagramRoute extends OpenAPIRoute {
       {
         results:  [
           {
-            ...diagram.isValid && { image: diagramURL },
+            ...shortenedDiagramURL && { image: shortenedDiagramURL },
             ...!diagram.isValid && { errorMessage: "GPT created an invalid diagram, you can try again or edit it online" },
             ...shortenedEditDiagramURL && { editDiagramOnline: shortenedEditDiagramURL },
             contributeToOpenSourceProject: 'https://github.com/bra1nDump/show-me-chatgpt-plugin/issues'
           }
         ]
       }
+
+    console.log('response', JSON.stringify(responseBody, null, 2))
 
     return new Response(
       JSON.stringify(responseBody),

@@ -6,6 +6,7 @@ const nanoid = customAlphabet(
   8
 )
 
+// TODO: Create 2 functions save svg and save short link, dont create slug outside
 export async function saveShortLink(
   store: KVNamespace,
   url: string
@@ -16,7 +17,26 @@ export async function saveShortLink(
   return slug
 }
 
+// Always has SVG stored in it
 export async function DiagramLinkRoute(request, env) {
+  const slug = request.params.id
+  if (!slug) {
+    return new Response('404 Not Found...', { status: 200 })
+  }
+  const data = await env.SHORTEN.get(slug)
+  if (!data) {
+    return new Response('404 Not Found...', { status: 200 })
+  }
+
+  return new Response(data, {
+    headers: {
+      'content-type': 'image/svg+xml'
+    }
+  })
+}
+
+// Stores redirect links (or SVGs, for legacy reasons)
+export async function ShortLinkRoute(request, env) {
   const slug = request.params.id
   if (!slug) {
     return new Response('404 Not Found...', { status: 200 })
@@ -42,29 +62,11 @@ export async function DiagramLinkRoute(request, env) {
       }
     });
   }
+
   // Assume that the all the non link data is SVG files
   return new Response(data, {
     headers: {
       'content-type': 'image/svg+xml'
-    }
-  })
-}
-
-export async function ShortLinkRoute(request, env) {
-  const slug = request.params.id
-  if (!slug) {
-    return new Response('404 Not Found...', { status: 200 })
-  }
-  const targetUrl = await env.SHORTEN.get(slug)
-  if (!targetUrl) {
-    return new Response('404 Not Found...', { status: 200 })
-  }
-
-  return new Response(null, {
-    status: 301,
-    statusText: 'Moved Permanently',
-    headers: {
-      Location: targetUrl
     }
   })
 }

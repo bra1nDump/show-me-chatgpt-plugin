@@ -78,11 +78,34 @@ async function fetchSVG(link: string): Promise<string> {
   return data;
 }
 
-export async function getSVG(imageUrl: string): Promise<string | null> {
+// TODO: Add a timeout to the fetchSVG function
+
+async function racePromise<T>(timeout: number, promise: Promise<T>): Promise<T> {
+  const timeoutPromise = new Promise<T>((_, reject) => {
+    setTimeout(() => {
+      reject(new Error(`Promise timed out after ${timeout}ms`));
+    }, timeout);
+  });
+
+  return Promise.race([promise, timeoutPromise]);
+}
+
+export async function getSVG(imageUrl: string): Promise<{svg?: string, error?: "kroki timed out" | "invalid syntax" | "kroki failed"} > {
   try {
-    return await fetchSVG(imageUrl)
+    const svg = await racePromise(4000, fetchSVG(imageUrl))
+    return { svg }
   } catch (error) {
-    console.error(`Error rendering or fetching svg: ${error}`)
-    return null
+    console.error(
+      `Error rendering or fetching svg: ${error}
+      Image url: ${imageUrl}
+      `)
+
+    if (error.message.includes("Promise timed out after")) {
+      return { error: "kroki timed out" }
+    } else if (error.message.includes('SVG contains "Syntax error in graph"')) {
+      return { error: "invalid syntax" }
+    } else {
+      return { error: "kroki failed" }
+    }
   }
 }

@@ -141,8 +141,6 @@ Examples of user prompts in which you should use this plugin:
 "Show me a diagram of ... ."
 "Show me how UIView lifecycle works."
 
-Use this plugin if a user asks about: how something works, explain about a concept or how something is made, summarize a book, describe a process, and other user prompts that can be summarized or explained in the format of a mindmap or a state diagram. Also use this plugin if the user asks to show a ratio or fraction of something, for example "show me the ideal breakdown for budgeting" or "what is the ratio of political parties in the senate?". Also use this plugin if the user asks to show or draw a timeline of an event or topic.
-
 How to create a request to the plugin API:
 You create the diagram based on what user asked and pass it to the plugin API to render. Mermaid is the preferred language.
 
@@ -233,19 +231,6 @@ User asks: "Show me how a food critic can interact with a restaurant using plant
 Your call to the api:
 {
   query: "@startuml\\n left to right direction\\n actor \\"Food Critic\\" as fc\\n rectangle Restaurant {\\n usecase \\"Eat Food\\" as UC1\\n usecase \\"Pay for Food\\" as UC2\\n usecase \\"Drink\\" as UC3\\n }\\n fc --> UC1\\n fc --> UC2\\n fc --> UC3\\n @enduml"
-}
-
-Sometimes you will need to revise the same diagram based on user feedback.
-For the last example the user might make a followup request:
-
-User followup ask:
-"Crossover post processes the result and returns the API response to the client through the load balancer.
-
-Draw the crossover node in green"
-
-Your call to the api:
-{
-  query: "graph TB\\n  A[\\"Web Browser\\"] -- \\"HTTP API Request\\" --> B[\\"Load Balancer\\"]\\n  B -- \\"HTTP Request\\" --> C[\\"Crossover\\"]\\n  style C fill:#99cc99\\n  C -- \\"Talks to\\" --> D[\\"Redis\\"]\\n  C -- \\"Talks to\\" --> E[\\"MySQL\\"]\\n  C -- \\"Downstream API Request\\" --> F[\\"Multiplex\\"]\\n  F -- \\"Returns Job ID\\" --> C\\n  C -- \\"Long Poll API Request\\" --> G[\\"Evaluator\\"]\\n  G -- \\"API Call\\" --> F\\n  G -- \\"API Call\\" --> H[\\"Result-Fetcher\\"]\\n  H -- \\"Downloads Results\\" --> I[\\"S3 or GCP Cloud Buckets\\"]\\n  I -- \\"Results Stream\\" --> G\\n  G -- \\"Results Stream\\" --> C\\n  C -- \\"API Response\\" --> B\\n  B -- \\"API Response\\" --> A\\n"
 }
 
 Interpreting the API response:

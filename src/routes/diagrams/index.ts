@@ -5,7 +5,8 @@ import { plantumlEditorLink } from "./plantuml";
 type DiagramDetails = {
   editorLink: string,
   isValid: boolean,
-  diagramSVG: string,
+  diagramSVG?: string,
+  error?: "kroki timed out" | "invalid syntax" | "kroki failed",
 };
 
 export async function diagramDetails(diagram: string, diagramLanguage: DiagramLanguage): Promise<DiagramDetails> {
@@ -40,12 +41,30 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
     '/svg/' +
     compressAndEncodeBase64(formattedDiagram)
 
-  const diagramSVG = await getSVG(imageUrl);
+  const rednerResult = await getSVG(imageUrl);
 
-  return {
-    editorLink: diagramFunctions.editorLink?.(formattedDiagram) ?? "",
-    isValid: Boolean(diagramSVG),
-    diagramSVG
+  // We always include an editor link, as most likely the issue with with rendering
+  // The user will still see the diagram in the editor
+  
+  if (rednerResult.error && rednerResult.error === "invalid syntax") {
+    return {
+      editorLink: diagramFunctions.editorLink?.(formattedDiagram) ?? "",
+      isValid: false,
+      error: rednerResult.error,
+    }
+  } else if (rednerResult.error) {
+    return {
+      editorLink: diagramFunctions.editorLink?.(formattedDiagram) ?? "",
+      isValid: false,
+      error: rednerResult.error,
+    }
+  } else if (rednerResult.svg) {
+    return {
+      editorLink: diagramFunctions.editorLink?.(formattedDiagram) ?? "",
+      isValid: true,
+      diagramSVG: rednerResult.svg,
+    }
   }
+  
 }
 
