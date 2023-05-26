@@ -15,9 +15,13 @@ export class DiagramRoute extends OpenAPIRoute {
     tags: ["Diagram"],
     summary: `Taking in a mermaid graph diagram, renders it and returns a link to the rendered image.`,
     parameters: {
+      // TODO: Pass manifest version as a parameter so its easier to debug old / new clients
+      // not sure if its even possible.
+
+      // It still prefers the old name even if new manifest is fetched
       mermaid: Query(
         new Str({
-          description: "Mermaid to render (legacy parameter name, still okay to use it tho)",
+          description: "Mermaid to render (legacy parameter name, use diagram instead)",
           // Not providing an example because it's a duplicate of the one below
         }),
         {
