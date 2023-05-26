@@ -181,12 +181,24 @@ export class DiagramRoute extends OpenAPIRoute {
       'topic': topic,
     })
 
+    let errorMessage: string | undefined;
+    switch (diagram.error) {
+      case 'invalid syntax':
+        errorMessage = "GPT created an invalid diagram, you can try again or fix it by hand by editing it online"
+        break;
+      case 'kroki timed out':
+      case 'kroki failed':
+        errorMessage = "We are experiencing a high load of requests for rendering the diagram, you can still view and edit it online. We are working on a fix."
+        break;
+    }
+
+    // TODO: Type this reponse to avoid breaking in the future
     const responseBody =
       {
         results:  [
           {
             ...shortenedDiagramURL && { image: shortenedDiagramURL },
-            ...!diagram.isValid && { errorMessage: "GPT created an invalid diagram, you can try again or edit it online" },
+            ...errorMessage && { errorMessage: errorMessage },
             ...shortenedEditDiagramURL && { editDiagramOnline: shortenedEditDiagramURL },
             contributeToOpenSourceProject: 'https://github.com/bra1nDump/show-me-chatgpt-plugin/issues'
           }
