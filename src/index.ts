@@ -5,7 +5,7 @@ import { isValidChatGPTIPAddress } from 'chatgpt-plugin'
 import { createCors } from 'itty-cors'
 
 import pkg from '../package.json'
-import { DiagramRoute, RenderRoute } from './routes/Diagram'
+import { MermaidRoute, RenderRoute } from './routes/Diagram'
 import { ShortLinkRoute, DiagramLinkRoute, debugCreateLink } from './routes/Shorten'
 import { logoSvg } from './logo'
 import { html as privacyPageHtml } from './privacy-page'
@@ -33,7 +33,7 @@ const { preflight, corsify } = createCors({ origins: ['*'] })
 router.all('*', preflight)
 
 // 2. Expose magic openapi.json, expose API itself
-router.get('/render', DiagramRoute)
+router.get('/render', MermaidRoute)
 
 // Privacy policy
 router.original.get('/', () => 

@@ -9,7 +9,7 @@ import { DiagramLanguage, diagramLanguages } from "./diagrams/utils";
 
 // TODO: Add graphvis editor https://www.devtoolsdaily.com/graphviz/?#%7B%22dot%22%3A%22digraph%20MessageArchitecture%20%7B%5Cn%20%20messageClient%5Cn%20%20messageQueue%5Bshape%3Drarrow%5D%5Cn%7D%22%7D
 
-export class DiagramRoute extends OpenAPIRoute {
+export class MermaidRoute extends OpenAPIRoute {
   /// 2. Creates /openapi.json route under the hood. Injects this into gpt prompt to teach about how to use the plugin.
   static schema = {
     tags: ["Diagram"],
