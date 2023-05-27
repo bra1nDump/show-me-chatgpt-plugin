@@ -6,6 +6,7 @@ const nanoid = customAlphabet(
   8
 )
 
+// TODO: Create 2 functions save svg and save short link, dont create slug outside
 export async function saveShortLink(
   store: KVNamespace,
   url: string
@@ -16,38 +17,56 @@ export async function saveShortLink(
   return slug
 }
 
+// Always has SVG stored in it
 export async function DiagramLinkRoute(request, env) {
   const slug = request.params.id
   if (!slug) {
     return new Response('404 Not Found...', { status: 200 })
   }
-  const imageSVG = await env.SHORTEN.get(slug)
-  if (!imageSVG) {
+  const data = await env.SHORTEN.get(slug)
+  if (!data) {
     return new Response('404 Not Found...', { status: 200 })
   }
 
-  return new Response(imageSVG, {
+  return new Response(data, {
     headers: {
       'content-type': 'image/svg+xml'
     }
   })
 }
 
+// Stores redirect links (or SVGs, for legacy reasons)
 export async function ShortLinkRoute(request, env) {
   const slug = request.params.id
   if (!slug) {
     return new Response('404 Not Found...', { status: 200 })
   }
-  const targetUrl = await env.SHORTEN.get(slug)
-  if (!targetUrl) {
+  const data = await env.SHORTEN.get(slug)
+  if (!data) {
     return new Response('404 Not Found...', { status: 200 })
   }
 
-  return new Response(null, {
-    status: 301,
-    statusText: 'Moved Permanently',
+  // Here is the deal: There still is a bug where we started passing the SVG
+  // contents to the shorten function expecting to get a link to this blob but
+  // then we also passed the editor links expecting to get redirects.
+  // Previously we always stored a redirect location. Fortunately all the SVG
+  // blobs don't start with http so we can fix this route in a backwards
+  // compatible way. If we were using a new type wrapper so that only URLs
+  // could be passed to saveShortLink then this problem would have been avoided.
+  if (data.startsWith('http')) {
+    return new Response(null, {
+      status: 301,
+      statusText: 'Moved Permenantly',
+      headers: {
+        'Location': data,
+      }
+    });
+  }
+
+  // Assume that the all the non link data is SVG files
+  return new Response(data, {
     headers: {
-      Location: targetUrl
+      'content-type': 'image/svg+xml'
     }
   })
 }

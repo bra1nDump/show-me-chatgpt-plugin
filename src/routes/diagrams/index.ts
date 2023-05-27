@@ -1,11 +1,12 @@
-import { compressAndEncodeBase64, DiagramLanguage, DiagramType, getSVG } from "./utils";
+import { compressAndEncodeBase64, DiagramLanguage, DiagramType, getSVG, HACK_postMermaidDiagram, RenderResult } from "./utils";
 import { mermaidEditorLink, mermaidFormat } from "./mermaid";
 import { plantumlEditorLink } from "./plantuml";
 
 type DiagramDetails = {
   editorLink: string,
   isValid: boolean,
-  diagramSVG: string | null,
+  diagramSVG?: string | null,
+  error?: "kroki timed out" | "invalid syntax" | "kroki failed",
 };
 
 export async function diagramDetails(diagram: string, diagramLanguage: DiagramLanguage, diagramType: DiagramType): Promise<DiagramDetails> {
@@ -34,20 +35,44 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
 
   const formattedDiagram = diagramFunctions.format?.(diagram, diagramType) ?? diagram;
 
-  const imageUrl =
+  let rednerResult: RenderResult
+  if (diagramLanguage === "mermaid") {
+    console.log("HACK: bypassing kroki.io for mermaid diagrams, going directly to kroki-mermaid.fly.dev")
+    rednerResult = await HACK_postMermaidDiagram(formattedDiagram)
+  } else {
+    const imageUrl =
     'https://kroki.io/' +
     diagramLanguage +
     '/svg/' +
     compressAndEncodeBase64(formattedDiagram)
 
+    rednerResult = await getSVG(imageUrl);
+  }
   console.log("imageUrl", imageUrl);
 
   const diagramSVG = await getSVG(imageUrl);
 
-  return {
-    editorLink: diagramFunctions.editorLink?.(formattedDiagram) ?? "",
-    isValid: Boolean(diagramSVG),
-    diagramSVG
-  }
-}
+  // We always include an editor link, as most likely the issue with with rendering
+  // The user will still see the diagram in the editor
 
+  if (rednerResult.error && rednerResult.error === "invalid syntax") {
+    return {
+      editorLink: diagramFunctions.editorLink?.(formattedDiagram) ?? "",
+      isValid: false,
+      error: rednerResult.error,
+    }
+  } else if (rednerResult.error) {
+    return {
+      editorLink: diagramFunctions.editorLink?.(formattedDiagram) ?? "",
+      isValid: false,
+      error: rednerResult.error,
+    }
+  } else if (rednerResult.svg) {
+    return {
+      editorLink: diagramFunctions.editorLink?.(formattedDiagram) ?? "",
+      isValid: true,
+      diagramSVG: rednerResult.svg,
+    }
+  }
+
+}

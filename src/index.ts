@@ -5,7 +5,7 @@ import { isValidChatGPTIPAddress } from 'chatgpt-plugin'
 import { createCors } from 'itty-cors'
 
 import pkg from '../package.json'
-import { DiagramRoute, RenderRoute } from './routes/Diagram'
+import { MermaidRoute, RenderRoute } from './routes/Diagram'
 import { GuidelinesRoute } from "./routes/Guidelines";
 import { ShortLinkRoute, DiagramLinkRoute, debugCreateLink } from './routes/Shorten'
 import { logoSvg } from './logo'
@@ -35,28 +35,28 @@ const { preflight, corsify } = createCors({ origins: ['*'] })
 router.all('*', preflight)
 
 // 2. Expose magic openapi.json, expose API itself
-router.get('/render', DiagramRoute)
+router.get('/render', MermaidRoute)
 
 router.get('/get-guidelines', GuidelinesRoute)
 
 // Privacy policy
-router.original.get('/', () => 
+router.original.get('/', () =>
   new Response(
-    privacyPageHtml, 
-    { headers: { 
-      'content-type': 'text/html', 
+    privacyPageHtml,
+    { headers: {
+      'content-type': 'text/html',
       'access-control-allow-origin': '*',
-      'access-control-allow-methods': 'GET', 
+      'access-control-allow-methods': 'GET',
     }
   })
 )
-router.original.get('/legal', () => 
+router.original.get('/legal', () =>
   new Response(
-    privacyPageHtml, 
-    { headers: { 
-      'content-type': 'text/html', 
+    privacyPageHtml,
+    { headers: {
+      'content-type': 'text/html',
       'access-control-allow-origin': '*',
-      'access-control-allow-methods': 'GET', 
+      'access-control-allow-methods': 'GET',
     }
   })
 )
@@ -66,8 +66,11 @@ router.original.get('/d/:id', DiagramLinkRoute)
 router.original.get('/.well-known/ai-plugin.json', ManifestRoute);
 router.original.get('/logo.svg', (request: Request, env: Env) => {
   console.log('logo')
+  const ip = request.headers.get('Cf-Connecting-Ip')
 
-  sendMixpanelEvent(env.MIXPANEL_TOKEN, 'impression', undefined, {})
+  if (Math.random() < 0.01) {
+    sendMixpanelEvent(env.MIXPANEL_TOKEN, 'impression', ip, { ip })
+  };
 
   return new Response(logoSvg, {
     headers: {

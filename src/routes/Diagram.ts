@@ -2,7 +2,6 @@ import { Enumeration, OpenAPIRoute, Query, Str } from '@cloudflare/itty-router-o
 
 import { saveShortLink } from './Shorten'
 
-import { sendMixpanelEvent } from '../mixpanel'
 import { Env } from '..';
 import { diagramDetails } from "./diagrams";
 import { DiagramLanguage, diagramLanguages, DiagramType, diagramTypes } from "./diagrams/utils";
@@ -10,12 +9,25 @@ import { getTrack } from "./utils";
 
 // TODO: Add graphvis editor https://www.devtoolsdaily.com/graphviz/?#%7B%22dot%22%3A%22digraph%20MessageArchitecture%20%7B%5Cn%20%20messageClient%5Cn%20%20messageQueue%5Bshape%3Drarrow%5D%5Cn%7D%22%7D
 
-export class DiagramRoute extends OpenAPIRoute {
+export class MermaidRoute extends OpenAPIRoute {
   /// 2. Creates /openapi.json route under the hood. Injects this into gpt prompt to teach about how to use the plugin.
   static schema = {
     tags: ["Diagram"],
     summary: `Taking a diagram, renders it and returns a link to the rendered image.`,
     parameters: {
+      // TODO: Pass manifest version as a parameter so its easier to debug old / new clients
+      // not sure if its even possible.
+
+      // It still prefers the old name even if new manifest is fetched
+      mermaid: Query(
+        new Str({
+          description: "Mermaid to render (legacy parameter name, use diagram instead)",
+          // Not providing an example because it's a duplicate of the one below
+        }),
+        {
+          required: false,
+        }
+      ),
       diagram: Query(
         new Str({
           description: "Diagram to render",
@@ -32,12 +44,14 @@ export class DiagramRoute extends OpenAPIRoute {
           values: Object.fromEntries(
             diagramLanguages.map(language => [language, language])
           )
-        })
+        }),
+        {
+          required: false,
+        }
       ),
       diagramType: Query(
         new Enumeration({
           description: "Type of the diagram",
-          required: true,
           values: Object.fromEntries(
             diagramTypes.map(language => [language, language])
           )
@@ -49,10 +63,10 @@ export class DiagramRoute extends OpenAPIRoute {
       topic: Query(
         new Str({
           description: "Topic of the diagram",
-          example: "Software Architecture",
+          example: "Software",
         }),
         {
-          required: true,
+          required: false,
         }
       ),
     },
@@ -90,10 +104,17 @@ export class DiagramRoute extends OpenAPIRoute {
     const timeline = new Timeline();
 
     // Extract data from request
-    const diagramLanguage = new URL(request.url).searchParams.get("diagramLanguage") as DiagramLanguage
-    const diagramParam = new URL(request.url).searchParams.get("diagram") as string;
-    const topic  = new URL(request.url).searchParams.get("topic") as string;
-    const diagramType  = new URL(request.url).searchParams.get("diagramType") as DiagramType;
+    const diagramLanguage =
+      new URL(request.url).searchParams.get("diagramLanguage") as DiagramLanguage
+      ?? "mermaid"; // For older versions
+    const diagramParam =
+      new URL(request.url).searchParams.get("diagram")
+      ?? new URL(request.url).searchParams.get("mermaid") as string; // For older versions
+
+    const topic  = new URL(request.url).searchParams.get("topic") ?? "none";
+    const diagramType  = new URL(request.url).searchParams.get("diagramType") as DiagramType
+      ?? "unknown";
+
     console.log('diagram', diagramParam)
     console.log('topic', topic)
 
@@ -114,37 +135,59 @@ export class DiagramRoute extends OpenAPIRoute {
       'topic': topic,
     })
 
-    const slug = diagram.diagramSVG? await saveShortLink(env.SHORTEN, diagram.diagramSVG): null
-    const diagramURL = `${BASE_URL}/d/${slug}`
+    let shortenedDiagramURL: string | undefined;
+    if (diagram.isValid) {
+      const slug = await saveShortLink(env.SHORTEN, diagram.diagramSVG as string)
+      shortenedDiagramURL = `${BASE_URL}/d/${slug}`
+    }
 
-    const editorSlug = diagram.editorLink ? await saveShortLink(env.SHORTEN, diagram.editorLink) : "";
-    const shortenedEditDiagramURL = diagram.editorLink ? `${BASE_URL}/s/${editorSlug}` : null
+    let shortenedEditDiagramURL: string | undefined;
+    if (diagram.editorLink) {
+      // Still show the edit link if available, even if there was an
+      const editorSlug = await saveShortLink(env.SHORTEN, diagram.editorLink);
+      shortenedEditDiagramURL = diagram.editorLink ? `${BASE_URL}/s/${editorSlug}` : undefined
+    }
 
-    console.log({ diagramURL })
-    console.log('diagram svg', diagram.diagramSVG)
+    console.log({ shortenedDiagramURL })
+    console.log('diagram svg (truncated)', diagram.diagramSVG?.slice(0, 300))
 
     await track('render_complete', {
       'diagram_language': diagramLanguage,
       'diagram_syntax_is_valid': diagram.isValid,
+      'rendering_error': diagram.error,
 
       'diagram_type': diagramType,
-      'diagram_url': diagramURL,
+      'diagram_url': shortenedDiagramURL ?? "diagram is invalid",
       'edit_diagram_url': shortenedEditDiagramURL ?? "not implemented yet",
 
       'topic': topic,
     })
 
+    let errorMessage: string | undefined;
+    switch (diagram.error) {
+      case 'invalid syntax':
+        errorMessage = "GPT created an invalid diagram, you can try again or fix it by hand by editing it online"
+        break;
+      case 'kroki timed out':
+      case 'kroki failed':
+        errorMessage = "We are experiencing a high load of requests for rendering the diagram, you can still view and edit it online. We are working on a fix."
+        break;
+    }
+
+    // TODO: Type this reponse to avoid breaking in the future
     const responseBody =
       {
         results:  [
           {
-            ...diagram.isValid && { image: diagramURL },
-            ...!diagram.isValid && { errorMessage: "GPT created an invalid diagram, you can try again or edit it online" },
+            ...shortenedDiagramURL && { image: shortenedDiagramURL },
+            ...errorMessage && { errorMessage: errorMessage },
             ...shortenedEditDiagramURL && { editDiagramOnline: shortenedEditDiagramURL },
             contributeToOpenSourceProject: 'https://github.com/bra1nDump/show-me-chatgpt-plugin/issues'
           }
         ]
       }
+
+    console.log('response', JSON.stringify(responseBody, null, 2))
 
     return new Response(
       JSON.stringify(responseBody),

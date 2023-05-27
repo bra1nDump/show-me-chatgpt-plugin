@@ -1,0 +1,17 @@
+# fly.toml app configuration file generated for billowing-cherry-3012 on 2023-05-26T21:53:32-07:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "kroki-wireviz"
+primary_region = "lax"
+
+[build]
+  image = "yuzutech/kroki-wireviz"
+
+[http_service]
+  internal_port = 8006
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0

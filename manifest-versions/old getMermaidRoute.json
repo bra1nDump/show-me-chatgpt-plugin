@@ -1,0 +1,76 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "Show Me",
+        "version": "0.1"
+    },
+    "paths": {
+        "/render": {
+            "get": {
+                "operationId": "get_MermaidRoute",
+                "tags": [
+                    "Diagram",
+                    "Mermaid"
+                ],
+                "summary": "Taking in a mermaid graph diagram, renders it and returns a link to the rendered image.",
+                "parameters": [
+                    {
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "description": "Diagram to render",
+                            "example": "graph TB\\n  U[\\\"User\\\"] -- \\\"File Operations\\\" --> FO[\\\"File Operations\\\"]\\n  U -- \\\"Code Editor\\\" --> CE[\\\"Code Editor\\\"]\\n  FO -- \\\"Manipulation of Files\\\" --> FS[\\\"FileSystem\\\"]\\n  FS -- \\\"Write/Read\\\" --> D[\\\"Disk\\\"]\\n  FS -- \\\"Compress/Decompress\\\" --> ZL[\\\"ZipLib\\\"]\\n  FS -- \\\"Read\\\" --> IP[\\\"INIParser\\\"]\\n  CE -- \\\"Create/Display/Edit\\\" --> WV[\\\"Webview\\\"]\\n  CE -- \\\"Language/Code Analysis\\\" --> VCA[\\\"VSCodeAPI\\\"]\\n  VCA -- \\\"Talks to\\\" --> VE[\\\"ValidationEngine\\\"]\\n  WV -- \\\"Render UI\\\" --> HC[\\\"HTMLCSS\\\"]\\n  VE -- \\\"Decorate Errors\\\" --> ED[\\\"ErrorDecoration\\\"]\\n  VE -- \\\"Analyze Document\\\" --> TD[\\\"TextDocument\\\"]\\n"
+                        },
+                        "name": "mermaid",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "results": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "image": {
+                                                        "type": "string",
+                                                        "description": "URL to the rendered image"
+                                                    },
+                                                    "errorMessage": {
+                                                        "type": "string",
+                                                        "description": "Error message if there was an error"
+                                                    },
+                                                    "editDiagramOnline": {
+                                                        "type": "string",
+                                                        "description": "URL to the editor where the diagram can be edited"
+                                                    },
+                                                    "contributeToOpenSourceProject": {
+                                                        "type": "string",
+                                                        "description": "GitHub URL to the open source project for this project"
+                                                    }
+                                                },
+                                                "required": [
+                                                    "editDiagramOnline",
+                                                    "contributeToOpenSourceProject"
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "results"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -131,11 +131,84 @@ async function fetchSVG(link: string): Promise<string> {
   return data;
 }
 
-export async function getSVG(imageUrl: string): Promise<string | null> {
+// TODO: Add a timeout to the fetchSVG function
+
+async function racePromise<T>(timeout: number, promise: Promise<T>): Promise<T> {
+  const timeoutPromise = new Promise<T>((_, reject) => {
+    setTimeout(() => {
+      reject(new Error(`Promise timed out after ${timeout}ms`));
+    }, timeout);
+  });
+
+  return Promise.race([promise, timeoutPromise]);
+}
+
+export interface RenderResult {
+  svg?: string, 
+  error?: "kroki timed out" | "invalid syntax" | "kroki failed"
+}
+
+export async function getSVG(imageUrl: string): Promise<RenderResult> {
   try {
-    return await fetchSVG(imageUrl)
+    const svg = await racePromise(4000, fetchSVG(imageUrl))
+
+    console.error(
+      `Rendered successfully
+      Image url: ${imageUrl}
+      `)
+
+    return { svg }
   } catch (error) {
-    console.error(`Error rendering or fetching svg: ${error}`)
-    return null
+    console.error(
+      `Error rendering or fetching svg: ${error}
+      Image url: ${imageUrl}
+      `)
+
+    if (error.message.includes("Promise timed out after")) {
+      return { error: "kroki timed out" }
+    } else if (error.message.includes('SVG contains "Syntax error in graph"')) {
+      return { error: "invalid syntax" }
+    } else {
+      return { error: "kroki failed" }
+    }
+  }
+}
+
+// Write a similar function for making a post to https://kroki-mermaid.fly.dev/svg
+// with the contents of the mermaid diagram as the body in plain text
+// HACK
+// https://github.com/bra1nDump/show-me-chatgpt-plugin/issues/26
+export async function HACK_postMermaidDiagram(diagram: string): Promise<{svg?: string, error?: "kroki timed out" | "invalid syntax" | "kroki failed"}> {
+  try {
+    const response = await racePromise(4000, fetch('https://kroki-mermaid.fly.dev/svg', {
+      method: 'POST',
+      body: diagram,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    }));
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.text();
+
+    if (data.includes("Syntax error in graph")) {
+      return { error: "invalid syntax" };
+    }
+
+    return { svg: data };
+  } catch (error) {
+    console.error(
+      `Error rendering or fetching svg: ${error}
+      Mermaid diagram: ${diagram}
+      `);
+
+    if (error.message.includes("Promise timed out after")) {
+      return { error: "kroki timed out" };
+    } else {
+      return { error: "kroki failed" };
+    }
   }
 }
