@@ -112,10 +112,10 @@ Your call to the api:
 Description: You can group time periods in sections/ages. This is done by adding a line with the keyword section followed by the section name. All subsequent time periods will be placed in this section until a new section is defined. If no section is defined, all time periods will be placed in the default section.
     `,
     "mindmap": `
-Different shapes
-Mermaid mindmaps can show nodes using different shapes. When specifying a shape for a node the syntax is similar to flowchart nodes, with an id followed by the shape definition and with the text within the shape delimiters. Where possible try to keep the same shapes as for flowcharts, even though they are not all supported from the start.
+Rules when using mindmap diagrams in mermaid syntax:
+- Mermaid mindmaps can show nodes using different shapes. When specifying a shape for a node the syntax is similar to flowchart nodes, with an id followed by the shape definition and with the text within the shape delimiters. Where possible try to keep the same shapes as for flowcharts, even though they are not all supported from the start.
 
-Mindmap can show the following shapes:
+- Mindmap can show the following shapes:
 \`\`\`
 mindmap
     id[I am a square]
@@ -127,8 +127,7 @@ mindmap
     I am the default shape
 \`\`\` 
 
-Markdown Strings
-The "Markdown Strings" feature enhances mind maps by offering a more versatile string type, which supports text formatting options such as bold and italics, and automatically wraps text within labels.
+- The "Markdown Strings" feature enhances mind maps by offering a more versatile string type, which supports text formatting options such as bold and italics, and automatically wraps text within labels.
 \`\`\`
 mindmap
     id1["\`**Root** with
@@ -137,12 +136,8 @@ Unicode works too: 🤓\`"]
       id2["\`The dog in **the** hog... a *very long text* that wraps to a new line\`"]
       id3[Regular labels still works]
 \`\`\` 
-Formatting:
-For bold text, use double asterisks ** before and after the text.
-For italics, use single asterisks * before and after the text.
-With traditional strings, you needed to add
-tags for text to wrap in nodes. However, markdown strings automatically wrap text when it becomes too long and allows you to start a new line by simply using a newline character instead of a
-tag.
+
+- Formatting: For bold text, use double asterisks ** before and after the text. For italics, use single asterisks * before and after the text. With traditional strings, you needed to add tags for text to wrap in nodes. However, markdown strings automatically wrap text when it becomes too long and allows you to start a new line by simply using a newline character instead of a tag.
  
 Examples:
 User asks: "Show me a mindmap about a mindmap"

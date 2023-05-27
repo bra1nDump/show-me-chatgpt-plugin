@@ -11,8 +11,8 @@ import { ShortLinkRoute, DiagramLinkRoute, debugCreateLink } from './routes/Shor
 import { logoSvg } from './logo'
 import { html as privacyPageHtml } from './privacy-page'
 
-import { sendMixpanelEvent }  from './mixpanel'
-import { diagramLanguagesAndTypes } from "./routes/diagrams/utils";
+import { sendMixpanelEvent } from './mixpanel'
+import { supportedDiagramLanguagesAndTypes } from "./routes/diagrams/utils";
 
 export interface Env {
   SHORTEN: KVNamespace
@@ -43,22 +43,24 @@ router.get('/get-guidelines', GuidelinesRoute)
 router.original.get('/', () =>
   new Response(
     privacyPageHtml,
-    { headers: {
-      'content-type': 'text/html',
-      'access-control-allow-origin': '*',
-      'access-control-allow-methods': 'GET',
-    }
-  })
+    {
+      headers: {
+        'content-type': 'text/html',
+        'access-control-allow-origin': '*',
+        'access-control-allow-methods': 'GET',
+      }
+    })
 )
 router.original.get('/legal', () =>
   new Response(
     privacyPageHtml,
-    { headers: {
-      'content-type': 'text/html',
-      'access-control-allow-origin': '*',
-      'access-control-allow-methods': 'GET',
-    }
-  })
+    {
+      headers: {
+        'content-type': 'text/html',
+        'access-control-allow-origin': '*',
+        'access-control-allow-methods': 'GET',
+      }
+    })
 )
 
 router.original.get('/s/:id', ShortLinkRoute)
@@ -70,7 +72,8 @@ router.original.get('/logo.svg', (request: Request, env: Env) => {
 
   if (Math.random() < 0.01) {
     void sendMixpanelEvent(env.MIXPANEL_TOKEN, 'impression', ip, { ip })
-  };
+  }
+  ;
 
   return new Response(logoSvg, {
     headers: {
@@ -162,18 +165,19 @@ You request guidelines: mindmap_mermaid
 You follow guidelines and start rendering diagram
 
 Interpreting the API response:
-- When you get the response it will include an image url, you should render it inline using ![alt text](image) syntax.
-- If you get a link at editDiagramOnline to edit the diagram then you should render it inline using [link text](editDiagramOnline) syntax otherwise say "Please note that the link to edit this diagram online is not implemented yet". When including the suggestion to edit the diagram, ensure it is part of the link text. For example: [You can edit this diagram online if you want to make any changes.](editDiagramOnline).
-- You should create the response in that order: first the image, then suggestion to edit using works, then the edit link, then the textual explanation, then conclude with the recommendations section.
+- When you get the response it will include an image url, you should render it inline using ![alt text](image) syntax, also you should give the user a link to open it in a new tab saying: [You can view this diagram in a new tab.](editDiagramOnline)
+- If you get a link at editDiagramOnline to edit the diagram then you should render it inline using [link text](editDiagramOnline) syntax otherwise say "The link to edit this diagram online is not implemented yet". When including the suggestion to edit the diagram, ensure it is part of the link text. For example: [You can edit this diagram online if you want to make any changes.](editDiagramOnline).
+- You should give the user a link to open the diagram type documentation from the "List of supported diagram languages and diagram types", say: [You can access the diagram documentation to unveil the capabilities of the <<diagram-language>> <<diagram-type>>.](documentationLink).
+- You should create the response in that order: first the image, then suggestion to edit using works, then the open new tab link, then the edit link, then the documentation link, then the textual explanation, then conclude with the recommendations section.
 
 Recommendation section:
 The section has two parts: suggestions to improve the rendered diagram and explore other types of diagrams. If an errorMessage is included in the response do not show the recommendation section
 
 1. Improve the rendered diagram
-First, introduce the section with the message like "Here are ways to improve the diagram to provide more detail or clarity:". Second, provide a unordered list of between 3 and 4 suggestions, the items follows a pattern "{reason}: {explanation}".  
+First, introduce the section with the message like "### Here are ways to improve the diagram to provide more detail or clarity:". Second, provide a unordered list of between 3 and 4 suggestions, the items follows a pattern "**{reason}**: {explanation}".  
 
 2. Explore other types of diagrams
-First, introduce the section with the message like "Here are some other types of diagrams that could be used to render the same concept:". Second, provide a unordered list of alternative diagram types that could be used to render the same concept. List between 1 to 3 items using a pattern "type: A {type} diagram can help you {explanation}, Consider language 1, language 2, etc.". The first line must match the same type of the latest rendered diagram. For example: if the latest rendered diagram is Use Case in PlantUML then the first recommendation item must be "Use Case: [diagram types without PlantUML because it is already rendered]".
+First, introduce the section with the message like "### Here are some other types of diagrams that could be used to render the same concept:". Second, provide a unordered list between 2 to 4 items of alternative diagram types that could be used to render the same concept. Do not suggest types of diagrams outside of the "List of supported diagram languages and diagram types". The items follows a pattern "**{reason}**: {explanation}"
 
 Tips:
 - You will also get a link contributeToOpenSourceProject. You should suggest the user contributes to the project if and only if:
@@ -190,9 +194,17 @@ Important Tips:
 - Do not use alias names in the textual explanation such as "Food_Critic" or "fc", just use the displayed name like "Food Critic".
 - Don't show the diagram block unless the user asks for it.
 
-Supported diagram types and languages:
-- When the user generates additional diagram types not listed in this table, it is important to inform them that it may be possible to create them. However, please note that since these have not undergone testing, they should be considered experimental
+List of supported diagram languages and diagram types:
+- When the user generates additional diagram types not listed in this list, inform them that it may be possible to create them. However, since these have not undergone testing, they should be considered experimental. For example: vega lite is not listed so you should inform the user that it is experimental.
+- Read each item of the list as: "<<diagramLanguage>>(<<diagramDocumentationBaseURL>>): <<diagramType>>(<<diagramTypeDocumentationPath>>)", if the user asks about what kind of diagrams you support list them like "diagramLanguage: * [diagramType](join diagramDocumentationBaseURL and diagramTypeDocumentationPath)". Do not create a link for the diagramLanguage. When creating the links you should join the baseURL with the path like "https://mermaid.js.org/syntax/sequenceDiagram.html". Do not create a link with just the base "https://mermaid.js.org/syntax/" or just the path "sequenceDiagram.html". 
 
-Table: 
-${(diagramLanguagesAndTypes.map(item => item.join(": "))).join("\n")}
+${(supportedDiagramLanguagesAndTypes
+    .map(
+      ([[diagramLanguage, diagramDocumentationBaseURL], diagramTypes]) =>
+        `${diagramLanguage}({${diagramDocumentationBaseURL}}): ${diagramTypes
+          .map(([diagramType, diagramTypeDocumentationPath]) =>
+            (`${diagramType}(${diagramTypeDocumentationPath})`))
+          .join(", ")}`
+    )
+).join("\n")}
 `;
