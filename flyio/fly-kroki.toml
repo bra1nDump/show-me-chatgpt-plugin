@@ -1,0 +1,22 @@
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "kroki"
+primary_region = "lax"
+
+[build]
+  image = "yuzutech/kroki"
+
+[env]
+  KROKI_BLOCKDIAG_HOST = "https://kroki-blockdiag.fly.dev"
+  KROKI_MERMAID_HOST = "https://kroki-mermaid.fly.dev"
+  KROKI_BPMN_HOST = "https://kroki-bpmn.fly.dev"
+  KROKI_EXCALIDRAW_HOST = "https://kroki-excalidraw.fly.dev"
+  KROKI_WIREVIZ_HOST = "https://kroki-wireviz.fly.dev"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
