@@ -1,4 +1,4 @@
-import { compressAndEncodeBase64, DiagramLanguage, getSVG } from "./utils";
+import { compressAndEncodeBase64, DiagramLanguage, getSVG, HACK_postMermaidDiagram, RenderResult } from "./utils";
 import { mermaidEditorLink, mermaidFormat } from "./mermaid";
 import { plantumlEditorLink } from "./plantuml";
 
@@ -35,13 +35,19 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
 
   const formattedDiagram = diagramFunctions.format?.(diagram) ?? diagram;
 
-  const imageUrl =
+  let rednerResult: RenderResult
+  if (diagramLanguage === "mermaid") {
+    console.log("HACK: bypassing kroki.io for mermaid diagrams, going directly to kroki-mermaid.fly.dev")
+    rednerResult = await HACK_postMermaidDiagram(formattedDiagram)
+  } else {
+    const imageUrl =
     'https://kroki.io/' +
     diagramLanguage +
     '/svg/' +
     compressAndEncodeBase64(formattedDiagram)
 
-  const rednerResult = await getSVG(imageUrl);
+    rednerResult = await getSVG(imageUrl);
+  }
 
   // We always include an editor link, as most likely the issue with with rendering
   // The user will still see the diagram in the editor
@@ -67,4 +73,3 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
   }
   
 }
-

@@ -90,9 +90,20 @@ async function racePromise<T>(timeout: number, promise: Promise<T>): Promise<T> 
   return Promise.race([promise, timeoutPromise]);
 }
 
-export async function getSVG(imageUrl: string): Promise<{svg?: string, error?: "kroki timed out" | "invalid syntax" | "kroki failed"} > {
+export interface RenderResult {
+  svg?: string, 
+  error?: "kroki timed out" | "invalid syntax" | "kroki failed"
+}
+
+export async function getSVG(imageUrl: string): Promise<RenderResult> {
   try {
     const svg = await racePromise(4000, fetchSVG(imageUrl))
+
+    console.error(
+      `Rendered successfully
+      Image url: ${imageUrl}
+      `)
+
     return { svg }
   } catch (error) {
     console.error(
@@ -106,6 +117,45 @@ export async function getSVG(imageUrl: string): Promise<{svg?: string, error?: "
       return { error: "invalid syntax" }
     } else {
       return { error: "kroki failed" }
+    }
+  }
+}
+
+// Write a similar function for making a post to https://kroki-mermaid.fly.dev/svg
+// with the contents of the mermaid diagram as the body in plain text
+// HACK
+// https://github.com/bra1nDump/show-me-chatgpt-plugin/issues/26
+export async function HACK_postMermaidDiagram(diagram: string): Promise<{svg?: string, error?: "kroki timed out" | "invalid syntax" | "kroki failed"}> {
+  try {
+    const response = await racePromise(4000, fetch('https://kroki-mermaid.fly.dev/svg', {
+      method: 'POST',
+      body: diagram,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    }));
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.text();
+
+    if (data.includes("Syntax error in graph")) {
+      return { error: "invalid syntax" };
+    }
+
+    return { svg: data };
+  } catch (error) {
+    console.error(
+      `Error rendering or fetching svg: ${error}
+      Mermaid diagram: ${diagram}
+      `);
+
+    if (error.message.includes("Promise timed out after")) {
+      return { error: "kroki timed out" };
+    } else {
+      return { error: "kroki failed" };
     }
   }
 }
