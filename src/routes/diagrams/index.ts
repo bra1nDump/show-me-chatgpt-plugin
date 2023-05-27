@@ -1,4 +1,11 @@
-import { compressAndEncodeBase64, DiagramLanguage, DiagramType, getSVG, HACK_postMermaidDiagram, RenderResult } from "./utils";
+import {
+  compressAndEncodeBase64,
+  DiagramLanguage,
+  DiagramType,
+  getSVG,
+  HACK_postMermaidDiagram,
+  RenderResult
+} from "./utils";
 import { mermaidEditorLink, mermaidFormat } from "./mermaid";
 import { plantumlEditorLink } from "./plantuml";
 
@@ -41,33 +48,27 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
     rednerResult = await HACK_postMermaidDiagram(formattedDiagram)
   } else {
     const imageUrl =
-    'https://kroki.io/' +
-    diagramLanguage +
-    '/svg/' +
-    compressAndEncodeBase64(formattedDiagram)
+      'https://kroki.io/' +
+      diagramLanguage +
+      '/svg/' +
+      compressAndEncodeBase64(formattedDiagram)
+
+    console.log("imageUrl", imageUrl);
 
     rednerResult = await getSVG(imageUrl);
   }
-  console.log("imageUrl", imageUrl);
 
-  const diagramSVG = await getSVG(imageUrl);
 
   // We always include an editor link, as most likely the issue with with rendering
   // The user will still see the diagram in the editor
 
-  if (rednerResult.error && rednerResult.error === "invalid syntax") {
+  if (rednerResult.error) {
     return {
       editorLink: diagramFunctions.editorLink?.(formattedDiagram) ?? "",
       isValid: false,
       error: rednerResult.error,
     }
-  } else if (rednerResult.error) {
-    return {
-      editorLink: diagramFunctions.editorLink?.(formattedDiagram) ?? "",
-      isValid: false,
-      error: rednerResult.error,
-    }
-  } else if (rednerResult.svg) {
+  } else {
     return {
       editorLink: diagramFunctions.editorLink?.(formattedDiagram) ?? "",
       isValid: true,

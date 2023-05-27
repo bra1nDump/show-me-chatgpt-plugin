@@ -1,5 +1,8 @@
 import { KVNamespace } from '@cloudflare/workers-types'
 import { customAlphabet } from 'nanoid'
+import { Request } from "miniflare";
+
+import { Env } from "../index";
 
 const nanoid = customAlphabet(
   '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
@@ -18,7 +21,7 @@ export async function saveShortLink(
 }
 
 // Always has SVG stored in it
-export async function DiagramLinkRoute(request, env) {
+export async function DiagramLinkRoute(request: Request, env: Env) {
   const slug = request.params.id
   if (!slug) {
     return new Response('404 Not Found...', { status: 200 })
@@ -36,7 +39,7 @@ export async function DiagramLinkRoute(request, env) {
 }
 
 // Stores redirect links (or SVGs, for legacy reasons)
-export async function ShortLinkRoute(request, env) {
+export async function ShortLinkRoute(request: Request, env: Env) {
   const slug = request.params.id
   if (!slug) {
     return new Response('404 Not Found...', { status: 200 })
@@ -71,12 +74,13 @@ export async function ShortLinkRoute(request, env) {
   })
 }
 
-export async function debugCreateLink(request, env) {
+export async function debugCreateLink(request: Request, env: Env) {
   let requestBody = await request.json()
   console.log('shorten', env.SHORTEN)
+  // @ts-ignore
   if ('url' in requestBody) {
     // Add slug to our KV store so it can be retrieved later:
-    const slug = await saveShortLink(env.SHORTEN, requestBody.url)
+    const slug = await saveShortLink(env.SHORTEN, requestBody.url as string)
     let shortenedURL = `${new URL(request.url).origin}/${slug}`
     let responseBody = {
       message: 'Link shortened successfully',
