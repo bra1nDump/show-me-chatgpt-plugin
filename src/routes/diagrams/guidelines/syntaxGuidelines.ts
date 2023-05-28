@@ -184,6 +184,18 @@ Your call to the api:
 }
 `
   },
+  "d2": {
+    "sequence": `
+Examples:
+
+\`\`\`
+shape: sequence_diagram
+alice -> bob: What does it mean\\nto be well-adjusted?
+bob -> alice: The ability to play bridge or\\ngolf as if they were games.
+\`\`\` 
+`
+
+  },
   "vegalite": {
     "bar-chart": `
 Examples:
