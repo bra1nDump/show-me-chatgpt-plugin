@@ -1,6 +1,6 @@
 import { DiagramType } from "../utils";
 
-export const diagramTypeGuidelines = {
+export const diagramTypeGuidelines: Partial<Record<DiagramType, string>> = {
   "graph": `
 Guidelines when creating the graph diagram in any diagram language:
 - Avoid linear diagrams when possible, diagrams should be hierarchical and have multiple branches when applicable.
@@ -18,11 +18,11 @@ Guidelines when creating the use case diagram in any diagram language:
 - Use <<system>> for system actors: In diagrams reflecting architectural decisions, use the <<system>> stereotype for system actors. For example, label a payment system as <<system>> Payment Processor to highlight it as a system entity, not a human or organization. This isn't suitable for technology-independent diagrams.
 - Use system boundary box: Enclose all use cases within a rectangular boundary box, inside it the use cases should be placed vertically from top to bottom
 `,
-  "timeline-diagram": `
+  "timeline": `
 A timeline is a kind of graphical representation that lays out the sequence of events, dates, or spans of time. Generally, it visually demonstrates the progression of time and is arranged in sequential order. At its most basic level, a timeline displays a series of occurrences organized based on their occurrence dates. Furthermore, a timeline is an effective tool for illustrating connections between events, such as the interrelation of various life events of an individual.
 `,
   "mindmap": `
 A mind map is a diagram used to visually organize information into a hierarchy, showing relationships among pieces of the whole. It is often created around a single concept, drawn as an image in the center of a blank page, to which associated representations of ideas such as images, words and parts of words are added. Major ideas are connected directly to the central concept, and other ideas branch out from those major ideas
-`
-} as const satisfies Partial<Record<DiagramType, string>>
+`,
+}
 

@@ -1,6 +1,6 @@
 import { DiagramLanguage, DiagramType } from "../utils";
 
-export const syntaxGuidelines = {
+export const syntaxGuidelines: Partial<Record<DiagramLanguage, Partial<Record<DiagramType, string>>>> = {
   "mermaid": {
     "graph": `
 Important rules when creating the graph diagram in mermaid syntax:
@@ -96,7 +96,7 @@ Your call to the api:
   query: "graph TB\\n  A[\\"Web Browser\\"] -- \\"HTTP API Request\\" --> B[\\"Load Balancer\\"]\\n  B -- \\"HTTP Request\\" --> C[\\"Crossover\\"]\\n  style C fill:#99cc99\\n  C -- \\"Talks to\\" --> D[\\"Redis\\"]\\n  C -- \\"Talks to\\" --> E[\\"MySQL\\"]\\n  C -- \\"Downstream API Request\\" --> F[\\"Multiplex\\"]\\n  F -- \\"Returns Job ID\\" --> C\\n  C -- \\"Long Poll API Request\\" --> G[\\"Evaluator\\"]\\n  G -- \\"API Call\\" --> F\\n  G -- \\"API Call\\" --> H[\\"Result-Fetcher\\"]\\n  H -- \\"Downloads Results\\" --> I[\\"S3 or GCP Cloud Buckets\\"]\\n  I -- \\"Results Stream\\" --> G\\n  G -- \\"Results Stream\\" --> C\\n  C -- \\"API Response\\" --> B\\n  B -- \\"API Response\\" --> A\\n"
 }
 `,
-    "timeline-diagram": `
+    "timeline": `
 Examples:
 User asks: "Generate a timeline visualisation illustrating the inception dates of major social media platforms such as LinkedIn, Facebook, Google, YouTube, and Twitter"
 Your call to the api:
@@ -183,5 +183,14 @@ Your call to the api:
   diagram: "@startuml\\n left to right direction\\n actor \\"Food Critic\\" as fc\\n rectangle Restaurant {\\n usecase \\"Eat Food\\" as UC1\\n usecase \\"Pay for Food\\" as UC2\\n usecase \\"Drink\\" as UC3\\n }\\n fc -- UC1\\n fc -- UC2\\n fc -- UC3\\n @enduml"
 }
 `
+  },
+  "vegalite": {
+    "bar-chart": `
+Examples:
+User asks: "Draw me a simple chart with embedded data"
+Your call to the api:
+{
+  query: "{"$schema": "https://vega.github.io/schema/vega-lite/v5.json",\\n "description": "description",\\n "data": {\\n "values": [\\n {"a": "A", "b": 28}, {"a": "B", "b": 55}, {"a": "C", "b": 43},\\n {"a": "D", "b": 91}, {"a": "E", "b": 81}, {"a": "F", "b": 53},\\n {"a": "G", "b": 19}, {"a": "H", "b": 87}, {"a": "I", "b": 52}\\n ]\\n },\\n "mark": "bar",\\n "encoding": {\\n "x": {"field": "a", "type": "nominal", "axis": {"labelAngle": 0}},\\n "y": {"field": "b", "type": "quantitative"}\\n }\\n }"
+}     `
   }
-} as const satisfies Partial<Record<DiagramLanguage, Partial<Record<DiagramType, string>>>>
+}

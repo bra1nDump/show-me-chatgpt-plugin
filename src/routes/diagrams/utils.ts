@@ -55,7 +55,7 @@ export const diagramLanguages = [
   "svgbob",
   "umlet",
   "vega",
-  "vega-lite",
+  "vegalite",
   "wavedrom",
   "wireviz",
 ] as const;
@@ -80,7 +80,7 @@ export const diagramTypes = [
   "requirement",
   "gitgraph",
   "mindmap",
-  "timeline-diagram",
+  "timeline",
   "block",
   "network",
   "json",
@@ -99,101 +99,6 @@ export const diagramTypes = [
 ] as const
 
 export type DiagramType = typeof diagramTypes[number]
-
-type DiagramDocumentationBaseURL = string
-type DiagramTypeDocumentationPath = string
-export const supportedDiagramLanguagesAndTypes:
-  [
-    [DiagramLanguage, DiagramDocumentationBaseURL],
-    [DiagramType, DiagramTypeDocumentationPath][]
-  ][] = [
-  [
-    ["mermaid", "https://mermaid.js.org/syntax/"],
-    [
-      ["sequence", "sequenceDiagram.html"],
-      ["class", "classDiagram.html"],
-      ["state", "stateDiagram.html"],
-      ["graph", "flowchart.html"],
-      ["entity-relationship", "entityRelationshipDiagram.html"],
-      ["user-journey", "userJourney.html"],
-      ["gantt", "gantt.html"],
-      ["pie-chart", "pie.html"],
-      ["requirement", "requirementDiagram.html"],
-      ["gitgraph", "gitgraph.html"],
-      ["mindmap", "mindmap.html"],
-      ["timeline-diagram", "timeline.html"]
-    ]
-  ],
-  [
-    ["plantuml", "https://plantuml.com/"],
-    [
-      ["sequence", "sequence-diagram"],
-      ["use-case", "use-case-diagram"],
-      ["class", "class-diagram"],
-      ["object", "object-diagram"],
-      ["activity", "activity-diagram-beta"],
-      ["component", "component-diagram"],
-      ["deployment", "deployment-diagram"],
-      ["state", "state-diagram"],
-      ["timing", "timing-diagram"],
-      ["entity-relationship", "ie-diagram"],
-      ["gantt", "gantt-diagram"],
-      ["mindmap", "mindmap-diagram"],
-      ["network", "nwdiag"],
-      ["json", "json"],
-      ["yaml", "yaml"],
-      ["ebnf", "ebnf"],
-      ["salt-wireframe", "salt"]
-    ]
-  ],
-  [
-    ["d2", "https://d2lang.com/tour/"],
-    [
-      ["sequence", "sequence-diagrams"],
-      ["class", "uml-classes"],
-      ["graph", "intro"],
-      ["entity-relationship", "sql-tables"],
-      ["grid", "grid-diagrams"]
-    ]
-  ],
-  [
-    ["nomnoml", "https://www.nomnoml.com/"],
-    [
-      ["class", ""],
-      ["activity", ""],
-      ["graph", ""],
-      ["entity-relationship", ""],
-      ["uml", ""]
-    ]
-  ],
-  [
-    ["graphviz", "https://graphviz.org/Gallery/"],
-    [
-      ["graph", "directed/unix.html"],
-      ["entity-relationship", "neato/ER.html"],
-      ["mindmap", "twopi/happiness.html"],
-      ["uml", "directed/UML_Class_diagram.html"],
-    ]
-  ],
-  [["actdiag", "http://blockdiag.com/en/actdiag/examples.html"], [["activity", ""]]],
-  [["blockdiag", "http://blockdiag.com/en/blockdiag/examples.html"], [["block", ""]]],
-  [["nwdiag", "http://blockdiag.com/en/nwdiag/nwdiag-examples.html"], [["network", ""]]],
-  [["rackdiag", "http://blockdiag.com/en/nwdiag/rackdiag-examples.html"], [["rack", ""]]],
-  [["dbml", "https://dbml.dbdiagram.io/home/"], [["dbml", ""]]],
-  [["erd", "https://github.com/BurntSushi/erd"], [["entity-relationship", ""]]],
-  [["ditaa", "https://ditaa.sourceforge.net/"], [["ascii", ""]]],
-  [["svgbob", "https://ivanceras.github.io/svgbob-editor/"], [["ascii", ""]]],
-  [["wavedrom", "https://wavedrom.com/tutorial.html"], [["digital-timing", ""]]],
-  [
-    ["vega-lite", "https://vega.github.io/vega-lite/examples/"],
-    [
-      ["bar-chart", "bar.html"],
-      ["histogram", "bar_binned_data.html"],
-      ["line-chart", "line_dashed_part.html"],
-      ["pie-chart", "arc_pie.html"]
-    ]
-  ],
-]
 
 async function fetchSVG(link: string): Promise<string> {
   const response = await fetch(link);

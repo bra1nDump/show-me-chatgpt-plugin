@@ -6,13 +6,12 @@ import { createCors } from 'itty-cors'
 
 import pkg from '../package.json'
 import { MermaidRoute, RenderRoute } from './routes/Diagram'
-import { GuidelinesRoute } from "./routes/Guidelines";
+import { InformationRoute } from "./routes/Information";
 import { ShortLinkRoute, DiagramLinkRoute, debugCreateLink } from './routes/Shorten'
 import { logoSvg } from './logo'
 import { html as privacyPageHtml } from './privacy-page'
 
 import { sendMixpanelEvent } from './mixpanel'
-import { supportedDiagramLanguagesAndTypes } from "./routes/diagrams/utils";
 
 export interface Env {
   SHORTEN: KVNamespace
@@ -37,7 +36,7 @@ router.all('*', preflight)
 // 2. Expose magic openapi.json, expose API itself
 router.get('/render', MermaidRoute)
 
-router.get('/get-guidelines', GuidelinesRoute)
+router.get('/get-information', InformationRoute)
 
 // Privacy policy
 router.original.get('/', () =>
@@ -151,17 +150,18 @@ Examples of user prompts in which you should use this plugin:
 Use this plugin if a user asks about: how something works, explain about a concept or how something is made, summarize a book, describe a process, and other user prompts that can be summarized or explained in the format of a mindmap or a state diagram. Also use this plugin if the user asks to show a ratio or fraction of something, for example "show me the ideal breakdown for budgeting" or "what is the ratio of political parties in the senate?". Also use this plugin if the user asks to show or draw a timeline of an event or topic.
 
 Before rendering diagrams to the plugin API:
-If there are established guidelines for the diagram you are about to create, make sure to request them. Otherwise, refrain from requesting them.
+Only if it is the first time rendering a diagram get list of supported diagrams, otherwise do not request.
 
 Rendering diagrams to the plugin API:
-If an guidelines is included in the response from the guidelines endpoint, make sure to follow them.
+If an guidelines is included in the response from the information endpoint, make sure to follow them.
+
 Examples: 
 User asks: "Show me how vscode internals work."
 You request guidelines: graph_mermaid
 You follow guidelines and start rendering diagram
 
-User asks: "Show me a mindmap about a mindmap"
-You request guidelines: mindmap_mermaid
+User asks: "Show me how a food critic can interact with a restaurant"
+You request guidelines: plantuml_use-case
 You follow guidelines and start rendering diagram
 
 Interpreting the API response:
@@ -189,23 +189,9 @@ Tips:
 
 Important Tips:
 - Do not repeat the same link.
-- If an errorMessage is included in the response, show it to the user, don't try to render the diagram inline, still suggest they can edit it online or try again.
+- If an errorMessage is included in the response, show it to the user, don't try to render the diagram inline, still suggest they can edit it online or try again, also send a link to open the diagram type documentation.
 - Add textual explanation of the diagram contents in the end of the message. Keep it brief unless the user asks for more details.
 - Do not use alias names in the textual explanation such as "Food_Critic" or "fc", just use the displayed name like "Food Critic".
 - Don't show the diagram block unless the user asks for it.
 - The language of the text in the diagrams should match the language of the user unless the user asks for it. For example: if the user asks in spanish "Muestrame un..." show a diagram in spanish or the user asks in portuguese "Mostre-me..." show a diagram in portuguese. 
-
-List of supported diagram languages and diagram types:
-- When the user generates additional diagram types not listed in this list, inform them that it may be possible to create them. However, since these have not undergone testing, they should be considered experimental. For example: vega lite is not listed so you should inform the user that it is experimental.
-- Read each item of the list as: "<<diagramLanguage>>(<<diagramDocumentationBaseURL>>): <<diagramType>>(<<diagramTypeDocumentationPath>>)", if the user asks about what kind of diagrams you support list them like "diagramLanguage: * [diagramType](join diagramDocumentationBaseURL and diagramTypeDocumentationPath)". Do not create a link for the diagramLanguage. When creating the links you should join the baseURL with the path like "https://mermaid.js.org/syntax/sequenceDiagram.html". Do not create a link with just the base "https://mermaid.js.org/syntax/" or just the path "sequenceDiagram.html". 
-
-${(supportedDiagramLanguagesAndTypes
-    .map(
-      ([[diagramLanguage, diagramDocumentationBaseURL], diagramTypes]) =>
-        `${diagramLanguage}({${diagramDocumentationBaseURL}}): ${diagramTypes
-          .map(([diagramType, diagramTypeDocumentationPath]) =>
-            (`${diagramType}(${diagramTypeDocumentationPath})`))
-          .join(", ")}`
-    )
-).join("\n")}
 `;

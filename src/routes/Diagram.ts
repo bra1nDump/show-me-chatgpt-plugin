@@ -55,7 +55,7 @@ export class MermaidRoute extends OpenAPIRoute {
           )
         }),
         {
-          required: true,
+          required: false,
         }
       ),
       topic: Query(
