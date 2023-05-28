@@ -18,7 +18,7 @@
     "build": "npx esbuild --bundle --target=esnext --format=esm --sourcemap --outdir=build src/index.ts"
   },
   "dependencies": {
-    "@cloudflare/itty-router-openapi": "^0.0.15",
+    "@cloudflare/itty-router-openapi": "^0.1.4",
     "@cloudflare/workers-types": "^4.20230404.0",
     "chatgpt-plugin": "^0.1.2",
     "itty-cors": "^0.3.6",
