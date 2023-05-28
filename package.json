@@ -22,6 +22,7 @@
     "@cloudflare/workers-types": "^4.20230404.0",
     "chatgpt-plugin": "^0.1.2",
     "itty-cors": "^0.3.6",
+    "lz-string": "^1.5.0",
     "nanoid": "^4.0.2",
     "pako": "^2.1.0",
     "zod": "^3.21.4"
@@ -39,8 +40,8 @@
     "timeline"
   ],
   "devDependencies": {
-    "typescript": "^5.0.4",
+    "esbuild": "^0.17.19",
     "miniflare": "^2.10.0",
-    "esbuild": "^0.17.19"
+    "typescript": "^5.0.4"
   }
 }

@@ -9,6 +9,7 @@ import {
 import { mermaidEditorLink, mermaidFormat } from "./mermaid";
 import { plantumlEditorLink } from "./plantuml";
 import { graphvizEditorLink } from "./graphviz";
+import { vegaLiteEditorLink } from "./vega-lite";
 
 type DiagramDetails = {
   editorLink: string,
@@ -35,6 +36,10 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
     "graphviz": {
       format: null,
       editorLink: graphvizEditorLink,
+    },
+    "vegalite": {
+      format: null,
+      editorLink: vegaLiteEditorLink,
     },
     // TODO: add other diagram languages
   }
