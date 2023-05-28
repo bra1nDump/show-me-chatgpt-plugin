@@ -16,6 +16,10 @@ export const supportedDiagrams:
     documentationURL: "https://mermaid.js.org/",
     types: [
       {
+        diagramType: "graph",
+        documentationURL: "https://mermaid.js.org/syntax/flowchart.html"
+      },
+      {
         diagramType: "sequence",
         documentationURL: "https://mermaid.js.org/syntax/sequenceDiagram"
       },

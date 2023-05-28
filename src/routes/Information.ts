@@ -45,7 +45,7 @@ export class InformationRoute extends OpenAPIRoute {
       getSupportedDiagrams: Query(new Bool({
         description: 'Get list of supported diagram languages and diagram types',
       }), {
-        required: false
+        required: true
       }),
     },
     responses: {
@@ -67,10 +67,11 @@ export class InformationRoute extends OpenAPIRoute {
   /// 3. Handles the API request
   async handle(request: Request, env: Env, _ctx: unknown) {
     const getDiagramGuidelines = new URL(request.url).searchParams.get("getDiagramGuidelines") as Guideline | undefined;
-    const getSupportedDiagrams = new URL(request.url).searchParams.get("getSupportedDiagrams") as unknown as Boolean;
+    const getSupportedDiagrams = (new URL(request.url).searchParams.get("getSupportedDiagrams") as string) === "true";
 
     console.log('get diagram guidelines: ', getDiagramGuidelines)
     console.log('get supported guidelines: ', getSupportedDiagrams)
+    console.log('get supported guidelines type: ', typeof getSupportedDiagrams)
 
     const getGuidelines = () => {
       if (getDiagramGuidelines) {

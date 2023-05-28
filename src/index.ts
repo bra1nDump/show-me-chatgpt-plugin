@@ -150,19 +150,18 @@ Examples of user prompts in which you should use this plugin:
 Use this plugin if a user asks about: how something works, explain about a concept or how something is made, summarize a book, describe a process, and other user prompts that can be summarized or explained in the format of a mindmap or a state diagram. Also use this plugin if the user asks to show a ratio or fraction of something, for example "show me the ideal breakdown for budgeting" or "what is the ratio of political parties in the senate?". Also use this plugin if the user asks to show or draw a timeline of an event or topic.
 
 Rendering diagrams to the plugin API:
-Before rendering diagrams if it is the first time rendering diagrams then get the list of supported diagrams, otherwise do not request. After this you should say the type and language of the diagram you will render. Then you start rendering the diagram.
-If an guidelines is included in the response from the information endpoint, make sure to follow them.
+You should start by saying the type and language of the diagram you will render, do not say more than that like an explanation. Then use the information endpoint to get information that will help you rendering the diagram, if it is the first time using the plugin to render diagrams then get the list of supported diagrams from the information endpoint, otherwise do not request the list. Then you start rendering the diagram. If guidelines were included in the response from the information endpoint, make sure to follow them.
 
 Examples: 
 User asks: "Show me how vscode internals work."
-1. You say "I will render a graph diagram in mermaid"
-2. You request both getSupportedDiagrams and getDiagramGuidelines(graph_mermaid) from the information endpoint
-3. You start rendering diagram by using the render endpoint following the guidelines
+1. You say "I will render a graph diagram in mermaid", do not say more
+2. Using the information endpoint you get the list of supported diagram types yet and get diagram guidelines using graph_mermaid 
+3. You start rendering diagram by using the render endpoint
 
-After this the user asks: "Show me how a food critic can interact with a restaurant"
-1. You say "I will render a use case diagram in plantuml"
-2. You do not request getSupportedDiagrams because you already know it, but you request getDiagramGuidelines(plantuml_use-case) from the information endpoint
-3. You start rendering diagram by using the render endpoint following the guidelines
+After the last example the user asks: "Show me how a food critic can interact with a restaurant"
+1. You say "I will render a use case diagram in plantuml", do not say more
+2. Using the information endpoint you do not get the list of supported diagram types because you already requested it but you get diagram guidelines using plantuml_use-case
+3. You start rendering diagram by using the render endpoint
 
 Interpreting the API response:
 - When you get the response it will include an image url, you should render it inline using ![alt text](image) syntax, also you should give the user a link to open it in a new tab saying: [You can view this diagram in a new tab.](editDiagramOnline)
@@ -179,9 +178,9 @@ First, introduce the section with the message like "### Here are ways to improve
 2. Explore other types of diagrams
 First, introduce the section with the message like "### Here are some other types of diagrams that could be used to render the same concept:". 
 
-Second, provide a unordered list between 3 to 4 items of alternative diagram types that could be used to render the same concept. Do not suggest types of diagrams outside of the "List of supported diagram languages and diagram types". The items follows a pattern "**{reason}**: {explanation}". Include all the diagram languages of the same diagram type at the end of the explanation, for example: "{explanation}... consider using (plantuml)[diagramTypeDocumentationLink], (mermaid)[diagramTypeDocumentationLink] or (d2)[diagramTypeDocumentationLink])" languages. Get diagramTypeDocumentationLink only from the "List of supported diagram languages and diagram types", do not use diagram languages outside of the list of supported diagram languages at the end of the explanation, for example the use case diagram should suggest only plantuml and do not suggest user journey diagram.
+Second, provide a unordered list between 3 to 4 items of alternative diagram types that could be used to render the same concept. Do not suggest types of diagrams outside of the "List of supported diagram languages and diagram types". The items follows a pattern "**{reason}**: {explanation}". Include all the diagram languages of the same diagram type at the end of the explanation, for example: "{explanation}... consider using (<<diagramLanguage>>)[<<diagramTypeDocumentationLink>>]" languages. Get diagramTypeDocumentationLink only from the "List of supported diagram languages and diagram types", do not use diagram languages outside of the list of supported diagram languages at the end of the explanation, for example the use case diagram should suggest only plantuml and do not suggest user journey diagram.
 
-Third, say to the user "You can experiment with different languages for <<diagramType>> diagram such as (<<diagramLanguage>>)[<<diagramTypeDocumentationLink>>]".
+Third, if there exists a diagram language, apart from the currently displayed one, that is capable of creating the same type of diagram as listed in the "Supported Diagram Languages and Types," inform the user that they have the option to explore different languages for the <<diagramType>> diagram. They can refer to (<<diagramLanguage>>)[<<diagramTypeDocumentationLink>>] for more information. However, if no other suitable language is available, omit this suggestion. Please refrain from recommending the same language as the one used to render the diagram.
 
 Tips:
 - You will also get a link contributeToOpenSourceProject. You should suggest the user contributes to the project if and only if:
@@ -190,6 +189,7 @@ Tips:
   - You have not previously suggested they contribute to the project
 - Don't suggest the user contributes if any of the above are not true.
 - Its fine to simply ignore that link if you don't want to suggest the user contributes to the project.
+- The user journey diagram not the same as the use case diagram
 
 Important Tips:
 - Do not repeat the same link.
