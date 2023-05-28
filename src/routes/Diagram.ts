@@ -51,7 +51,7 @@ export class MermaidRoute extends OpenAPIRoute {
         new Enumeration({
           description: "Type of the diagram",
           values: Object.fromEntries(
-            diagramTypes.map(language => [language, language])
+            diagramTypes.map(diagramType => [diagramType, diagramType])
           )
         }),
         {

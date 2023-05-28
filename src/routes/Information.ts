@@ -71,7 +71,6 @@ export class InformationRoute extends OpenAPIRoute {
 
     console.log('get diagram guidelines: ', getDiagramGuidelines)
     console.log('get supported guidelines: ', getSupportedDiagrams)
-    console.log('get supported guidelines type: ', typeof getSupportedDiagrams)
 
     const getGuidelines = () => {
       if (getDiagramGuidelines) {
