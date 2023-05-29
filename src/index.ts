@@ -147,20 +147,22 @@ Examples of user prompts in which you should use this plugin:
 "Show me a diagram of ... ."
 "Show me how UIView lifecycle works."
 
-Use this plugin if a user asks about: how something works, explain about a concept or how something is made, summarize a book, describe a process, and other user prompts that can be summarized or explained in the format of a mindmap or a state diagram. Also use this plugin if the user asks to show a ratio or fraction of something, for example "show me the ideal breakdown for budgeting" or "what is the ratio of political parties in the senate?". Also use this plugin if the user asks to show or draw a timeline of an event or topic.
+Use this plugin if a user asks about: how something works, explain about a concept or how something is made, summarize a book, describe a process, and other user prompts that can be summarized or explained in the format of a diagram. Also use this plugin if the user asks to show a ratio or fraction of something, for example "show me the ideal breakdown for budgeting" or "what is the ratio of political parties in the senate?". Also use this plugin if the user asks to show or draw a timeline of an event or topic.
 
-Rendering diagrams to the plugin API:
-You should start by saying the type and language of the diagram you will render, do not say more than that like an explanation. Then use the information endpoint to get information that will help you rendering the diagram, if it is the first time using the plugin to render diagrams then get the list of supported diagrams from the information endpoint, otherwise do not request the list. Then you start rendering the diagram. If guidelines were included in the response from the information endpoint, make sure to follow them.
+Rendering the diagram to the plugin API:
+1. Start by saying the type and language of the diagram you will render
+2. Use the information endpoint to get information that will help you rendering the diagram, if it is the first time using the plugin then get the list of supported diagrams from the information endpoint, otherwise do not request the list.
+3. Start rendering the diagram using the render endpoint. If guidelines were included in the response from the information endpoint, make sure to follow them.
 
-Examples: 
+Example: 
 User asks: "Show me how vscode internals work."
-1. You say "I will render a graph diagram in mermaid", do not say more
-2. Using the information endpoint you get the list of supported diagram types yet and get diagram guidelines using graph_mermaid 
+1. You say the text "I will render a graph diagram in mermaid", avoid saying anything more than the text
+2. Get the list of supported diagram types yet and get diagram guidelines using graph_mermaid 
 3. You start rendering diagram by using the render endpoint
 
-After the last example the user asks: "Show me how a food critic can interact with a restaurant"
-1. You say "I will render a use case diagram in plantuml", do not say more
-2. Using the information endpoint you do not get the list of supported diagram types because you already requested it but you get diagram guidelines using plantuml_use-case
+After that the user asks: "Show me how a food critic can interact with a restaurant"
+1. You say the text "I will render a use case diagram in plantuml", avoid saying anything more than the text
+2. Do not get the list of supported diagram types because you already requested it but you get diagram guidelines using plantuml_use-case
 3. You start rendering diagram by using the render endpoint
 
 Interpreting the API response:
@@ -170,17 +172,16 @@ Interpreting the API response:
 - You should create the response in that order: first the image, then suggestion to edit using works, then the open new tab link, then the edit link, then the documentation link, then the textual explanation, then conclude with the recommendations section.
 
 Recommendation section:
-The section has two parts: suggestions to improve the rendered diagram and explore other types of diagrams. If an errorMessage is included in the response do not show the recommendation section
+If an errorMessage is included in the response do not show this section
 
 1. Improve the rendered diagram
-First, introduce the section with the message like "### Here are ways to improve the diagram to provide more detail or clarity:". Second, provide a unordered list of between 3 and 4 suggestions, the items follows a pattern "**{reason}**: {explanation}".  
+1.1. Introduce the section with the message "### Here are ways to improve the diagram to provide more detail or clarity:". Second, provide a unordered list of between 3 and 4 suggestions, the items follows a pattern "**{reason}**: {explanation}".  
 
-2. Explore other types of diagrams
-First, introduce the section with the message like "### Here are some other types of diagrams that could be used to render the same concept:". 
+2.2. Explore other types of diagrams
+2.2.1. Introduce the section with the message "### Here are some other types of diagrams that could be used to render the same concept:". 
+2.2.2. Provide a unordered list between 3 to 4 items of alternative diagram types, the items follows a pattern "**{reason}**: {explanation} consider using ({diagramLanguage})[{diagramTypeDocumentationLink}]". Take data from the "List of supported diagram languages and diagram types".
 
-Second, provide a unordered list between 3 to 4 items of alternative diagram types that could be used to render the same concept. Do not suggest types of diagrams outside of the "List of supported diagram languages and diagram types". The items follows a pattern "**{reason}**: {explanation}". Include all the diagram languages of the same diagram type at the end of the explanation, for example: "{explanation}... consider using (<<diagramLanguage>>)[<<diagramTypeDocumentationLink>>]" languages. Get diagramTypeDocumentationLink only from the "List of supported diagram languages and diagram types", do not use diagram languages outside of the list of supported diagram languages at the end of the explanation, for example the use case diagram should suggest only plantuml and do not suggest user journey diagram.
-
-Third, if there exists a diagram language, apart from the currently displayed one, that is capable of creating the same type of diagram as listed in the "Supported Diagram Languages and Types," inform the user that they have the option to explore different languages for the <<diagramType>> diagram. They can refer to (<<diagramLanguage>>)[<<diagramTypeDocumentationLink>>] for more information. However, if no other suitable language is available, omit this suggestion. Please refrain from recommending the same language as the one used to render the diagram.
+3.1 If there exists a diagram language, apart from the currently displayed one, that is capable of creating the same type of diagram from the "List of supported diagram languages and diagram types" inform the user that they have the option to explore different languages for the diagramType diagram. They can refer to (diagramLanguage)[diagramTypeDocumentationLink] for more information. However, if no other suitable language is available, omit this suggestion. Please refrain from recommending the same language as the one used to render the diagram.
 
 Tips:
 - You will also get a link contributeToOpenSourceProject. You should suggest the user contributes to the project if and only if:

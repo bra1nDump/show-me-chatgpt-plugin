@@ -45,7 +45,7 @@ export class InformationRoute extends OpenAPIRoute {
       getSupportedDiagrams: Query(new Bool({
         description: 'Get list of supported diagram languages and diagram types',
       }), {
-        required: true
+        required: false
       }),
     },
     responses: {
@@ -77,9 +77,9 @@ export class InformationRoute extends OpenAPIRoute {
         const diagramLanguage = getDiagramGuidelines.split("_")[0] as DiagramLanguage
         const diagramType = getDiagramGuidelines.split("_")[1] as DiagramType
 
-        const guidelines = `${diagramTypeGuidelines[diagramType] ?? ""}${syntaxGuidelines[diagramLanguage]?.[diagramType] ?? "not implemented yet"}`
+        const guidelines = `${diagramTypeGuidelines[diagramType] ?? ""}${syntaxGuidelines[diagramLanguage]?.[diagramType] ?? ""}`
 
-        return guidelines.length > 0 ? guidelines : ""
+        return guidelines.length > 0 ? guidelines : "there are no guidelines for this diagram type"
       } else {
         return null
       }

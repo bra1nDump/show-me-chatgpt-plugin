@@ -51,16 +51,30 @@ graph TB
 
 Examples:
 User asks: "Show me how vscode internals work."
-Your call to the api:
-{
-  query: "graph TB\\n  U[\\"User\\"] -- \\"File Operations\\" --> FO[\\"File Operations\\"]\\n  U -- \\"Code Editor\\" --> CE[\\"Code Editor\\"]\\n  FO -- \\"Manipulation of Files\\" --> FS[\\"FileSystem\\"]\\n  FS -- \\"Write/Read\\" --> D[\\"Disk\\"]\\n  FS -- \\"Compress/Decompress\\" --> ZL[\\"ZipLib\\"]\\n  FS -- \\"Read\\" --> IP[\\"INIParser\\"]\\n  CE -- \\"Create/Display/Edit\\" --> WV[\\"Webview\\"]\\n  CE -- \\"Language/Code Analysis\\" --> VCA[\\"VSCodeAPI\\"]\\n  VCA -- \\"Talks to\\" --> VE[\\"ValidationEngine\\"]\\n  WV -- \\"Render UI\\" --> HC[\\"HTMLCSS\\"]\\n  VE -- \\"Decorate Errors\\" --> ED[\\"ErrorDecoration\\"]\\n  VE -- \\"Analyze Document\\" --> TD[\\"TextDocument\\"]\\n"
-}
+\`\`\`
+graph TB
+  U["User"] -- "File Operations" --> FO["File Operations"]
+  U -- "Code Editor" --> CE["Code Editor"]
+  FO -- "Manipulation of Files" --> FS["FileSystem"]
+  FS -- "Write/Read" --> D["Disk"]
+  FS -- "Compress/Decompress" --> ZL["ZipLib"]
+  FS -- "Read" --> IP["INIParser"]
+  CE -- "Create/Display/Edit" --> WV["Webview"]
+  CE -- "Language/Code Analysis" --> VCA["VSCodeAPI"]
+  VCA -- "Talks to" --> VE["ValidationEngine"]
+  WV -- "Render UI" --> HC["HTMLCSS"]
+  VE -- "Decorate Errors" --> ED["ErrorDecoration"]
+  VE -- "Analyze Document" --> TD["TextDocument"]
+\`\`\`
 
 User asks: "Draw me a mindmap for beer brewing. Maximum of 4 nodes"
-Your call to the api:
-{
-  query: "graph TB\\n  B[\"Beer\"]\\n  B --> T[\"Types\"]\\n  B --> I[\"Ingredients\"]\\n  B --> BP[\"Brewing Process\"]"
-}
+\`\`\`
+graph TB
+  B["Beer"]
+  B --> T["Types"]
+  B --> I["Ingredients"]
+  B --> BP["Brewing Process"]
+\`\`\`
 
 User asks:
 "Computing backend data services is a distributed system made of multiple microservices.
@@ -78,10 +92,22 @@ Crossover post processes the result and returns the API response to the client.
 
 Draw me a diagram of this system"
 
-Your call to the api:
-{
-  query: "graph TB\\n  A[\\"Web Browser\\"] -- \\"HTTP API Request\\" --> B[\\"Load Balancer\\"]\\n  B -- \\"HTTP Request\\" --> C[\\"Crossover\\"]\\n  C -- \\"Talks to\\" --> D[\\"Redis\\"]\\n  C -- \\"Talks to\\" --> E[\\"MySQL\\"]\\n  C -- \\"Downstream API Request\\" --> F[\\"Multiplex\\"]\\n  F -- \\"Returns Job ID\\" --> C\\n  C -- \\"Long Poll API Request\\" --> G[\\"Evaluator\\"]\\n  G -- \\"API Call\\" --> F\\n  G -- \\"API Call\\" --> H[\\"Result-Fetcher\\"]\\n  H -- \\"Downloads Results\\" --> I[\\"S3 or GCP Cloud Buckets\\"]\\n  I -- \\"Results Stream\\" --> G\\n  G -- \\"Results Stream\\" --> C\\n  C -- \\"API Response\\" --> A\\n"
-}
+\`\`\`
+graph TB
+  A["Web Browser"] -- "HTTP API Request" --> B["Load Balancer"]
+  B -- "HTTP Request" --> C["Crossover"]
+  C -- "Talks to" --> D["Redis"]
+  C -- "Talks to" --> E["MySQL"]
+  C -- "Downstream API Request" --> F["Multiplex"]
+  F -- "Returns Job ID" --> C
+  C -- "Long Poll API Request" --> G["Evaluator"]
+  G -- "API Call" --> F
+  G -- "API Call" --> H["Result-Fetcher"]
+  H -- "Downloads Results" --> I["S3 or GCP Cloud Buckets"]
+  I -- "Results Stream" --> G
+  G -- "Results Stream" --> C
+  C -- "API Response" --> A
+\`\`\`
 
 Sometimes you will need to revise the same diagram based on user feedback.
 For the last example the user might make a followup request:
@@ -91,24 +117,51 @@ User followup ask:
 
 Draw the crossover node in green"
 
-Your call to the api:
-{
-  query: "graph TB\\n  A[\\"Web Browser\\"] -- \\"HTTP API Request\\" --> B[\\"Load Balancer\\"]\\n  B -- \\"HTTP Request\\" --> C[\\"Crossover\\"]\\n  style C fill:#99cc99\\n  C -- \\"Talks to\\" --> D[\\"Redis\\"]\\n  C -- \\"Talks to\\" --> E[\\"MySQL\\"]\\n  C -- \\"Downstream API Request\\" --> F[\\"Multiplex\\"]\\n  F -- \\"Returns Job ID\\" --> C\\n  C -- \\"Long Poll API Request\\" --> G[\\"Evaluator\\"]\\n  G -- \\"API Call\\" --> F\\n  G -- \\"API Call\\" --> H[\\"Result-Fetcher\\"]\\n  H -- \\"Downloads Results\\" --> I[\\"S3 or GCP Cloud Buckets\\"]\\n  I -- \\"Results Stream\\" --> G\\n  G -- \\"Results Stream\\" --> C\\n  C -- \\"API Response\\" --> B\\n  B -- \\"API Response\\" --> A\\n"
-}
+\`\`\`
+query: "graph TB
+  A["Web Browser"] -- "HTTP API Request" --> B["Load Balancer"]
+  B -- "HTTP Request" --> C["Crossover"]
+  style C fill:#99cc99
+  C -- "Talks to" --> D["Redis"]
+  C -- "Talks to" --> E["MySQL"]
+  C -- "Downstream API Request" --> F["Multiplex"]
+  F -- "Returns Job ID" --> C
+  C -- "Long Poll API Request" --> G["Evaluator"]
+  G -- "API Call" --> F
+  G -- "API Call" --> H["Result-Fetcher"]
+  H -- "Downloads Results" --> I["S3 or GCP Cloud Buckets"]
+  I -- "Results Stream" --> G
+  G -- "Results Stream" --> C
+  C -- "API Response" --> B
+  B -- "API Response" --> A
+\`\`\`
 `,
     "timeline": `
 Examples:
 User asks: "Generate a timeline visualisation illustrating the inception dates of major social media platforms such as LinkedIn, Facebook, Google, YouTube, and Twitter"
-Your call to the api:
-{
-  diagram: "timeline\\n    title Inception Dates of Major Social Media Platforms\\n    2002 : LinkedIn\\n    2004 : Facebook\\n    : Google\\n    2005 : Youtube\\n    2006 : Twitter\\n"
-}
+\`\`\`
+timeline
+  title Inception Dates of Major Social Media Platforms
+  2002 : LinkedIn
+  2004 : Facebook
+  : Google
+  2005 : Youtube
+  2006 : Twitter
+\`\`\`
 
 User asks: "Show me a timeline of Industrial Revolution"
-Your call to the api:
-{
-  diagram: "timeline\\n    title Timeline of Industrial Revolution\\n    section 17th-20th century\\n        Industry 1.0 : Machinery, Water power, Steam power\\n        Industry 2.0 : Electricity, Internal combustion engine, Mass production\\n        Industry 3.0 : Electronics, Computers, Automation\\n section 21st century\\n        Industry 4.0 : Internet, Robotics, Internet of Things\\n        Industry 5.0 : Artificial intelligence, Big data,3D printing\\n" 
-}
+\`\`\`
+timeline
+  title Timeline of Industrial Revolution
+  section 17th-20th century
+    Industry 1.0 : Machinery, Water power, Steam power
+    Industry 2.0 : Electricity, Internal combustion engine, Mass production
+    Industry 3.0 : Electronics, Computers, Automation
+  section 21st century
+    Industry 4.0 : Internet, Robotics, Internet of Things
+    Industry 5.0 : Artificial intelligence, Big data,3D printing
+\`\`\`
+
 Description: You can group time periods in sections/ages. This is done by adding a line with the keyword section followed by the section name. All subsequent time periods will be placed in this section until a new section is defined. If no section is defined, all time periods will be placed in the default section.
     `,
     "mindmap": `
@@ -141,47 +194,98 @@ Unicode works too: 🤓\`"]
  
 Examples:
 User asks: "Show me a mindmap about a mindmap"
-Your call to the api:
-{
-  diagram: "mindmap\\n  root((mindmap))\\n    Origins\\n      Long history\\n      Popularisation\\n        British popular psychology author Tony Buzan\\n    Research\\n      On effectiveness and features\\n      On Automatic creation\\n        Uses\\n            Creative techniques\\n            Strategic planning\\n            Argument mapping\\n    Tools\\n      Pen and paper\\n      Mermaid"
-}
-    `
+\`\`\`
+mindmap
+  root((mindmap))
+    Origins
+      Long history
+      Popularisation
+        British popular psychology author Tony Buzan
+    Research
+      On effectiveness and features
+      On Automatic creation
+        Uses
+            Creative techniques
+            Strategic planning
+            Argument mapping
+    Tools
+      Pen and paper
+      Mermaid
+\`\`\`
+`,
+    "state": `
+Important rules when creating the state diagram in mermaid syntax:
+- When making a choice between two or more paths prefer using <<choice>> than a node called Check
+
+Examples:
+
+Simple sample
+\`\`\`
+stateDiagram-v2
+    [*] --> Still
+    Still --> [*]
+
+    Still --> Moving
+    Moving --> Still
+    Moving --> Crash
+    Crash --> [*]
+\`\`\`
+
+Choice
+Sometimes you need to model a choice between two or more paths, you can do so using <<choice>>.
+\`\`\`
+stateDiagram-v2
+    state if_state <<choice>>
+    [*] --> IsPositive
+    IsPositive --> if_state
+    if_state --> False: if n < 0
+    if_state --> True : if n >= 0
+\`\`\`    
+`
   },
   "plantuml": {
     "use-case": `
 Important rules when creating the use case diagram in plantuml syntax:
 - Do not show underscores as spaces between the words, use a space instead. For example use "Online Shopping Website" instead of "Online_Shopping_Website"
+- When connecting use cases with actors use the undirected edge like "e -- UC1". Don't connect an use case with another use case, avoid using "UC1 -- UC2".
 
 Tips when using the use case diagram in plantuml syntax:
 - Prefer using "left to right direction" to make the diagram more readable, it makes the diagram separate into three columns. The left column must contain actors like clients or customers who purchase goods or services. The central column should contain the use cases. The right column must contain actors that make the organization work like employees, managers or systems. To make the actors in the left or the right side of the three columns, in the following example, the employee "e" is in the left column (e -- UC4) but the manager "b" and the payroll system "ps" are in the right column(UC1 -- ps, UC3 -- b):
 \`\`\`
 @startuml
-left to right direction
-rectangle "Payroll Processing" { 
-usecase "Calculate Pay" as UC1
-usecase "Issue Paycheck" as UC2
-usecase "Deposit Paycheck" as UC3
-usecase "Receive Paycheck" as UC4
-}
-actor "Employee" as e
-actor "Payroll System" as ps <<system>>
-actor "Manager" as b
-UC1 -- ps 
-UC2 -- ps  
-UC3 -- b
-e -- UC4
+  left to right direction
+  rectangle "Payroll Processing" { 
+    usecase "Calculate Pay" as UC1
+    usecase "Issue Paycheck" as UC2
+    usecase "Deposit Paycheck" as UC3
+    usecase "Receive Paycheck" as UC4
+  }
+  actor "Employee" as e
+  actor "Payroll System" as ps <<system>>
+  actor "Manager" as b
+  UC1 -- ps 
+  UC2 -- ps  
+  UC3 -- b
+  e -- UC4
 @enduml
 \`\`\`
 
-- When connecting use cases with actors use the undirected edge like "e -- UC1". Don't connect an use case with another use case, avoid using "UC1 -- UC2".
-
-   
 Examples:
 User asks: "Show me how a food critic can interact with a restaurant"
-Your call to the api:
-{
-  diagram: "@startuml\\n left to right direction\\n actor \\"Food Critic\\" as fc\\n rectangle Restaurant {\\n usecase \\"Eat Food\\" as UC1\\n usecase \\"Pay for Food\\" as UC2\\n usecase \\"Drink\\" as UC3\\n }\\n fc -- UC1\\n fc -- UC2\\n fc -- UC3\\n @enduml"
-}
+\`\`\`
+@startuml
+left to right direction
+  actor "Food Critic" as fc
+  rectangle Restaurant {
+    usecase "Eat Food" as UC1
+    usecase "Pay for Food" as UC2
+    usecase "Write Review" as UC3
+  }
+  fc -- UC1
+  fc -- UC2
+  fc -- UC3
+@enduml
+\`\`\`
 `
   },
   "d2": {
@@ -190,8 +294,8 @@ Examples:
 
 \`\`\`
 shape: sequence_diagram
-alice -> bob: What does it mean\\nto be well-adjusted?
-bob -> alice: The ability to play bridge or\\ngolf as if they were games.
+alice -> bob: What does it mean\nto be well-adjusted?
+bob -> alice: The ability to play bridge or\ngolf as if they were games.
 \`\`\` 
 `
 
@@ -200,9 +304,30 @@ bob -> alice: The ability to play bridge or\\ngolf as if they were games.
     "bar-chart": `
 Examples:
 User asks: "Draw me a simple chart with embedded data"
-Your call to the api:
+\`\`\`
 {
-  query: "{"$schema": "https://vega.github.io/schema/vega-lite/v5.json",\\n "description": "description",\\n "data": {\\n "values": [\\n {"a": "A", "b": 28}, {"a": "B", "b": 55}, {"a": "C", "b": 43},\\n {"a": "D", "b": 91}, {"a": "E", "b": 81}, {"a": "F", "b": 53},\\n {"a": "G", "b": 19}, {"a": "H", "b": 87}, {"a": "I", "b": 52}\\n ]\\n },\\n "mark": "bar",\\n "encoding": {\\n "x": {"field": "a", "type": "nominal", "axis": {"labelAngle": 0}},\\n "y": {"field": "b", "type": "quantitative"}\\n }\\n }"
-}     `
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "A simple bar chart with embedded data.",
+  "data": {
+    "values": [
+      {"a": "A", "b": 28},
+      {"a": "B", "b": 55},
+      {"a": "C", "b": 43},
+      {"a": "D", "b": 91},
+      {"a": "E", "b": 81},
+      {"a": "F", "b": 53},
+      {"a": "G", "b": 19},
+      {"a": "H", "b": 87},
+      {"a": "I", "b": 52}
+    ]
+  },
+  "mark": "bar",
+  "encoding": {
+    "x": {"field": "a", "type": "nominal", "axis": {"labelAngle": 0}},
+    "y": {"field": "b", "type": "quantitative"}
+  }
+}
+\`\`\`
+`
   }
 }
