@@ -52,37 +52,31 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
 
   const formattedDiagram = diagramFunctions.format?.(diagram, diagramType) ?? diagram;
 
-  let rednerResult: RenderResult
-  if (diagramLanguage === "mermaid") {
-    console.log("HACK: bypassing kroki.io for mermaid diagrams, going directly to kroki-mermaid.fly.dev")
-    rednerResult = await HACK_postMermaidDiagram(formattedDiagram)
-  } else {
-    const imageUrl =
-      'https://kroki.io/' +
-      diagramLanguage +
-      '/svg/' +
-      compressAndEncodeBase64(formattedDiagram)
+  const imageUrl =
+    'https://kroki.io/' +
+    diagramLanguage +
+    '/svg/' +
+    compressAndEncodeBase64(formattedDiagram)
 
-    console.log("imageUrl", imageUrl);
+  console.log("imageUrl", imageUrl);
 
-    rednerResult = await getSVG(imageUrl);
-  }
+  const renderResult = await getSVG(imageUrl)
 
 
   // We always include an editor link, as most likely the issue with with rendering
   // The user will still see the diagram in the editor
 
-  if (rednerResult.error) {
+  if (renderResult.error) {
     return {
       editorLink: diagramFunctions.editorLink?.(formattedDiagram) ?? "",
       isValid: false,
-      error: rednerResult.error,
+      error: renderResult.error,
     }
   } else {
     return {
       editorLink: diagramFunctions.editorLink?.(formattedDiagram) ?? "",
       isValid: true,
-      diagramSVG: rednerResult.svg,
+      diagramSVG: renderResult.svg,
     }
   }
 
