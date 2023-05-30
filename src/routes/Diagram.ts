@@ -167,7 +167,7 @@ export class MermaidRoute extends OpenAPIRoute {
     }
 
     console.log({ shortenedDiagramURL })
-    console.log('diagram svg (truncated)', diagram.diagramSVG.slice(0, 300))
+    console.log('diagram svg (truncated or empty)', diagram.diagramSVG?.slice(0, 300))
 
     await track('render_complete', {
       'diagram_language': diagramLanguage,
