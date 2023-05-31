@@ -24,5 +24,14 @@ A timeline is a kind of graphical representation that lays out the sequence of e
   "mindmap": `
 A mind map is a diagram used to visually organize information into a hierarchy, showing relationships among pieces of the whole. It is often created around a single concept, drawn as an image in the center of a blank page, to which associated representations of ideas such as images, words and parts of words are added. Major ideas are connected directly to the central concept, and other ideas branch out from those major ideas
 `,
+  "user-journey": `
+User journeys describe at a high level of detail exactly what steps different users take to complete a specific task within a system, application or website. This technique shows the current (as-is) user workflow, and reveals areas of improvement for the to-be workflow.
+`,
+  requirement: `
+A Requirement diagram provides a visualization for requirements and their connections, to each other and other documented elements. The modeling specs follow those defined by SysML v1.6.
+  `,
+  gitgraph: `
+A Git Graph is a pictorial representation of git commits and git actions(commands) on various branches. These kind of diagram are particularly helpful to developers and devops teams to share their Git branching strategies. For example, it makes it easier to visualize how git flow works.
+  `,
 }
 
