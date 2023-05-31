@@ -1,0 +1,13 @@
+# docker-compose.yml
+version: '3'
+services:
+  diagram-chatgpt:
+    container_name: show-me-diagram-chatgpt-plugin
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: show-me:v1
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "8787:8787"
