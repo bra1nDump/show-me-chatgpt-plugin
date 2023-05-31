@@ -10,7 +10,6 @@ COPY package*.json ./
 # Clean cache
 # RUN npm cache clean --force
 # RUN npm install -g esbuild
-RUN npm config set registry https://registry.npm.taobao.org
 
 # Install any needed packages specified in package.json
 RUN npm i
