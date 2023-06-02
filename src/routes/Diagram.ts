@@ -1,8 +1,8 @@
-import { Enumeration, OpenAPIRoute, Query, Str } from '@cloudflare/itty-router-openapi'
+import { Enumeration, OpenAPIRoute, OpenAPISchema, Query, Str } from '@cloudflare/itty-router-openapi'
 
 import { saveShortLink } from './Shorten'
 
-import { sendMixpanelEvent } from '../mixpanel'
+import { createTrackerForRequest, sendMixpanelEvent } from '../mixpanel'
 import { Env } from '..';
 import { diagramDetails } from "./diagrams";
 import { DiagramLanguage, diagramLanguages } from "./diagrams/utils";
@@ -97,6 +97,10 @@ export class MermaidRoute extends OpenAPIRoute {
     },
   }
 
+  getSchema(): OpenAPISchema {
+    return MermaidRoute.schema
+  }
+
   /// 3. Handles the API request
   async handle(request: Request, env: Env, _ctx, data: Record<string, any>) {
     const BASE_URL = new URL(request.url).origin
@@ -117,30 +121,7 @@ export class MermaidRoute extends OpenAPIRoute {
     console.log('diagram', diagramParam)
     console.log('topic', topic)
 
-    // Print headers
-    const headers = Object.fromEntries(request.headers)
-    console.log('headers', headers)
-
-    const conversationId = headers['openai-conversation-id']
-    const ephemeralUserId = headers['openai-ephemeral-user-id']
-    const realIP = headers['x-real-ip']
-
-    // Track render event
-    const track = async (event: string, properties: Record<string, any>) => {
-      try {
-        const adjustedProperties = {
-          ...properties,
-          'conversation_id': conversationId,
-
-          ip: realIP,
-          'worker_environment': env.WORKER_ENV,
-        }
-        await sendMixpanelEvent(env.MIXPANEL_TOKEN as string, event, ephemeralUserId, adjustedProperties)
-        console.log('Sent mixpanel event', event, properties)
-      } catch (e) {
-        console.log('Error sending mixpanel event', e)
-      }
-    }
+    const track = createTrackerForRequest(request, env)
     void track('render', {
       'diagram_language': diagramLanguage,
 
