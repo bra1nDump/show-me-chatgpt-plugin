@@ -1,19 +1,17 @@
 import { DiagramLanguage, DiagramType } from "./utils";
 
-type DiagramLanguageDocumentationURL = string
-type DiagramTypeDocumentationURL = string
 export const supportedDiagrams:
   {
     diagramLanguage: DiagramLanguage,
-    documentationURL: DiagramLanguageDocumentationURL,
+    languageDocumentationURL: string,
     types: {
       diagramType: DiagramType,
-      documentationURL: DiagramTypeDocumentationURL
+      documentationURL: string
     }[]
   }[] = [
   {
     diagramLanguage: "mermaid",
-    documentationURL: "https://mermaid.js.org/",
+    languageDocumentationURL: "https://mermaid.js.org/",
     types: [
       {
         diagramType: "graph",
@@ -67,7 +65,7 @@ export const supportedDiagrams:
   },
   {
     diagramLanguage: "plantuml",
-    documentationURL: "https://plantuml.com/",
+    languageDocumentationURL: "https://plantuml.com/",
     types: [
       {
         diagramType: "sequence",
@@ -141,7 +139,7 @@ export const supportedDiagrams:
   },
   {
     diagramLanguage: "d2",
-    documentationURL: "https://d2lang.com",
+    languageDocumentationURL: "https://d2lang.com",
     types: [
       {
         diagramType: "sequence",
@@ -167,7 +165,7 @@ export const supportedDiagrams:
   },
   {
     diagramLanguage: "nomnoml",
-    documentationURL: "https://www.nomnoml.com",
+    languageDocumentationURL: "https://www.nomnoml.com",
     types: [
       {
         diagramType: "class",
@@ -193,7 +191,7 @@ export const supportedDiagrams:
   },
   {
     diagramLanguage: "graphviz",
-    documentationURL: "https://graphviz.org/Gallery/",
+    languageDocumentationURL: "https://graphviz.org/Gallery/",
     types: [
       {
         diagramType: "graph",
@@ -215,7 +213,7 @@ export const supportedDiagrams:
   },
   {
     diagramLanguage: "actdiag",
-    documentationURL: "http://blockdiag.com/en/actdiag",
+    languageDocumentationURL: "http://blockdiag.com/en/actdiag",
     types: [
       {
         diagramType: "activity",
@@ -225,7 +223,7 @@ export const supportedDiagrams:
   },
   {
     diagramLanguage: "blockdiag",
-    documentationURL: "http://blockdiag.com/en/blockdiag",
+    languageDocumentationURL: "http://blockdiag.com/en/blockdiag",
     types: [
       {
         diagramType: "block",
@@ -235,7 +233,7 @@ export const supportedDiagrams:
   },
   {
     diagramLanguage: "nwdiag",
-    documentationURL: "http://blockdiag.com/en/nwdiag",
+    languageDocumentationURL: "http://blockdiag.com/en/nwdiag",
     types: [
       {
         diagramType: "network",
@@ -245,7 +243,7 @@ export const supportedDiagrams:
   },
   {
     diagramLanguage: "rackdiag",
-    documentationURL: "http://blockdiag.com/en/nwdiag/rackdiag-examples.html",
+    languageDocumentationURL: "http://blockdiag.com/en/nwdiag/rackdiag-examples.html",
     types: [
       {
         diagramType: "rack",
@@ -255,7 +253,7 @@ export const supportedDiagrams:
   },
   {
     diagramLanguage: "dbml",
-    documentationURL: "https://dbml.dbdiagram.io/home/",
+    languageDocumentationURL: "https://dbml.dbdiagram.io/home/",
     types: [
       {
         diagramType: "dbml",
@@ -265,7 +263,7 @@ export const supportedDiagrams:
   },
   {
     diagramLanguage: "erd",
-    documentationURL: "https://github.com/BurntSushi/erd",
+    languageDocumentationURL: "https://github.com/BurntSushi/erd",
     types: [
       {
         diagramType: "entity-relationship",
@@ -275,7 +273,7 @@ export const supportedDiagrams:
   },
   {
     diagramLanguage: "ditaa",
-    documentationURL: "https://ditaa.sourceforge.net/",
+    languageDocumentationURL: "https://ditaa.sourceforge.net/",
     types: [
       {
         diagramType: "ascii",
@@ -285,7 +283,7 @@ export const supportedDiagrams:
   },
   {
     diagramLanguage: "svgbob",
-    documentationURL: "https://ivanceras.github.io/svgbob-editor/",
+    languageDocumentationURL: "https://ivanceras.github.io/svgbob-editor/",
     types: [
       {
         diagramType: "ascii",
@@ -295,7 +293,7 @@ export const supportedDiagrams:
   },
   {
     diagramLanguage: "wavedrom",
-    documentationURL: "https://wavedrom.com/tutorial.html",
+    languageDocumentationURL: "https://wavedrom.com/tutorial.html",
     types: [
       {
         diagramType: "digital-timing",
@@ -305,7 +303,7 @@ export const supportedDiagrams:
   },
   {
     diagramLanguage: "vegalite",
-    documentationURL: "https://vega.github.io/vega-lite/examples/",
+    languageDocumentationURL: "https://vega.github.io/vega-lite/examples/",
     types: [
       {
         diagramType: "bar-chart",
@@ -326,3 +324,19 @@ export const supportedDiagrams:
     ]
   },
 ]
+
+// Languages Per Diagram Type List
+// graph: mermaid(link), d2(link), nomnoml(link), etc
+// sequence: mermaid(link), plantuml(link), d2(link), etc
+export const languagesPerDiagramType = Object.entries(
+  supportedDiagrams.reduce((acc: Record<string, string[]>, { diagramLanguage, types }) => {
+    types.forEach(({ diagramType,documentationURL }) => {
+      if (!acc[diagramType]) {
+        acc[diagramType] = [];
+      }
+      acc[diagramType].push(`${diagramLanguage}(${documentationURL})`);
+    });
+    return acc;
+  }, {})
+)
+  .map(([diagramType, diagramLanguages]) => `${diagramType}: ${(diagramLanguages).join(', ')}`).join("\n")

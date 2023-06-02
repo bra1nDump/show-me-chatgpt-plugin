@@ -6,7 +6,8 @@ import { createCors } from 'itty-cors'
 
 import pkg from '../package.json'
 import { MermaidRoute, RenderRoute } from './routes/Diagram'
-import { InformationRoute } from "./routes/Information";
+import { DiagramGuidelinesRoute } from "./routes/DiagramGuidelines";
+import { languagesPerDiagramType } from "./routes/diagrams/supportedDiagrams";
 import { ShortLinkRoute, DiagramLinkRoute, debugCreateLink } from './routes/Shorten'
 import { logoSvg } from './logo'
 import { html as privacyPageHtml } from './privacy-page'
@@ -36,7 +37,7 @@ router.all('*', preflight)
 // 2. Expose magic openapi.json, expose API itself
 router.get('/render', MermaidRoute)
 
-router.get('/get-information', InformationRoute)
+router.get('/diagram-guidelines', DiagramGuidelinesRoute)
 
 // Privacy policy
 router.original.get('/', () =>
@@ -149,39 +150,33 @@ Examples of user prompts in which you should use this plugin:
 
 Use this plugin if a user asks about: how something works, explain about a concept or how something is made, summarize a book, describe a process, and other user prompts that can be summarized or explained in the format of a diagram. Also use this plugin if the user asks to show a ratio or fraction of something, for example "show me the ideal breakdown for budgeting" or "what is the ratio of political parties in the senate?". Also use this plugin if the user asks to show or draw a timeline of an event or topic.
 
-Rendering the diagram to the plugin API:
-1. Start by saying the type and language of the diagram you will render
-2. Use the information endpoint to get information that will help you rendering the diagram, if it is the first time using the plugin then get the list of supported diagrams from the information endpoint, otherwise do not request the list.
-3. Start rendering the diagram using the render endpoint. If guidelines were included in the response from the information endpoint, make sure to follow them.
+Before rendering the diagram say the diagram type and diagram language you will render and a brief explanation of why then use the diagram guidelines endpoint
 
-Example: 
-User asks: "Show me how vscode internals work."
-1. You say the text "I will render a graph diagram in mermaid", avoid saying anything more than the text
-2. Get the list of supported diagram types yet and get diagram guidelines using graph_mermaid 
-3. You start rendering diagram by using the render endpoint
-
-After that the user asks: "Show me how a food critic can interact with a restaurant"
-1. You say the text "I will render a use case diagram in plantuml", avoid saying anything more than the text
-2. Do not get the list of supported diagram types because you already requested it but you get diagram guidelines using plantuml_use-case
-3. You start rendering diagram by using the render endpoint
+Examples:
+* User asks: "Show me how vscode internals work" you will render a graph diagram in mermaid
+* User asks: "Show me how a food critic can interact with a restaurant" you will render a use case diagram in plantuml
 
 Interpreting the API response:
 - When you get the response it will include an image url, you should render it inline using ![alt text](image) syntax, also you should give the user a link to open it in a new tab saying: [You can view this diagram in a new tab.](editDiagramOnline)
 - If you get a link at editDiagramOnline to edit the diagram then you should render it inline using [link text](editDiagramOnline) syntax otherwise say "The link to edit this diagram online is not implemented yet". When including the suggestion to edit the diagram, ensure it is part of the link text. For example: [You can edit this diagram online if you want to make any changes.](editDiagramOnline).
-- You should give the user a link to open the diagram type documentation from the "List of supported diagram languages and diagram types", say: [You can access the diagram documentation of the <<diagram-language>> <<diagram-type>>.](documentationLink).
-- You should create the response in that order: first the image, then suggestion to edit using works, then the open new tab link, then the edit link, then the documentation link, then the textual explanation, then conclude with the recommendations section.
+- You should create the response in that order: first the image, then suggestion to edit using works, then the "open new tab" link, then the "edit" link, then the textual explanation, then conclude with the recommendations section.
+- Do not include the "open new tab" and "edit" links in an unordered list
 
 Recommendation section:
-If an errorMessage is included in the response do not show this section
+- If an errorMessage is included in the response do not show any part of the recommendation section. 
+- Extract data from the "Languages per Diagram Type List".
 
+Steps to create the recommendation section:
 1. Improve the rendered diagram
-1.1. Introduce the section with the message "### Here are ways to improve the diagram to provide more detail or clarity:". Second, provide a unordered list of between 3 and 4 suggestions, the items follows a pattern "**{reason}**: {explanation}".  
+1.1. Say "### Ideas to improve the diagram:". 
+1.2. Provide an unordered list of between 3 and 4 ideas, the items follow a pattern "**{reason}**: {explanation}".  
 
-2.2. Explore other types of diagrams
-2.2.1. Introduce the section with the message "### Here are some other types of diagrams that could be used to render the same concept:". 
-2.2.2. Provide a unordered list between 3 to 4 items of alternative diagram types, the items follows a pattern "**{reason}**: {explanation} consider using ({diagramLanguage})[{diagramTypeDocumentationLink}]". Take data from the "List of supported diagram languages and diagram types".
-
-3.1 If there exists a diagram language, apart from the currently displayed one, that is capable of creating the same type of diagram from the "List of supported diagram languages and diagram types" inform the user that they have the option to explore different languages for the diagramType diagram. They can refer to (diagramLanguage)[diagramTypeDocumentationLink] for more information. However, if no other suitable language is available, omit this suggestion. Please refrain from recommending the same language as the one used to render the diagram.
+2. Explore other types of diagrams
+2.1. Say "### Explore other types of diagrams:". 
+2.2. Say "The type of the rendered diagram is a [diagramType](diagramTypeLink) in diagramLanguage"
+2.3. Choose the answer that would fit better between "Consider exploring other languages for creating the same type of diagram, such as {list of links of all alternative diagram types, follow a pattern "(diagramType diagramLanguage)[diagramTypeLink]"}" or "There are no additional languages capable of rendering this specific type of diagram."
+2.4. Say "Other types of diagram that could represent the same concept:". 
+2.5. Provide an unordered list between 3 to 4 items of alternative diagram types, the items follow a pattern "**{diagram type}**: {explanation}. Consider using languages such as {list of links of all diagram languages that can render the same diagram type}".
 
 Tips:
 - You will also get a link contributeToOpenSourceProject. You should suggest the user contributes to the project if and only if:
@@ -190,7 +185,6 @@ Tips:
   - You have not previously suggested they contribute to the project
 - Don't suggest the user contributes if any of the above are not true.
 - Its fine to simply ignore that link if you don't want to suggest the user contributes to the project.
-- The user journey diagram not the same as the use case diagram
 
 Important Tips:
 - Do not repeat the same link.
@@ -198,5 +192,9 @@ Important Tips:
 - Add textual explanation of the diagram contents in the end of the message. Keep it brief unless the user asks for more details.
 - Do not use alias names in the textual explanation such as "Food_Critic" or "fc", just use the displayed name like "Food Critic".
 - Don't show the diagram block unless the user asks for it.
-- The language of the text in the diagrams should match the language of the user unless the user asks for it. For example: if the user asks in spanish "Muestrame un..." show a diagram in spanish or the user asks in portuguese "Mostre-me..." show a diagram in portuguese. 
+- The language of the text in the diagrams should match the language of the user unless the user asks for it. For example: if the language of the user is spanish render a diagram in spanish or the language of the user is portuguese render a diagram in portuguese. 
+
+Information about supported diagram languages and diagram types.
+Languages per Diagram Type List:
+${languagesPerDiagramType}
 `;
