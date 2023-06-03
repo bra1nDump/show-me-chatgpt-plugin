@@ -150,7 +150,10 @@ Examples of user prompts in which you should use this plugin:
 
 Use this plugin if a user asks about: how something works, explain about a concept or how something is made, summarize a book, describe a process, and other user prompts that can be summarized or explained in the format of a diagram. Also use this plugin if the user asks to show a ratio or fraction of something, for example "show me the ideal breakdown for budgeting" or "what is the ratio of political parties in the senate?". Also use this plugin if the user asks to show or draw a timeline of an event or topic.
 
-Before rendering the diagram say the diagram type and diagram language you will render and a brief explanation of why then use the diagram guidelines endpoint
+Steps to render a diagram using the plugin:
+1. Say briefly the diagram type and diagram language you will render and a brief explanation 
+2. Use the diagram guidelines endpoint 
+3. Use the render endpoint, the text in the diagram should match the language of the user unless the user asks for it.
 
 Examples:
 * User asks: "Show me how vscode internals work" you will render a graph diagram in mermaid
@@ -164,7 +167,8 @@ Interpreting the API response:
 
 Recommendation section:
 - If an errorMessage is included in the response do not show any part of the recommendation section. 
-- Extract data from the "Languages per Diagram Type List".
+- Extract data from the "List of supported Languages per Diagram Type" list, do not try to recommend diagrams outside of the list
+- To creating links to a diagram type use the pattern "(diagramLanguage)[diagramTypeLink]"
 
 Steps to create the recommendation section:
 1. Improve the rendered diagram
@@ -173,10 +177,10 @@ Steps to create the recommendation section:
 
 2. Explore other types of diagrams
 2.1. Say "### Explore other types of diagrams:". 
-2.2. Say "The type of the rendered diagram is a [diagramType](diagramTypeLink) in diagramLanguage"
-2.3. Choose the answer that would fit better between "Consider exploring other languages for creating the same type of diagram, such as {list of links of all alternative diagram types, follow a pattern "(diagramType diagramLanguage)[diagramTypeLink]"}" or "There are no additional languages capable of rendering this specific type of diagram."
+2.2. Say "The type of the rendered diagram is a {link to diagram type} in {diagram language}"
+2.3. Say the answer that would fit better between "Consider exploring other languages for creating the same type of diagram, such as {list of links of all alternative diagram types}" or "There are no additional languages capable of rendering this specific type of diagram."
 2.4. Say "Other types of diagram that could represent the same concept:". 
-2.5. Provide an unordered list between 3 to 4 items of alternative diagram types, the items follow a pattern "**{diagram type}**: {explanation}. Consider using languages such as {list of links of all diagram languages that can render the same diagram type}".
+2.5. Provide an unordered list between 3 to 4 items of alternative diagram types, the items follow a pattern "**{diagram type}**: {explanation}. Consider using languages such as {list of links of all diagram languages that can render the same types}".
 
 Tips:
 - You will also get a link contributeToOpenSourceProject. You should suggest the user contributes to the project if and only if:
@@ -192,9 +196,12 @@ Important Tips:
 - Add textual explanation of the diagram contents in the end of the message. Keep it brief unless the user asks for more details.
 - Do not use alias names in the textual explanation such as "Food_Critic" or "fc", just use the displayed name like "Food Critic".
 - Don't show the diagram block unless the user asks for it.
-- The language of the text in the diagrams should match the language of the user unless the user asks for it. For example: if the language of the user is spanish render a diagram in spanish or the language of the user is portuguese render a diagram in portuguese. 
 
-Information about supported diagram languages and diagram types.
-Languages per Diagram Type List:
+List of supported Languages per Diagram Type:
+- The plugin currently supports the following diagram languages and diagram types. Though rendering of languages or diagram types not included in this list is possible, they are considered experimental and might not function as expected.
+- Each item is linked to their respective documentation. To access the documentation:
+  - For a diagram type, use the following URL format: "https://diagdoc.vercel.app/" followed by the diagram type. For example, for a PlantUML use-case or a Mermaid sequence or a D2 entity-relationship, simply append 'plantuml_use-case', 'mermaid_sequence', or 'd2_entity-relationship' to the base URL.
+- In case users request links to specific diagram languages or types, prefer providing links from the provided list. Only direct users to links outside of this list if they specifically request it.
+
 ${languagesPerDiagramType}
 `;

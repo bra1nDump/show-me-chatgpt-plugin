@@ -33,5 +33,8 @@ A Requirement diagram provides a visualization for requirements and their connec
   gitgraph: `
 A Git Graph is a pictorial representation of git commits and git actions(commands) on various branches. These kind of diagram are particularly helpful to developers and devops teams to share their Git branching strategies. For example, it makes it easier to visualize how git flow works.
   `,
+  "entity-relationship": `
+The entity relationship diagram consist of entities, relationship and attributes
+`
 }
 

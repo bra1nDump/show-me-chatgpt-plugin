@@ -128,10 +128,6 @@ export const supportedDiagrams:
         documentationURL: "https://plantuml.com/yaml"
       },
       {
-        diagramType: "ebnf",
-        documentationURL: "https://plantuml.com/ebnf"
-      },
-      {
         diagramType: "salt-wireframe",
         documentationURL: "https://plantuml.com/salt"
       },
@@ -183,10 +179,6 @@ export const supportedDiagrams:
         diagramType: "entity-relationship",
         documentationURL: "https://www.nomnoml.com"
       },
-      {
-        diagramType: "uml",
-        documentationURL: "https://www.nomnoml.com"
-      },
     ]
   },
   {
@@ -204,10 +196,6 @@ export const supportedDiagrams:
       {
         diagramType: "mindmap",
         documentationURL: "https://graphviz.org/Gallery/twopi/happiness"
-      },
-      {
-        diagramType: "uml",
-        documentationURL: "https://graphviz.org/Gallery/directed/UML_Class_diagram"
       },
     ]
   },
@@ -326,15 +314,15 @@ export const supportedDiagrams:
 ]
 
 // Languages Per Diagram Type List
-// graph: mermaid(link), d2(link), nomnoml(link), etc
-// sequence: mermaid(link), plantuml(link), d2(link), etc
+// graph: mermaid, d2, nomnoml, etc
+// sequence: mermaid, plantuml, d2, etc
 export const languagesPerDiagramType = Object.entries(
   supportedDiagrams.reduce((acc: Record<string, string[]>, { diagramLanguage, types }) => {
     types.forEach(({ diagramType,documentationURL }) => {
       if (!acc[diagramType]) {
         acc[diagramType] = [];
       }
-      acc[diagramType].push(`${diagramLanguage}(${documentationURL})`);
+      acc[diagramType].push(diagramLanguage);
     });
     return acc;
   }, {})
