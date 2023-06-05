@@ -23,7 +23,7 @@ export class DiagramGuidelinesRoute extends OpenAPIRoute {
     summary: "Diagram guidelines to help rendering more effective diagrams",
     parameters: {
       diagramGuidelines: Query(new Enumeration({
-          description: 'Guidelines for a type of diagram, includes syntax and best practices. Always request it before rendering a diagram',
+          description: 'Guidelines and syntax for a type of diagram',
           required: true,
           values: Object.fromEntries(
             diagramGuidelinesParams.map(param => [param, param])

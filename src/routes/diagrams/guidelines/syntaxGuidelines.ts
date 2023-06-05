@@ -1527,10 +1527,254 @@ graph ER {
 \`\`\`
 `
   },
+  actdiag: {
+    activity: `
+Example:
+\`\`\`
+{
+   A -> B -> C -> D;
+
+  lane foo {
+    A; B;
+  }
+  lane bar {
+    C; D;
+  }
+}  
+\`\`\`
+  
+Example:
+\`\`\`
+actdiag {
+  write -> convert -> image
+
+  lane user {
+     label = "User"
+     write [label = "Writing reST"];
+     image [label = "Get diagram IMAGE"];
+  }
+  lane actdiag {
+     convert [label = "Convert reST to Image"];
+  }
+}
+\`\`\
+`
+  },
+  blockdiag: {
+    block: `
+Simple diagram
+\`\`\`
+blockdiag {
+   A -> B -> C -> D;
+   A -> E -> F -> G;
+}
+\`\`\`
+`
+  },
+  nwdiag: {
+    network: `
+Simple diagram:
+\`\`\`
+nwdiag {
+  network dmz {
+      address = "210.x.x.x/24"
+
+      web01 [address = "210.x.x.1"];
+      web02 [address = "210.x.x.2"];
+  }
+  network internal {
+      address = "172.x.x.x/24";
+
+      web01 [address = "172.x.x.1"];
+      web02 [address = "172.x.x.2"];
+      db01;
+      db02;
+  }
+}
+\`\`\`
+    `,
+  },
+  rackdiag: {
+    rack: `
+Simple diagram:
+\`\`\`
+rackdiag {
+  // define height of rack
+  16U;
+
+  // define rack items
+  1: UPS [2U];
+  3: DB Server
+  4: Web Server
+  5: Web Server
+  6: Web Server
+  7: Load Balancer
+  8: L3 Switch
+}
+\`\`\`
+`
+  },
+  erd: {
+    "entity-relationship": `
+# Basics
+- Entities are declared in '[' ... ']'. All attributes after the entity header up until the end of the file (or the next entity declaration) correspond to this entity.
+- Each relationship must be between exactly two entities, which need not be distinct. Each entity in the relationship has exactly one of four possible cardinalities:
+Cardinality |  Syntax
+0 or 1      |  ?
+exactly 1   |  1
+0 or more   |  *
+1 or more   |  +
+    
+Example:
+Let's try making an ER diagram from a small example:
+\`\`\`
+[Person]
+*name
+height
+weight
++birth_location_id
+
+[Location]
+*id
+city
+state
+country
+
+Person *--1 Location
+\`\`\`
+
+Example 2:
+\`\`\`
+[Person]
+*name
+height
+weight
+\`birth date\`
++birth_place_id
+
+[\`Birth Place\`]
+*id
+\`birth city\`
+'birth state'
+"birth country"
+
+Person *--1 \`Birth Place\`
+\`\`\`
+
+# Fonts, colors, labels, ...
+The er format also has limited support for customizing the appearance of your ER diagram. For example, the following will show the entity with a background color of #ececfc and a font size of 20:
+\`\`\`
+[Person] {bgcolor: "#ececfc", size: "20"}
+name
+height
+weight
+\`\`\`
+
+Alternatively, you can specify the background color of every entity with a special directive at the top of the file:
+\`\`\`
+entity {bgcolor: "#ececfc", size: "20"}
+
+[Person]
+name
+height
+weight
+
+[\`Birth Place\`]
+place
+\`\`\`
+
+There are three other directives: "title", "header" and "relationship". The "title" directive allows one to specify a title for the graph and provide options for formatting it. The "header" directive allows one to customize the formatting of every entity header. And similarly for "relationship". Note that global options are overwritten by local options.
+
+Note that directives **must come before anything else** in an ER file.
+
+Here's an complete example:
+\`\`\`
+title {label: "nfldb Entity-Relationship diagram (condensed)", size: "20"}
+
+# Entities
+
+[player] {bgcolor: "#d0e0d0"}
+  *player_id {label: "varchar, not null"}
+  full_name {label: "varchar, null"}
+  team {label: "varchar, not null"}
+  position {label: "player_pos, not null"}
+  status {label: "player_status, not null"}
+
+[team] {bgcolor: "#d0e0d0"}
+  *team_id {label: "varchar, not null"}
+  city {label: "varchar, not null"}
+  name {label: "varchar, not null"}
+
+[game] {bgcolor: "#ececfc"}
+  *gsis_id {label: "gameid, not null"}
+  start_time {label: "utctime, not null"}
+  week {label: "usmallint, not null"}
+  season_year {label: "usmallint, not null"}
+  season_type {label: "season_phase, not null"}
+  finished {label: "boolean, not null"}
+  home_team {label: "varchar, not null"}
+  home_score {label: "usmallint, not null"}
+  away_team {label: "varchar, not null"}
+  away_score {label: "usmallint, not null"}
+
+[drive] {bgcolor: "#ececfc"}
+  *+gsis_id {label: "gameid, not null"}
+  *drive_id {label: "usmallint, not null"}
+  start_field {label: "field_pos, null"}
+  start_time {label: "game_time, not null"}
+  end_field {label: "field_pos, null"}
+  end_time {label: "game_time, not null"}
+  pos_team {label: "varchar, not null"}
+  pos_time {label: "pos_period, null"}
+
+[play] {bgcolor: "#ececfc"}
+  *+gsis_id {label: "gameid, not null"}
+  *+drive_id {label: "usmallint, not null"}
+  *play_id {label: "usmallint, not null"}
+  time {label: "game_time, not null"}
+  pos_team {label: "varchar, not null"}
+  yardline {label: "field_pos, null"}
+  down {label: "smallint, null"}
+  yards_to_go {label: "smallint, null"}
+
+[play_player] {bgcolor: "#ececfc"}
+  *+gsis_id {label: "gameid, not null"}
+  *+drive_id {label: "usmallint, not null"}
+  *+play_id {label: "usmallint, not null"}
+  *+player_id {label: "varchar, not null"}
+  team {label: "varchar, not null"}
+
+[meta] {bgcolor: "#fcecec"}
+  version {label: "smallint, null"}
+  season_type {label: "season_phase, null"}
+  season_year {label: "usmallint, null"}
+  week {label: "usmallint, null"}
+
+# Relationships
+
+player      *--1 team
+game        *--1 team {label: "home"}
+game        *--1 team {label: "away"}
+drive       *--1 team
+play        *--1 team
+play_player *--1 team
+
+game        1--* drive
+game        1--* play
+game        1--* play_player
+
+drive       1--* play
+drive       1--* play_player
+
+play        1--* play_player
+
+player      1--* play_player
+\`\`\`\
+`
+  },
   "vegalite": {
     "bar-chart": `
-Examples:
-User asks: "Draw me a simple chart with embedded data"
+Example:
 \`\`\`
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
@@ -1552,9 +1796,101 @@ User asks: "Draw me a simple chart with embedded data"
   "encoding": {
     "x": {"field": "a", "type": "nominal", "axis": {"labelAngle": 0}},
     "y": {"field": "b", "type": "quantitative"}
+  },
+  "width": { "step": 50 }
+}
+\`\`\`
+- About the last example example, "a" and "b" are x-axis label and y-axis label. You should use more descriptive names for these labels instead of just "a" or "b".
+
+Example using groups:
+\`\`\`
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "values": [
+      {"category": "A", "group": "x", "value": 0.1},
+      {"category": "A", "group": "y", "value": 0.6},
+      {"category": "A", "group": "z", "value": 0.9},
+      {"category": "B", "group": "x", "value": 0.7},
+      {"category": "B", "group": "y", "value": 0.2},
+      {"category": "B", "group": "z", "value": 1.1},
+      {"category": "C", "group": "x", "value": 0.6},
+      {"category": "C", "group": "y", "value": 0.1},
+      {"category": "C", "group": "z", "value": 0.2}
+    ]
+  },
+  "width": { "step": 50 },
+  "mark": "bar",
+  "encoding": {
+    "x": {"field": "category"},
+    "y": {
+      "field": "value",
+      "type": "quantitative",
+      "axis": {"title": "population", "grid": false}
+    },
+    "xOffset": {"field": "group"},
+    "color": {"field": "group"}
   }
 }
 \`\`\`
-`
+`,
+    "histogram": `
+Example:
+\`\`\`
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "values": [
+      {"bin_start": 8, "bin_end": 10, "count": 7},
+      {"bin_start": 10, "bin_end": 12, "count": 29},
+      {"bin_start": 12, "bin_end": 14, "count": 71},
+      {"bin_start": 14, "bin_end": 16, "count": 127},
+      {"bin_start": 16, "bin_end": 18, "count": 94},
+      {"bin_start": 18, "bin_end": 20, "count": 54},
+      {"bin_start": 20, "bin_end": 22, "count": 17},
+      {"bin_start": 22, "bin_end": 24, "count": 5}
+    ]
+  },
+  "mark": "bar",
+  "encoding": {
+    "x": {
+      "field": "bin_start",
+      "bin": {"binned": true, "step": 2}
+    },
+    "x2": {"field": "bin_end"},
+    "y": {
+      "field": "count",
+      "type": "quantitative"
+    }
+  }
+}
+\`\`\`
+    `,
+    "line-chart": `
+Example:
+\`\`\`
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Line chart with a dashed part created by drawing multiple connecting lines. Note that the data source contains the data point at (E, 81) twice.",
+  "data": {
+    "values": [
+      {"a": "A", "b": 28, "predicted": false},
+      {"a": "B", "b": 55, "predicted": false},
+      {"a": "D", "b": 91, "predicted": false},
+      {"a": "E", "b": 81, "predicted": false},
+      {"a": "E", "b": 81, "predicted": true},
+      {"a": "G", "b": 19, "predicted": true},
+      {"a": "H", "b": 87, "predicted": true}
+    ]
+  },
+  "mark": "line",
+  "encoding": {
+    "x": {"field": "a", "type": "ordinal"},
+    "y": {"field": "b", "type": "quantitative"},
+    "strokeDash": {"field": "predicted", "type": "nominal"}
+  }
+}
+\`\`\`
+    `
   }
 }
