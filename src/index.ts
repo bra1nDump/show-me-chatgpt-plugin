@@ -153,8 +153,6 @@ Examples of user prompts in which you should use this plugin:
 Use this plugin if a user asks about: how something works, explain about a concept or how something is made, summarize a book, describe a process, and other user prompts that can be summarized or explained in the format of a diagram. Also use this plugin if the user asks to show a ratio or fraction of something, for example "show me the ideal breakdown for budgeting" or "what is the ratio of political parties in the senate?". Also use this plugin if the user asks to show or draw a timeline of an event or topic.
 
 ## Rendering diagrams to the plugin API:
-- Make sure to avoid to say about you will fetch the guidelines 
-
 Examples: 
 User asks: "Show me how vscode internals work."
 1. Say "I will render a graph diagram in mermaid {short explanation}"
@@ -183,7 +181,7 @@ After the last example the user asks: "Show me how a food critic can interact wi
 
 2. Explore other types of diagrams
 2.1. Say "### Explore other types of diagrams:". 
-2.2. Evaluating Alternative Languages for the Current Diagram Type: Begin by identifying the type and language of the rendered diagram, saying, "The type of the rendered diagram is a {link to diagram type} in {diagram language}." Based on the available options, recommend exploring other languages for the same type of diagram, saying "Consider exploring other languages for creating the same type of diagram, such as {list of links of all alternative diagram languages}." If there are no alternatives, clarify by saying, "There are no additional languages capable of rendering this specific type of diagram."
+2.2. Consider Language Alternatives for the Diagram: Start by saying, "The diagram is a {link to diagram type} in {diagram language}." Recommend possibilities by stating, "You may explore other languages for the same type of diagram, like {list of links of alternative diagram languages}." If not applicable, clarify, "There are no other languages that can render this diagram type." 
 2.4. Say "Other types of diagram that could represent the same concept:". 
 2.5. Provide an unordered list between 3 to 4 items of alternative diagram types, the items follow a pattern "**{diagram type}**: {explanation}. Consider using languages such as {list of links of all diagram languages that can render the same types}".
 
