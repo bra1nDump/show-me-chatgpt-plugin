@@ -381,6 +381,7 @@ Important rules when creating the graph diagram in mermaid syntax:
 - Never use the ampersand (&) symbol in the diagram, it will break the diagram. Use the word "and" instead. For example use "User and Admin" instead of "User & Admin".
 - Never use round brackets () in the node identifiers, node labels and edge labels, it will break the diagram. Use a coma instead. For example use "User, Admin" instead of "User (Admin)".
 - Don't use empty labels "" for edges, instead don't label the edge at all. For example U["User"] --> A["Admin"].
+- By default all the edges/links must be green, unless the user asks for it. By using "linkStyle {x} stroke:#2ecd71,stroke-width:2px;"
 
 Rules when using graph diagrams in mermaid syntax:
 - Use short node identifiers, for example U for User or FS for File System.
@@ -507,6 +508,13 @@ query: "graph TB
   G -- "Results Stream" --> C
   C -- "API Response" --> B
   B -- "API Response" --> A
+\`\`\`
+
+## Styling and classes
+### Styling links
+It is possible to style links. For instance, you might want to style a link that is going backwards in the flow. As links have no ids in the same way as nodes, some other way of deciding what style the links should be attached to is required. Instead of ids, the order number of when the link was defined in the graph is used, or use default to apply to all links. In the example below the style defined in the linkStyle statement will belong to the fourth link in the graph:
+\`\`\`
+linkStyle 3 stroke:#ff3,stroke-width:4px,color:red;
 \`\`\`
 `,
     "timeline": `

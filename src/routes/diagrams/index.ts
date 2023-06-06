@@ -1,12 +1,9 @@
 import {
   compressAndEncodeBase64,
   DiagramLanguage,
-  DiagramType,
   getSVG,
-  HACK_postMermaidDiagram,
-  RenderResult
 } from "./utils";
-import { mermaidEditorLink, mermaidFormat } from "./mermaid";
+import { mermaidEditorLink } from "./mermaid";
 import { plantumlEditorLink } from "./plantuml";
 import { graphvizEditorLink } from "./graphviz";
 import { vegaLiteEditorLink } from "./vega-lite";
@@ -20,64 +17,51 @@ type DiagramDetails = {
   error?: "kroki timed out" | "invalid syntax" | "kroki failed",
 };
 
-export async function diagramDetails(diagram: string, diagramLanguage: DiagramLanguage, diagramType: DiagramType): Promise<DiagramDetails> {
+export async function diagramDetails(diagram: string, diagramLanguage: DiagramLanguage): Promise<DiagramDetails> {
   type DiagramFunctions = {
-    format: ((diagram: string, diagramType: DiagramType) => string) | null,
     editorLink: (diagram: string) => string | null
   };
 
   const getDiagramFunctions: Partial<Record<DiagramLanguage, DiagramFunctions>> = {
     "mermaid": {
-      format: mermaidFormat,
       editorLink: mermaidEditorLink,
     },
     "plantuml": {
-      format: null,
       editorLink: plantumlEditorLink,
     },
     "graphviz": {
-      format: null,
       editorLink: graphvizEditorLink,
     },
     "vegalite": {
-      format: null,
       editorLink: vegaLiteEditorLink,
     },
     "nomnoml": {
-      format: null,
       editorLink: nomnomlEditorLink
     },
     "actdiag": {
-      format: null,
       editorLink: actdiagEditorLink
     },
     "blockdiag": {
-      format: null,
       editorLink: blockdiagEditorLink
     },
     "nwdiag": {
-      format: null,
       editorLink: nwdiagEditorLink
     },
     "rackdiag": {
-      format: null,
       editorLink: rackdiagEditorLink
     }
   }
 
   const defaultDiagramFunctions: DiagramFunctions = {
-    format: null,
     editorLink: () => null,
   }
   const diagramFunctions = getDiagramFunctions[diagramLanguage] ?? defaultDiagramFunctions
-
-  const formattedDiagram = diagramFunctions.format?.(diagram, diagramType) ?? diagram;
 
   const imageUrl =
     'https://kroki.io/' +
     diagramLanguage +
     '/svg/' +
-    compressAndEncodeBase64(formattedDiagram)
+    compressAndEncodeBase64(diagram)
 
   console.log("imageUrl", imageUrl);
 
@@ -89,13 +73,13 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
 
   if (renderResult.error) {
     return {
-      editorLink: diagramFunctions.editorLink?.(formattedDiagram) ?? "",
+      editorLink: diagramFunctions.editorLink?.(diagram) ?? "",
       isValid: false,
       error: renderResult.error,
     }
   } else {
     return {
-      editorLink: diagramFunctions.editorLink?.(formattedDiagram) ?? "",
+      editorLink: diagramFunctions.editorLink?.(diagram) ?? "",
       isValid: true,
       diagramSVG: renderResult.svg,
     }

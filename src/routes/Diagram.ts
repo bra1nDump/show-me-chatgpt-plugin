@@ -116,7 +116,7 @@ export class MermaidRoute extends OpenAPIRoute {
     console.log('diagram', diagramParam)
     console.log('topic', topic)
 
-    const diagram = await diagramDetails(diagramParam, diagramLanguage, diagramType)
+    const diagram = await diagramDetails(diagramParam, diagramLanguage)
 
     const headers = Object.fromEntries(request.headers)
     console.log('headers', headers)
