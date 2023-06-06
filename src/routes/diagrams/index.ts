@@ -10,6 +10,8 @@ import { mermaidEditorLink, mermaidFormat } from "./mermaid";
 import { plantumlEditorLink } from "./plantuml";
 import { graphvizEditorLink } from "./graphviz";
 import { vegaLiteEditorLink } from "./vega-lite";
+import { nomnomlEditorLink } from "./nomnoml";
+import { actdiagEditorLink, blockdiagEditorLink, nwdiagEditorLink, rackdiagEditorLink } from "./actdiag";
 
 type DiagramDetails = {
   editorLink: string,
@@ -41,7 +43,26 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
       format: null,
       editorLink: vegaLiteEditorLink,
     },
-    // TODO: add other diagram languages
+    "nomnoml": {
+      format: null,
+      editorLink: nomnomlEditorLink
+    },
+    "actdiag": {
+      format: null,
+      editorLink: actdiagEditorLink
+    },
+    "blockdiag": {
+      format: null,
+      editorLink: blockdiagEditorLink
+    },
+    "nwdiag": {
+      format: null,
+      editorLink: nwdiagEditorLink
+    },
+    "rackdiag": {
+      format: null,
+      editorLink: rackdiagEditorLink
+    }
   }
 
   const defaultDiagramFunctions: DiagramFunctions = {
