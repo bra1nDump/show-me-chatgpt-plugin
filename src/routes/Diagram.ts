@@ -1,4 +1,4 @@
-import { Enumeration, OpenAPIRoute, Query, Str } from '@cloudflare/itty-router-openapi'
+import { Enumeration, OpenAPIRoute, Query, Str, OpenAPISchema } from '@cloudflare/itty-router-openapi'
 
 import { saveShortLink } from './Shorten'
 
@@ -120,6 +120,8 @@ export class MermaidRoute extends OpenAPIRoute {
 
     console.log('diagram', diagramParam)
     console.log('topic', topic)
+
+    const diagram = await diagramDetails(diagramParam, diagramLanguage)
 
     const track = createTrackerForRequest(request, env)
     void track('render', {
