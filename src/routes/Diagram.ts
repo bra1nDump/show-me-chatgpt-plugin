@@ -162,9 +162,9 @@ export class MermaidRoute extends OpenAPIRoute {
     })
 
     let errorMessage: string | undefined;
-    switch (diagram.error) {
+    switch (diagram.error?.type) {
       case 'invalid syntax':
-        errorMessage = "GPT created an invalid diagram, you can try again or fix it by hand by editing it online"
+        errorMessage = `GPT created an invalid diagram, you can try again or fix it by hand by editing it online. Render error message: \`${diagram.error?.invalidSyntax}\``
         break;
       case 'kroki timed out':
       case 'kroki failed':

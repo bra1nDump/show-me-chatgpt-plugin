@@ -100,13 +100,11 @@ export type DiagramType = typeof diagramTypes[number]
 
 async function fetchSVG(link: string): Promise<string> {
   const response = await fetch(link);
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
   const data = await response.text();
 
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}. Render error: \`${data}\``);
+  }
   if (data.includes("Syntax error in graph")) {
     throw new Error('SVG contains "Syntax error in graph"');
   }
@@ -126,9 +124,14 @@ async function racePromise<T>(timeout: number, promise: Promise<T>): Promise<T> 
   return Promise.race([promise, timeoutPromise]);
 }
 
+export type RenderError = {
+  type: "kroki timed out" | "invalid syntax" | "kroki failed",
+  invalidSyntax?: string;
+}
+
 export interface RenderResult {
   svg?: string,
-  error?: "kroki timed out" | "invalid syntax" | "kroki failed"
+  error?: RenderError
 }
 
 export async function getSVG(imageUrl: string): Promise<RenderResult> {
@@ -148,11 +151,11 @@ export async function getSVG(imageUrl: string): Promise<RenderResult> {
       `)
 
     if (error.message.includes("Promise timed out after")) {
-      return { error: "kroki timed out" }
-    } else if (error.message.includes('SVG contains "Syntax error in graph"')) {
-      return { error: "invalid syntax" }
+      return { error: { type: "kroki timed out" } }
+    } else if (error.message.includes('SVG contains "Syntax error in graph"') || error.message.includes('HTTP error!')) {
+      return { error: { type: "invalid syntax", invalidSyntax: error.message } }
     } else {
-      return { error: "kroki failed" }
+      return { error: { type: "kroki failed" } }
     }
   }
 }

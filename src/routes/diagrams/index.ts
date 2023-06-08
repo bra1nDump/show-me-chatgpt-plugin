@@ -2,6 +2,7 @@ import {
   compressAndEncodeBase64,
   DiagramLanguage,
   getSVG,
+  RenderError,
 } from "./utils";
 import { mermaidEditorLink } from "./mermaid";
 import { plantumlEditorLink } from "./plantuml";
@@ -14,7 +15,7 @@ type DiagramDetails = {
   editorLink: string,
   isValid: boolean,
   diagramSVG?: string | null,
-  error?: "kroki timed out" | "invalid syntax" | "kroki failed",
+  error?: RenderError,
 };
 
 export async function diagramDetails(diagram: string, diagramLanguage: DiagramLanguage): Promise<DiagramDetails> {
