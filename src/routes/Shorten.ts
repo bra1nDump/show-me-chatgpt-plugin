@@ -1,8 +1,7 @@
 import { KVNamespace } from '@cloudflare/workers-types'
 import { customAlphabet } from 'nanoid'
-import { Request } from "miniflare";
-
-import { Env } from "../index";
+import { Env } from '..'
+import { createTrackerForRequest, sendMixpanelEvent } from '../mixpanel'
 
 const nanoid = customAlphabet(
   '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
@@ -57,6 +56,15 @@ export async function ShortLinkRoute(request: Request, env: Env) {
   // compatible way. If we were using a new type wrapper so that only URLs
   // could be passed to saveShortLink then this problem would have been avoided.
   if (data.startsWith('http')) {
+    // Most likely its an edit link (in the newer versions of the plugin)
+    //
+    // NOTE: Might want to associate the edit link with the original render request
+    // Currently can be kind of inferred by conversation id but requires a mixpanel query
+    const track = createTrackerForRequest(request, env)
+    track('open_edit_link', {
+      link: data,
+    })
+
     return new Response(null, {
       status: 301,
       statusText: 'Moved Permenantly',

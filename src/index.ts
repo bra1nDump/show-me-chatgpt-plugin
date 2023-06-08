@@ -12,7 +12,7 @@ import { ShortLinkRoute, DiagramLinkRoute, debugCreateLink } from './routes/Shor
 import { logoSvg } from './logo'
 import { html as privacyPageHtml } from './privacy-page'
 
-import { sendMixpanelEvent } from './mixpanel'
+import { createTrackerForRequest, sendMixpanelEvent }  from './mixpanel'
 
 export interface Env {
   SHORTEN: KVNamespace
@@ -68,12 +68,11 @@ router.original.get('/d/:id', DiagramLinkRoute)
 router.original.get('/.well-known/ai-plugin.json', ManifestRoute);
 router.original.get('/logo.svg', (request: Request, env: Env) => {
   console.log('logo')
-  const ip = request.headers.get('Cf-Connecting-Ip') as string
 
   if (Math.random() < 0.01) {
-    void sendMixpanelEvent(env.MIXPANEL_TOKEN, 'impression', ip, { ip })
-  }
-  ;
+    const track = createTrackerForRequest(request, env)
+    track('impression', {})
+  };
 
   return new Response(logoSvg, {
     headers: {
@@ -117,22 +116,15 @@ router.all('*', () => new Response('404 Not Found...', { status: 200 }))
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {
-    const ip = request.headers.get('Cf-Connecting-Ip')
-    // if (!ip) {
-    //   console.warn('search error missing IP address')
-    //   return new Response('invalid source IP', { status: 500 })
-    // }
-    // if (env.WORKER_ENV !== 'local') {
-    //   if (!isValidChatGPTIPAddress(ip)) {
-    //     console.warn('search error invalid IP address', ip)
-    //     return new Response(`Forbidden`, { status: 403 })
-    //   }
-    // }
-
     console.log('request', request.url)
 
     if (request.method === 'OPTIONS') {
       return preflight(request);
+    }
+
+    if (request.url.endsWith('openapi.json')) {
+      const track = createTrackerForRequest(request, env)
+      track('plugin_installed', {})
     }
 
     return router.handle(request, env, ctx).then(corsify)

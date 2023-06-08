@@ -15,6 +15,7 @@ Create and edit diagrams in seconds without even leaving the chat.
 - Grab one of the existing issues or create an issue you want to work on
 
 # How to run the project
+## local
 - Run `npm install`
 - To run the server, run `npm run dev`
 - Navigate to https://chat.openai.com.
@@ -23,6 +24,8 @@ Create and edit diagrams in seconds without even leaving the chat.
 - Select "Develop your own plugin"
 - Enter in localhost:8787 since this is the URL the server is running on locally, then select "Find manifest file".
 - The plugin should now be installed and enabled! You can start with a question like "Show me how VSCode architecture looks like"
+## Docker
+- run `docker-compose up -d`
 
 > Note: There is some unused code in the repo which we didn't have time to clean up. Its mostly related to running GPT-4 on the server side and multi diagram support.
 

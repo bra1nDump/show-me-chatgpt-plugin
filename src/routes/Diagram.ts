@@ -2,6 +2,7 @@ import { Enumeration, OpenAPIRoute, Query, Str } from '@cloudflare/itty-router-o
 
 import { saveShortLink } from './Shorten'
 
+import { createTrackerForRequest, sendMixpanelEvent } from '../mixpanel'
 import { Env } from '..';
 import { diagramDetails } from "./diagrams";
 import { DiagramLanguage, diagramLanguages, DiagramType, diagramTypes } from "./diagrams/utils";
@@ -96,6 +97,10 @@ export class MermaidRoute extends OpenAPIRoute {
     },
   }
 
+  getSchema(): OpenAPISchema {
+    return MermaidRoute.schema
+  }
+
   /// 3. Handles the API request
   async handle(request: Request, env: Env, _ctx : unknown, data: Record<string, any>) {
     const BASE_URL = new URL(request.url).origin
@@ -116,13 +121,7 @@ export class MermaidRoute extends OpenAPIRoute {
     console.log('diagram', diagramParam)
     console.log('topic', topic)
 
-    const diagram = await diagramDetails(diagramParam, diagramLanguage)
-
-    const headers = Object.fromEntries(request.headers)
-    console.log('headers', headers)
-
-    const track = getTrack(headers, env)
-
+    const track = createTrackerForRequest(request, env)
     void track('render', {
       'diagram_language': diagramLanguage,
 
@@ -147,7 +146,7 @@ export class MermaidRoute extends OpenAPIRoute {
     }
 
     console.log({ shortenedDiagramURL })
-    console.log('diagram svg (truncated)', diagram.diagramSVG?.slice(0, 300))
+    console.log('diagram svg (truncated or empty)', diagram.diagramSVG?.slice(0, 300))
 
     await track('render_complete', {
       'diagram_language': diagramLanguage,

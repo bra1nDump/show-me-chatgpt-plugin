@@ -1,6 +1,6 @@
 {
   "name": "diagram-chatgpt-plugin",
-  "version": "0.1",
+  "version": "0.1.0",
   "private": true,
   "description": "Create Diagrams with Kroki, using Mermaid, GraphViz, Excalidraw, and more",
   "author": "InfoHazard Economist",
