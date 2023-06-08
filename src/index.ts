@@ -116,9 +116,11 @@ export default {
       return preflight(request);
     }
 
-    if (request.url.endsWith('openapi.json')) {
+    // Sample the event - log 1% of requests
+    if (request.url.endsWith('openapi.json')
+      && Math.random() < 0.01) {
       const track = createTrackerForRequest(request, env)
-      track('plugin_installed', {})
+      track('openapi_fetched', {})
     }
 
     return router.handle(request, env, ctx).then(corsify)
