@@ -4,8 +4,8 @@ import { Env } from '..';
 import { DiagramLanguage, DiagramType } from "./diagrams/utils";
 import { diagramTypeGuidelines } from "./diagrams/guidelines/diagramTypeGuidelines";
 import { syntaxGuidelines } from "./diagrams/guidelines/syntaxGuidelines";
-import { getTrack } from "./utils";
 import { supportedDiagrams } from "./diagrams/supportedDiagrams";
+import { createTrackerForRequest } from "../mixpanel";
 
 type DiagramTypeSyntax = `${DiagramLanguage}_${DiagramType}`
 
@@ -55,10 +55,7 @@ export class DiagramGuidelinesRoute extends OpenAPIRoute {
 
     const diagramGuidelines = `${diagramTypeGuidelines[diagramType] ?? ""}${syntaxGuidelines[diagramLanguage]?.[diagramType] ?? ""}` || "there are no guidelines for this diagram type"
 
-    const headers = Object.fromEntries(request.headers)
-    console.log('headers', headers)
-
-    const track = getTrack(headers, env)
+    const track = createTrackerForRequest(request, env)
 
     void track('diagram-guidelines', {
       'diagramGuidelinesParam': diagramGuidelinesParam,

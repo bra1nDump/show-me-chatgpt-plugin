@@ -6,7 +6,6 @@ import { createTrackerForRequest, sendMixpanelEvent } from '../mixpanel'
 import { Env } from '..';
 import { diagramDetails } from "./diagrams";
 import { DiagramLanguage, diagramLanguages, DiagramType, diagramTypes } from "./diagrams/utils";
-import { getTrack } from "./utils";
 
 export class MermaidRoute extends OpenAPIRoute {
   /// 2. Creates /openapi.json route under the hood. Injects this into gpt prompt to teach about how to use the plugin.
