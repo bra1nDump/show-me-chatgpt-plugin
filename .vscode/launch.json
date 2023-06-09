@@ -19,6 +19,22 @@
             ],
             "outputCapture": "std",
             "console": "integratedTerminal",
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Dev With Secrets",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "dev:with-secrets"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/build/**/*.js",
+                "${workspaceFolder}/build/**/*.js.map"
+            ],
+            "outputCapture": "std",
+            "console": "integratedTerminal",
         }
     ]
 }
