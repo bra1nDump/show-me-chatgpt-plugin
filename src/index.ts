@@ -11,6 +11,7 @@ import { logoSvg } from './logo'
 import { html as privacyPageHtml } from './privacy-page'
 
 import { createTrackerForRequest, sendMixpanelEvent }  from './mixpanel'
+import { JoinWorkTogetherEmailRoute } from './routes/CollectEmail'
 
 export interface Env {
   SHORTEN: KVNamespace
@@ -18,6 +19,9 @@ export interface Env {
   OPENAI_KEY: string
   WORKER_ENV: 'production' | 'local'
   MIXPANEL_TOKEN: string
+
+  MAILCHIMP_API_KEY: string
+  MAILCHIMP_LIST_ID: string
 }
 
 const router = OpenAPIRouter({
@@ -59,6 +63,9 @@ router.original.get('/legal', () =>
 
 router.original.get('/s/:id', ShortLinkRoute)
 router.original.get('/d/:id', DiagramLinkRoute)
+
+router.original.post('/join-work-together-email', JoinWorkTogetherEmailRoute)
+
 router.original.get('/.well-known/ai-plugin.json', ManifestRoute);
 router.original.get('/logo.svg', (request: Request, env: Env) => {
   console.log('logo')
