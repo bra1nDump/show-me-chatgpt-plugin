@@ -2,6 +2,7 @@ import { KVNamespace } from '@cloudflare/workers-types'
 import { customAlphabet } from 'nanoid'
 import { Env } from '..'
 import { createTrackerForRequest, sendMixpanelEvent } from '../mixpanel'
+import { DiagramEditorWithEmailForm } from './CollectEmail'
 
 const nanoid = customAlphabet(
   '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
@@ -39,7 +40,7 @@ export async function DiagramLinkRoute(request: Request, env: Env) {
 
 // Stores redirect links (or SVGs, for legacy reasons)
 export async function ShortLinkRoute(request: Request, env: Env) {
-  const slug = request.params.id
+  const slug = (request as any).params.id
   if (!slug) {
     return new Response('404 Not Found...', { status: 200 })
   }
@@ -60,18 +61,9 @@ export async function ShortLinkRoute(request: Request, env: Env) {
     //
     // NOTE: Might want to associate the edit link with the original render request
     // Currently can be kind of inferred by conversation id but requires a mixpanel query
-    const track = createTrackerForRequest(request, env)
-    track('open_edit_link', {
-      link: data,
-    })
 
-    return new Response(null, {
-      status: 301,
-      statusText: 'Moved Permenantly',
-      headers: {
-        'Location': data,
-      }
-    });
+    const workerUrl = new URL(request.url).origin
+    return DiagramEditorWithEmailForm(data, workerUrl, env)
   }
 
   // Assume that the all the non link data is SVG files
@@ -81,6 +73,7 @@ export async function ShortLinkRoute(request: Request, env: Env) {
     }
   })
 }
+
 
 export async function debugCreateLink(request: Request, env: Env) {
   let requestBody = await request.json()
