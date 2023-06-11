@@ -17,15 +17,6 @@ export class MermaidRoute extends OpenAPIRoute {
       // not sure if its even possible.
 
       // It still prefers the old name even if new manifest is fetched
-      mermaid: Query(
-        new Str({
-          description: "Mermaid to render (legacy parameter name, use diagram instead)",
-          // Not providing an example because it's a duplicate of the one below
-        }),
-        {
-          required: false,
-        }
-      ),
       diagram: Query(
         new Str({
           description: "Diagram to render",
@@ -38,6 +29,7 @@ export class MermaidRoute extends OpenAPIRoute {
       diagramLanguage: Query(
         new Enumeration({
           description: 'Language of the diagram',
+          default: "mermaid",
           required: true,
           values: Object.fromEntries(
             diagramLanguages.map(language => [language, language])
@@ -50,6 +42,7 @@ export class MermaidRoute extends OpenAPIRoute {
       diagramType: Query(
         new Enumeration({
           description: "Type of the diagram",
+          default: "graph",
           values: Object.fromEntries(
             diagramTypes.map(diagramType => [diagramType, diagramType])
           )
@@ -164,7 +157,7 @@ export class MermaidRoute extends OpenAPIRoute {
     let errorMessage: string | undefined;
     switch (diagram.error?.type) {
       case 'invalid syntax':
-        errorMessage = `GPT created an invalid diagram, you can try again or fix it by hand by editing it online. Render error message: \`${diagram.error?.invalidSyntax}\``
+        errorMessage = `invalid syntax: \`${diagram.error?.invalidSyntax}\``
         break;
       case 'kroki timed out':
       case 'kroki failed':

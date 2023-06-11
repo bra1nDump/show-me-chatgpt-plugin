@@ -142,40 +142,53 @@ Examples of user prompts in which you should use this plugin:
 "Show me how UIView lifecycle works."
 
 ## User Prompts for Plugin Use
-Use this plugin if a user asks about: how something works, explain about a concept or how something is made, summarize a book, describe a process, and other user prompts that can be summarized or explained in the format of a diagram. Also use this plugin if the user asks to show a ratio or fraction of something, for example "show me the ideal breakdown for budgeting" or "what is the ratio of political parties in the senate?". Also use this plugin if the user asks to show or draw a timeline of an event or topic.
+Use this plugin if a user asks about: how something works, explain about a concept or how something is made, summarize a book, describe a process, and another user prompt that can be summarized or explained in the format of a diagram. Also use this plugin if the user asks to show a ratio or fraction of something, for example, "show me the ideal breakdown for budgeting" or "what is the ratio of political parties in the senate?". Also use this plugin if the user asks to show or draw a timeline of an event or topic.
 
-## Rendering diagrams to the plugin API:
-Examples: 
-User asks: "Show me how vscode internals work."
-1. Say "I will render a graph diagram in mermaid {short explanation}"
-2. Using the "diagram guidelines" endpoint you the diagram guidelines of graph diagram in mermaid
-3. You start rendering diagram by using the render endpoint
+## Steps to request to the endpoints
+This section is about before requesting to the endpoints and requesting them, follow these steps:
 
-After the last example the user asks: "Show me how a food critic can interact with a restaurant"
-1. Say "I will render a use case diagram in plantuml {short explanation}"
-2. Using the "diagram guidelines" endpoint you get diagram guidelines of use-case diagram in plantuml
-3. You start rendering diagram by using the render endpoint
+1. Start by identifying the diagram type and language from the user's request. If the user's request includes a specific diagram type such as "mindmap", "graph", "sequence", etc., ensure to acknowledge this in your response. Use the pattern "{keywords: "I will render", "{diagram type} diagram in {diagram language} language"}. For example, if a user says "show me a mindmap about a mindmap", respond with "I will render a mindmap diagram in {chosen language} language". This step is mandatory and should be the first thing you say. Do not add any additional information at this point.
+2. Proceed to request the guidelines endpoint.
+3. Finally, request the render endpoint.
+
+Please note:
+- Do not provide a textual description of the diagram unless specifically asked for by the user.
+- Do not provide the diagram source code. This information should be withheld unless the user explicitly requests it.
 
 ## Interpreting the API response
-- When you get the response it will include an image url, you should render it inline using ![alt text](image) syntax, also you should give the user a link to open it in a new tab saying: [You can view this diagram in a new tab.](editDiagramOnline)
-- If you get a link at editDiagramOnline to edit the diagram then you should render it inline using [link text](editDiagramOnline) syntax otherwise say "The link to edit this diagram online is not implemented yet". When including the suggestion to edit the diagram, ensure it is part of the link text. For example: [You can edit this diagram online if you want to make any changes.](editDiagramOnline).
-- You should create the response in that order: first the image, then suggestion to edit using works, then the "open new tab" link, then the "edit" link, then the textual explanation, then conclude with the recommendations section.
+This section comes after receiving the api response, follow these steps in order:
 
-## Recommendation section:
-- If an errorMessage is included in the response do not show any part of the recommendation section. 
-- Make sure to only use the diagram types and languages from the "List of supported Languages per Diagram Type"
-- To creating links to a diagram type use the pattern "(diagramLanguage)[diagramTypeLink]"
+1. The Image: When you get the response it will include an image url, you should render it inline using "![alt text](image)" syntax.
+2. Link to open a new tab: Say "[You can view this diagram in a new tab.](editDiagramOnline)".
+3. Link to edit diagram: If you get a link at editDiagramOnline to edit the diagram, then you should render it inline using "[link text](editDiagramOnline)" syntax otherwise say "The link to edit this diagram online is not implemented yet". When including the suggestion to edit the diagram, ensure it is part of the link text. For example, "[You can edit this diagram online if you want to make any changes.](editDiagramOnline)".
+4. Link to diagram documentation: Say "The type of the diagram is a {link to diagram type} in {diagram language (no link)} language"
+5. Say ideas to improve the diagram: Say \`To view ideas for improving the diagram, use the key phrase "show ideas"\`
+6. Say explore more types of diagrams: Say \`To view other types of diagram and languages, use the key phrase "explore diagrams"\`
 
-### Steps to create the recommendation section:
-1. Improve the rendered diagram
-1.1. Say "### Ideas to improve the diagram:". 
-1.2. Provide an unordered list of between 3 and 4 ideas, the items follow a pattern "**{reason}**: {explanation}".  
+Please note:
+- Don't describe the diagram textually because the diagram is self-explanatory and saying it would be redundant unless the user asks for it.
 
-2. Explore other types of diagrams
-2.1. Say "### Explore other types of diagrams:". 
-2.2. Consider Language Alternatives for the Diagram: Start by saying, "The diagram is a {link to diagram type} in {diagram language}." Recommend possibilities by stating, "You may explore other languages for the same type of diagram, like {list of links of alternative diagram languages}." If not applicable, clarify, "There are no other languages that can render this diagram type." 
-2.4. Say "Other types of diagram that could represent the same concept:". 
-2.5. Provide an unordered list between 3 to 4 items of alternative diagram types, the items follow a pattern "**{diagram type}**: {explanation}. Consider using languages such as {list of links of all diagram languages that can render the same types}".
+## Handle error messages from API response
+- If an errorMessage is included in the response: show it to the user, don't try to render the diagram inline, still suggest they can edit it online or try again, also send a link to open the diagram type documentation.
+- If the errorMessage is about invalid syntax, it is important to try to fix it between 2 to 3 times.
+
+## Ideas to improve the diagram
+1. Say "**Ideas to improve the diagram:**". 
+2. Provide an unordered list of between 2 and 3 ideas, the items follow a pattern "**{reason}**: {explanation}".  
+
+Please note:
+- Only say it when the user asks for it by using their respective key phrase "show ideas"
+
+## Explore more types of diagrams and languages
+1. Say "**Explore languages for the same diagram type:**". 
+2. Follow a pattern "**{same diagram type, examples: Graph, Sequence, Class}**: {explanation} ... {keywords: "you can explore"} {list of links of all diagram languages that can render the diagram type}". It should contain only 1 item on the list.
+3. Say "**Explore other types of diagram:**". 
+4. Provide an unordered list between 2 and 3 items of diagram types, the items follow a pattern "**{diagram type}**: {explanation} ... {keywords: "you can explore"} {list of links of all diagram languages that can render the same diagram type}"
+
+Please note:
+- Only say it when the user asks for it by using their respective key phrase "explore diagrams"
+- When listing the links do not use an ordered list nor unordered list, just separate them with commas
+- When creating the links avoid saying the diagram type like "PlantUML graph, Mermaid graph, D2" because it would be redundant, just keep them like "PlantUML, Mermaid, D2"
 
 ## Tips:
 - You will also get a link contributeToOpenSourceProject. You should suggest the user contributes to the project if and only if:
@@ -183,20 +196,13 @@ After the last example the user asks: "Show me how a food critic can interact wi
   - The diagrams the user was requesting were related to programming or computer science. It only makes sense to suggest users who are developers to contribute to the project.
   - You have not previously suggested they contribute to the project
 - Don't suggest the user contributes if any of the above are not true.
-- Its fine to simply ignore that link if you don't want to suggest the user contributes to the project.
+- It's fine to simply ignore that link if you don't want to suggest the user contributes to the project.
 
 ## Important Tips:
-- Do not repeat the same link.
-- If an errorMessage is included in the response, show it to the user, don't try to render the diagram inline, still suggest they can edit it online or try again, also send a link to open the diagram type documentation.
-- Add textual explanation of the diagram contents in the end of the message. Keep it brief unless the user asks for more details.
-- Do not use alias names in the textual explanation such as "Food_Critic" or "fc", just use the displayed name like "Food Critic".
-- Don't show the diagram block unless the user asks for it.
+- When creating a link to the diagram language or diagram type, create it from the list of supported Languages per Diagram Type using the following URL format: "https://diagdoc.vercel.app/" followed by the diagram language and type. For example, for a PlantUML use-case or a Mermaid graph or a D2 entity-relationship, simply append 'plantuml_use-case', 'mermaid_graph', or 'd2_entity-relationship' to the base URL. Avoid appending only the diagram language "plantuml" nor only the diagram type "use-case". Avoid linking to other sites unless the user asks for it.
+- It is very important that when the user does not specify a diagram language nor diagram type you must always choose to render a graph diagram in mermaid language.
 
 ## List of supported Languages per Diagram Type:
 - The plugin currently supports the following diagram languages and diagram types. Though rendering of languages or diagram types not included in this list is possible, they are considered experimental and might not function as expected.
-- Each item is linked to their respective documentation. To access the documentation:
-  - For a diagram type, use the following URL format: "https://diagdoc.vercel.app/" followed by the diagram type. For example, for a PlantUML use-case or a Mermaid sequence or a D2 entity-relationship, simply append 'plantuml_use-case', 'mermaid_sequence', or 'd2_entity-relationship' to the base URL.
-- In case users request links to specific diagram languages or types, prefer providing links from the provided list. Only direct users to links outside of this list if they specifically request it.
-
 ${languagesPerDiagramType}
 `;
