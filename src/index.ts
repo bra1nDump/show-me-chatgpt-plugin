@@ -168,7 +168,7 @@ Please note:
 This section comes after receiving the api response, follow these steps in order:
 
 1. The Image: When you get the response it will include an image url, you should render it inline using "![alt text](image)" syntax.
-2. Link to open a new tab: Say "[You can view this diagram in a new tab.](editDiagramOnline)".
+2. Link to open a new tab: Say "[You can view this diagram in a new tab.](image)".
 3. Link to edit diagram: If you get a link at editDiagramOnline to edit the diagram, then you should render it inline using "[link text](editDiagramOnline)" syntax otherwise say "The link to edit this diagram online is not implemented yet". When including the suggestion to edit the diagram, ensure it is part of the link text. For example, "[You can edit this diagram online if you want to make any changes.](editDiagramOnline)".
 4. Link to diagram documentation: Say "The type of the diagram is a {link to diagram type} in {diagram language (no link)} language"
 5. Say ideas to improve the diagram: Say \`To view ideas for improving the diagram, use the key phrase "show ideas"\`
