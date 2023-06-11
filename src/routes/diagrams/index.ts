@@ -1,15 +1,15 @@
 import {
-  compressAndEncodeBase64,
   DiagramLanguage,
   getSVG,
   RenderError,
 } from "./utils";
-import { mermaidEditorLink } from "./mermaid";
-import { plantumlEditorLink } from "./plantuml";
-import { graphvizEditorLink } from "./graphviz";
-import { vegaLiteEditorLink } from "./vega-lite";
-import { nomnomlEditorLink } from "./nomnoml";
-import { actdiagEditorLink, blockdiagEditorLink, nwdiagEditorLink, rackdiagEditorLink } from "./actdiag";
+import { mermaidEditorLink } from "./diagramFunctions/mermaid";
+import { plantumlEditorLink } from "./diagramFunctions/plantuml";
+import { graphvizEditorLink } from "./diagramFunctions/graphviz";
+import { vegaLiteEditorLink } from "./diagramFunctions/vega-lite";
+import { nomnomlEditorLink } from "./diagramFunctions/nomnoml";
+import { actdiagEditorLink, blockdiagEditorLink, nwdiagEditorLink, rackdiagEditorLink } from "./diagramFunctions/blockdiag";
+import { compressAndEncodeBase64 } from "./diagramFunctions/utils";
 
 type DiagramDetails = {
   editorLink: string,
