@@ -11,8 +11,8 @@
     "node": ">=14"
   },
   "scripts": {
-    "dev": "miniflare --build-watch-path src --build-command 'npm run build' --wrangler-config wrangler.local.toml --kv SHORTEN --kv-persist --modules build/index.js",
-    "dev:with-secrets": "miniflare --build-watch-path src --build-command 'npm run build' --wrangler-config wrangler.toml --kv SHORTEN --kv-persist --modules build/index.js",
+    "dev": "miniflare --build-watch-path src --build-command \"npm run build\" --wrangler-config wrangler.local.toml --kv SHORTEN --kv-persist --modules build/index.js",
+    "dev:with-secrets": "miniflare --build-watch-path src --build-command \"npm run build\" --wrangler-config wrangler.toml --kv SHORTEN --kv-persist --modules build/index.js",
     "_comment": "NOTE: Only use wrangler when deploying or testing in the cloud. Use miniflare for local development (npm run dev).",
     "dev:wrangler": "wrangler dev --env=local",
     "publish": "wrangler publish",
