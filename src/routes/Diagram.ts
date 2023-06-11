@@ -1,5 +1,6 @@
 import { Enumeration, OpenAPIRoute, Query, Str, OpenAPISchema } from '@cloudflare/itty-router-openapi'
 
+import { IRequest } from 'itty-router'
 import { saveShortLink } from './Shorten'
 
 import { createTrackerForRequest, sendMixpanelEvent } from '../mixpanel'
@@ -94,9 +95,8 @@ export class MermaidRoute extends OpenAPIRoute {
   }
 
   /// 3. Handles the API request
-  async handle(request: Request, env: Env, _ctx : unknown, data: Record<string, any>) {
+  async handle(request: IRequest, env: Env, _ctx : unknown, data: Record<string, any>) {
     const BASE_URL = new URL(request.url).origin
-    const timeline = new Timeline();
 
     // Extract data from request
     const diagramLanguage =
@@ -234,28 +234,4 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     }
   })
 }
-
-class Timeline {
-  private start: Date;
-  // @ts-ignore
-  private endOfGPTResponse: Option<Date>;
-
-  constructor() {
-    this.start = new Date();
-  }
-
-  finishGPTResponse() {
-    this.endOfGPTResponse = new Date();
-    console.log(
-      'time gpt responded: ',
-      (this.endOfGPTResponse.getTime() - this.start.getTime()) / 1000
-    )
-  }
-
-  finish() {
-
-  }
-}
-
-type Option<T> = T | null;
 

@@ -1,4 +1,5 @@
 import { Enumeration, OpenAPIRoute, Query, Str } from '@cloudflare/itty-router-openapi'
+import { IRequest } from 'itty-router'
 
 import { Env } from '..';
 import { DiagramLanguage, DiagramType } from "./diagrams/utils";
@@ -46,7 +47,7 @@ export class DiagramGuidelinesRoute extends OpenAPIRoute {
     },
   }
 
-  async handle(request: Request, env: Env, _ctx: unknown) {
+  async handle(request: IRequest, env: Env, _ctx: unknown) {
     const diagramGuidelinesParam = new URL(request.url).searchParams.get("diagramGuidelines") as GuidelineParam;
 
     console.log('diagram guidelines param: ', diagramGuidelinesParam)

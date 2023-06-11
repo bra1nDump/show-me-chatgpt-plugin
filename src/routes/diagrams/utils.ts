@@ -10,7 +10,7 @@ export function compressAndEncodeBase64(input: string) {
 
   // Encode the compressed Uint8Array to a Base64 string
   const base64Encoded = btoa(
-    String.fromCharCode.apply(null, compressedUint8Array)
+    String.fromCharCode.apply(null, compressedUint8Array as unknown as number[])
   )
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
@@ -24,7 +24,7 @@ export function encodeBase64(input: string) {
   const inputUint8Array = textEncoder.encode(input)
 
   // Encode the compressed Uint8Array to a Base64 string
-  const base64Encoded = btoa(String.fromCharCode.apply(null, inputUint8Array))
+  const base64Encoded = btoa(String.fromCharCode.apply(null, inputUint8Array as unknown as number[]))
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
 
@@ -144,7 +144,8 @@ export async function getSVG(imageUrl: string): Promise<RenderResult> {
       `)
 
     return { svg }
-  } catch (error) {
+  } catch (e) {
+    const error = e as Error
     console.error(
       `Error rendering or fetching svg: ${error}
       Image url: ${imageUrl}

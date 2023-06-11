@@ -1,10 +1,11 @@
 import { Env } from ".";
+import { IRequest } from "itty-router";
 
 export type MixpanelEventProperties = {
   [key: string]: any;
 }
 
-export function createTrackerForRequest(request: Request, env: Env) {
+export function createTrackerForRequest(request: IRequest, env: Env) {
     // Print headers
     const headers = Object.fromEntries(request.headers)
     console.log('headers', headers)

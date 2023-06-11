@@ -41,6 +41,7 @@
     "timeline"
   ],
   "devDependencies": {
+    "@types/pako": "^2.0.0",
     "esbuild": "^0.17.19",
     "miniflare": "^2.10.0",
     "typescript": "^5.0.4"

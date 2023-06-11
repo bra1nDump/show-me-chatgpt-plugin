@@ -3,6 +3,7 @@ import { KVNamespace, ExecutionContext } from '@cloudflare/workers-types'
 import { defineAIPluginManifest } from 'chatgpt-plugin'
 import { isValidChatGPTIPAddress } from 'chatgpt-plugin'
 import { createCors } from 'itty-cors'
+import { IRequest } from 'itty-router'
 
 import pkg from '../package.json'
 import { MermaidRoute, RenderRoute } from './routes/Diagram'
@@ -36,7 +37,6 @@ const router = OpenAPIRouter({
 })
 
 const { preflight, corsify } = createCors({ origins: ['*'] })
-router.all('*', preflight)
 
 // 2. Expose magic openapi.json, expose API itself
 router.get('/render', MermaidRoute)
@@ -73,7 +73,7 @@ router.original.get('/d/:id', DiagramLinkRoute)
 router.original.post('/join-work-together-email', JoinWorkTogetherEmailRoute)
 
 router.original.get('/.well-known/ai-plugin.json', ManifestRoute);
-router.original.get('/logo.svg', (request: Request, env: Env) => {
+router.original.get('/logo.svg', (request: IRequest, env: Env) => {
   console.log('logo')
 
   if (Math.random() < 0.01) {
@@ -90,7 +90,7 @@ router.original.get('/logo.svg', (request: Request, env: Env) => {
   });
 })
 
-function ManifestRoute(request: Request): Response {
+function ManifestRoute(request: IRequest): Response {
   const url = new URL(request.url)
   const host = request.headers.get('host')
   const openAPIUrl = `${url.protocol}//${host}/openapi.json`
@@ -122,10 +122,12 @@ function ManifestRoute(request: Request): Response {
 router.all('*', () => new Response('404 Not Found...', { status: 200 }))
 
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext) {
+  async fetch(request: IRequest, env: Env, ctx: ExecutionContext) {
     console.log('request', request.url)
 
+    // Needed for localhost development
     if (request.method === 'OPTIONS') {
+      // @ts-ignore
       return preflight(request);
     }
 

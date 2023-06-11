@@ -2,6 +2,8 @@ import { Env } from ".."
 // @ts-ignore
 import DiagramEditorWithEmailFormHtml from "./DiagramEditorWithEmailForm.html"
 
+import { IRequest } from "itty-router"
+
 /**
  * Displays diagram editor in an iframe with a header that allows the user to enter their email
  * Once the user enters the email, we fire a mixpanel event. The editor will always be visible in the remaining space.
@@ -27,7 +29,7 @@ export function DiagramEditorWithEmailForm(editorUrl: string, workerUrl: string,
 }
 
 // https://mailchimp.com/developer/marketing/api/list-members/add-member-to-list/
-export async function JoinWorkTogetherEmailRoute(request: Request, env: Env) {
+export async function JoinWorkTogetherEmailRoute(request: IRequest, env: Env) {
     // get api key from env
     const apiKey = env.MAILCHIMP_API_KEY!
     const listId = env.MAILCHIMP_LIST_ID!

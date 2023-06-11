@@ -4,6 +4,8 @@ import { Env } from '..'
 import { createTrackerForRequest, sendMixpanelEvent } from '../mixpanel'
 import { DiagramEditorWithEmailForm } from './CollectEmail'
 
+import { IRequest } from 'itty-router'
+
 const nanoid = customAlphabet(
   '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz',
   8
@@ -21,7 +23,7 @@ export async function saveShortLink(
 }
 
 // Always has SVG stored in it
-export async function DiagramLinkRoute(request: Request, env: Env) {
+export async function DiagramLinkRoute(request: IRequest, env: Env) {
   const slug = request.params.id
   if (!slug) {
     return new Response('404 Not Found...', { status: 200 })
@@ -39,8 +41,8 @@ export async function DiagramLinkRoute(request: Request, env: Env) {
 }
 
 // Stores redirect links (or SVGs, for legacy reasons)
-export async function ShortLinkRoute(request: Request, env: Env) {
-  const slug = (request as any).params.id
+export async function ShortLinkRoute(request: IRequest, env: Env) {
+  const slug = request.params.id
   if (!slug) {
     return new Response('404 Not Found...', { status: 200 })
   }
