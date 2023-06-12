@@ -10,6 +10,10 @@ import { vegaLiteEditorLink } from "./diagramFunctions/vega-lite";
 import { nomnomlEditorLink } from "./diagramFunctions/nomnoml";
 import { actdiagEditorLink, blockdiagEditorLink, nwdiagEditorLink, rackdiagEditorLink } from "./diagramFunctions/blockdiag";
 import { compressAndEncodeBase64 } from "./diagramFunctions/utils";
+import { wavedromEditorLink } from "./diagramFunctions/wavedrom";
+import { svgBobEditorLink } from "./diagramFunctions/svgbob";
+import { dbmlEditorLink } from "./diagramFunctions/dbml";
+import { d2EditorLink } from "./diagramFunctions/d2";
 
 type DiagramDetails = {
   editorLink: string,
@@ -33,6 +37,9 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
     "graphviz": {
       editorLink: graphvizEditorLink,
     },
+    "d2": {
+      editorLink: d2EditorLink,
+    },
     "vegalite": {
       editorLink: vegaLiteEditorLink,
     },
@@ -50,6 +57,15 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
     },
     "rackdiag": {
       editorLink: rackdiagEditorLink
+    },
+    "dbml": {
+      editorLink: dbmlEditorLink
+    },
+    "svgbob": {
+      editorLink: svgBobEditorLink
+    },
+    "wavedrom": {
+      editorLink: wavedromEditorLink,
     }
   }
 
