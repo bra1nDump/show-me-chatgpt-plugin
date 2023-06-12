@@ -36,7 +36,7 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
   const formattedDiagram = diagramFunctions.format?.(diagram) ?? diagram;
 
   let rednerResult: RenderResult
-  if (false && diagramLanguage === "mermaid") {
+  if (diagramLanguage === "mermaid") {
     console.log("HACK: bypassing kroki.io for mermaid diagrams, going directly to kroki-mermaid.fly.dev")
     rednerResult = await HACK_postMermaidDiagram(formattedDiagram)
   } else {

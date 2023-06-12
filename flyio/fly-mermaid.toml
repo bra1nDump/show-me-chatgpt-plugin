@@ -1,13 +1,20 @@
 # fly.toml app configuration file generated for billowing-cherry-3012 on 2023-05-26T21:53:32-07:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
+# 
+# Updating memory as chrome is using a lot and I read somewhere that that helped people
+# https://fly.io/docs/rails/getting-started/dockerfiles/#out-of-memory
 
 app = "kroki-mermaid"
 primary_region = "lax"
 
 [build]
   image = "yuzutech/kroki-mermaid"
+
+# Didn't actually upgrade, had to run manually
+# fly scale memory 512  -c fly-mermaid.toml
+[services]
+  memory = 512
 
 [http_service]
   internal_port = 8002
