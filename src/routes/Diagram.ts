@@ -23,7 +23,7 @@ export class MermaidRoute extends OpenAPIRoute {
           example: `graph TB\\n  U[\\"User\\"] -- \\"File Operations\\" --> FO[\\"File Operations\\"]\\n  U -- \\"Code Editor\\" --> CE[\\"Code Editor\\"]\\n  FO -- \\"Manipulation of Files\\" --> FS[\\"FileSystem\\"]\\n  FS -- \\"Write/Read\\" --> D[\\"Disk\\"]\\n  FS -- \\"Compress/Decompress\\" --> ZL[\\"ZipLib\\"]\\n  FS -- \\"Read\\" --> IP[\\"INIParser\\"]\\n  CE -- \\"Create/Display/Edit\\" --> WV[\\"Webview\\"]\\n  CE -- \\"Language/Code Analysis\\" --> VCA[\\"VSCodeAPI\\"]\\n  VCA -- \\"Talks to\\" --> VE[\\"ValidationEngine\\"]\\n  WV -- \\"Render UI\\" --> HC[\\"HTMLCSS\\"]\\n  VE -- \\"Decorate Errors\\" --> ED[\\"ErrorDecoration\\"]\\n  VE -- \\"Analyze Document\\" --> TD[\\"TextDocument\\"]\\n`,
         }),
         {
-          required: true,
+          required: false,
         }
       ),
       diagramLanguage: Query(
@@ -110,8 +110,31 @@ export class MermaidRoute extends OpenAPIRoute {
     const diagramType  = new URL(request.url).searchParams.get("diagramType") as DiagramType
       ?? "unknown";
 
-    console.log('diagram', diagramParam)
+    console.log('diagramParam', diagramParam)
     console.log('topic', topic)
+
+    if (!diagramParam) {
+      const responseBody =
+        {
+          results:  [
+            {
+              errorMessage: "The diagram parameter is missing. Please provide a diagram to render.",
+              contributeToOpenSourceProject: "https://github.com/bra1nDump/show-me-chatgpt-plugin/issues"
+            }
+          ]
+        }
+
+      console.log('response', JSON.stringify(responseBody, null, 2))
+
+      return new Response(
+        JSON.stringify(responseBody),
+        {
+          headers: {
+            'content-type': 'application/json;charset=UTF-8'
+          }
+        }
+      )
+    }
 
     const diagram = await diagramDetails(diagramParam, diagramLanguage)
 
@@ -136,7 +159,7 @@ export class MermaidRoute extends OpenAPIRoute {
     if (diagram.editorLink) {
       // Still show the edit link if available, even if there was an
       const editorSlug = await saveShortLink(env.SHORTEN, diagram.editorLink);
-      shortenedEditDiagramURL = diagram.editorLink ? `${BASE_URL}/s/${editorSlug}` : undefined
+      shortenedEditDiagramURL = `${BASE_URL}/s/${editorSlug}`
     }
 
     console.log({ shortenedDiagramURL })
