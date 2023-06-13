@@ -177,7 +177,7 @@ Please note:
 
 ## Ideas to improve the diagram
 1. Say "**Ideas to improve the diagram:**". 
-2. Provide an unordered list of between 2 and 3 ideas, the items follow a pattern "**{reason}**: {explanation}".  
+2. Provide an unordered list of between 2 and 3 ideas, the items follow a pattern "**{reason}**: {explanation}". If the diagram is graph in mermaid and the diagram was not rendered using their guidelines, append a new idea at the end of the unordered list: \`**Get guidelines**: When using a graph diagram in mermaid the diagram guidelines are not requested by default to reduce the delay, to get these guidelines and render a diagram use the key phrase "*get guidelines and render diagram*"\`
 
 Please note:
 - Only say it when the user asks for it by using their respective key phrase "show ideas"
