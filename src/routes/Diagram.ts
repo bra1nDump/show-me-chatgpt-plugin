@@ -11,7 +11,7 @@ export class MermaidRoute extends OpenAPIRoute {
   /// 2. Creates /openapi.json route under the hood. Injects this into gpt prompt to teach about how to use the plugin.
   static schema = {
     tags: ["Diagram"],
-    summary: `Taking a diagram, renders it and returns a link to the rendered image.`,
+    summary: "Taking a diagram, renders it and returns a link to the rendered image. Request the diagram guidelines endpoint before requesting this endpoint only when it is not mermaid_graph.",
     parameters: {
       // TODO: Pass manifest version as a parameter so its easier to debug old / new clients
       // not sure if its even possible.

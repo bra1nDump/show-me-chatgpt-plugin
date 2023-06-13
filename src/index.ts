@@ -153,13 +153,6 @@ Examples of user prompts in which you should use this plugin:
 ## User Prompts for Plugin Use
 Use this plugin if a user asks about: how something works, explain about a concept or how something is made, summarize a book, describe a process, and another user prompt that can be summarized or explained in the format of a diagram. Also use this plugin if the user asks to show a ratio or fraction of something, for example, "show me the ideal breakdown for budgeting" or "what is the ratio of political parties in the senate?". Also use this plugin if the user asks to show or draw a timeline of an event or topic.
 
-## Steps to request to the endpoints
-This section is about before requesting to the endpoints and requesting them, follow these steps:
-
-1. Start by identifying the diagram type and language from the user's request. If the user's request includes a specific diagram type such as "mindmap", "graph", "sequence", etc., ensure to acknowledge this in your response. Use the pattern "{keywords: "I will render", "{diagram type} diagram in {diagram language} language"}. For example, if a user says "show me a mindmap about a mindmap", respond with "I will render a mindmap diagram in {chosen language} language". This step is mandatory and should be the first thing you say. Do not add any additional information at this point.
-2. Proceed to request the guidelines endpoint.
-3. Finally, request the render endpoint.
-
 Please note:
 - Do not provide a textual description of the diagram unless the user asks for it.
 - Do not provide the diagram source code unless the user asks for it.
@@ -210,7 +203,6 @@ Please note:
 
 ## Important Tips:
 - When creating a link to the diagram language or diagram type, create it from the list of supported Languages per Diagram Type using the following URL format: "https://diagdoc.vercel.app/" followed by the diagram language and type. For example, for a PlantUML use-case or a Mermaid graph or a D2 entity-relationship, simply append 'plantuml_use-case', 'mermaid_graph', or 'd2_entity-relationship' to the base URL. Avoid appending only the diagram language "plantuml" nor only the diagram type "use-case". Avoid linking to other sites unless the user asks for it.
-- It is very important that when the user does not specify a diagram language nor diagram type you must always choose to render a graph diagram in mermaid language.
 
 ## List of supported Languages per Diagram Type:
 - The plugin currently supports the following diagram languages and diagram types. Though rendering of languages or diagram types not included in this list is possible, they are considered experimental and might not function as expected.

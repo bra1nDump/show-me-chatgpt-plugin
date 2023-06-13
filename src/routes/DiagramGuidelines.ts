@@ -25,7 +25,6 @@ export class DiagramGuidelinesRoute extends OpenAPIRoute {
       diagramGuidelines: Query(new Enumeration({
           description: 'Guidelines and syntax for a type of diagram',
           required: true,
-          default: "mermaid_graph" as GuidelineParam,
           values: Object.fromEntries(
             diagramGuidelinesParams.map(param => [param, param])
           ),
