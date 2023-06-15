@@ -14,6 +14,7 @@ import { html as privacyPageHtml } from './privacy-page'
 
 import { createTrackerForRequest, sendMixpanelEvent }  from './mixpanel'
 import { JoinWorkTogetherEmailRoute } from './routes/CollectEmail'
+import { ShowCarouselRoute } from "./routes/ShowCarousel";
 
 export interface Env {
   SHORTEN: KVNamespace
@@ -42,6 +43,8 @@ router.all('*', preflight)
 router.get('/render', MermaidRoute)
 
 router.get('/diagram-guidelines', DiagramGuidelinesRoute)
+
+router.get('/show-carousel', ShowCarouselRoute)
 
 // Privacy policy
 router.original.get('/', () =>
@@ -187,10 +190,11 @@ Please note:
 - Only say it when the user asks for it by using their respective key phrase "show ideas"
 
 ## Explore types of diagrams and languages
-1. Say "**Explore all languages for the same diagram type:**". 
-2. Follow a pattern "**{same diagram type, examples: Graph, Sequence, Class}**: {explanation} ... {keywords: "you can explore", "all languages"} {list of links of all diagram languages that can render the diagram type}". It should contain only 1 item on the list. 
-3. Say "**Explore other types of diagram:**". 
-4. Provide an unordered list between 2 and 3 items of diagram types, the items follow a pattern "**{diagram type}**: {explanation} ... {keywords: "you can explore"} {list of links of all diagram languages that can render the same diagram type}"
+1. Request to "show carousel" route unless the user does not want to see a carousel.
+2. Say "**Explore all languages for the same diagram type:**". 
+3. Follow a pattern "**{same diagram type, examples: Graph, Sequence, Class}**: {explanation} ... {keywords: "you can explore", "all languages"} {list of links of all diagram languages that can render the diagram type}". It should contain only 1 item on the list. 
+4. Say "**Explore other types of diagram:**". 
+5. Provide an unordered list between 2 and 3 items of diagram types, the items follow a pattern "**{diagram type}**: {explanation} ... {keywords: "you can explore"} {list of links of all diagram languages that can render the same diagram type}"
 
 Please note:
 - Only say it when the user asks for it by using their respective key phrase "explore diagrams"
@@ -204,6 +208,7 @@ Please note:
   - You have not previously suggested they contribute to the project
 - Don't suggest the user contributes if any of the above are not true.
 - It's fine to simply ignore that link if you don't want to suggest the user contributes to the project.
+- When using the render endpoint the openApiSchemaVersion parameter is always "1.0"
 
 ## Important Tips:
 - When creating a link to the diagram language or diagram type, create it from the list of supported Languages per Diagram Type using the following URL format: "https://diagdoc.vercel.app/" followed by the diagram language and type. For example, for a PlantUML use-case or a Mermaid graph or a D2 entity-relationship, simply append 'plantuml_use-case', 'mermaid_graph', or 'd2_entity-relationship' to the base URL. Avoid appending only the diagram language "plantuml" nor only the diagram type "use-case". Avoid linking to other sites unless the user asks for it.

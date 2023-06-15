@@ -17,9 +17,18 @@ export class MermaidRoute extends OpenAPIRoute {
     tags: ["Diagram"],
     summary: "Taking a diagram, renders it and returns a link to the rendered image. Always request the diagram guidelines endpoint before requesting this endpoint",
     parameters: {
-      // TODO: Pass manifest version as a parameter so its easier to debug old / new clients
-      // not sure if its even possible.
-
+      openApiSchemaVersion: Query(
+        new Enumeration({
+          description: "Version of the OpenAPI schema",
+          default: "1.0",
+          required: false,
+          values: {
+            "1.0": "1.0",
+          },
+        }), {
+          required: false,
+        }
+      ),
       diagramLanguage: Query(
         new Enumeration({
           description: 'Language of the diagram',
@@ -121,6 +130,8 @@ export class MermaidRoute extends OpenAPIRoute {
       new URL(request.url).searchParams.get("diagram")
       ?? new URL(request.url).searchParams.get("mermaid") as string; // For older versions
 
+    const openApiSchemaVersion = new URL(request.url).searchParams.get("openApiSchemaVersion") ?? "none";
+
     const topic = new URL(request.url).searchParams.get("topic") ?? "none";
     const diagramType = new URL(request.url).searchParams.get("diagramType") as DiagramType
       ?? "unknown";
@@ -167,6 +178,7 @@ export class MermaidRoute extends OpenAPIRoute {
       'diagram': diagramParam.length > 255 ? diagramParam.substring(0, 200) + " -- truncated" : diagramParam,
 
       'topic': topic,
+      'openApiSchemaVersion': openApiSchemaVersion,
     })
 
     let shortenedDiagramURL: string | undefined;
@@ -195,6 +207,7 @@ export class MermaidRoute extends OpenAPIRoute {
       'edit_diagram_url': shortenedEditDiagramURL ?? "not implemented yet",
 
       'topic': topic,
+      'openApiSchemaVersion': openApiSchemaVersion,
     })
 
     let errorMessage: string | undefined;
