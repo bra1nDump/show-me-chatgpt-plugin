@@ -45,6 +45,10 @@ export class DiagramGuidelinesRoute extends OpenAPIRoute {
             description: "Diagram themes to change the style of the diagram. The themes are specific to the diagram language. Don't render a diagram using a theme unless the user asks for it",
             required: false
           }),
+          additionalInstructions: new Str({
+            description: "Additional instructions to help rendering the diagram",
+            required: false
+          }),
         },
       },
     },
