@@ -1,3 +1,5 @@
+import { EditorLink } from "./utils";
+
 function encodeHex(input: string): string {
   const textEncoder = new TextEncoder();
   return Array
@@ -6,9 +8,12 @@ function encodeHex(input: string): string {
     .join('')
 }
 
-export function plantumlEditorLink(code: string): string {
+export function plantumlEditorLink(code: string): EditorLink {
   const buffer = encodeHex(code)
 
-  return 'https://www.plantuml.com/plantuml/uml/~h' + buffer
+  return {
+    link: `https://www.plantuml.com/plantuml/uml/~h${buffer}`,
+    canAutofillDiagramCode: true
+  }
 }
 

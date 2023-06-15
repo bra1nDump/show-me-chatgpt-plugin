@@ -6,6 +6,7 @@ import { diagramTypeGuidelines } from "./diagrams/guidelines/diagramTypeGuidelin
 import { syntaxGuidelines } from "./diagrams/guidelines/syntaxGuidelines";
 import { supportedDiagrams } from "./diagrams/supportedDiagrams";
 import { createTrackerForRequest } from "../mixpanel";
+import { diagramThemes } from "./diagrams/themes/diagramThemes";
 
 type DiagramTypeSyntax = `${DiagramLanguage}_${DiagramType}`
 
@@ -19,8 +20,8 @@ type GuidelineParam = typeof diagramGuidelinesParams[number]
 
 export class DiagramGuidelinesRoute extends OpenAPIRoute {
   static schema = {
-    tags: ["Diagram Guidelines"],
-    summary: "Diagram guidelines to help rendering more effective diagrams",
+    tags: ["Diagram Guidelines", "Diagram Themes"],
+    summary: "Diagram guidelines and themes to help rendering more effective diagrams",
     parameters: {
       diagramGuidelines: Query(new Enumeration({
           description: 'Guidelines and syntax for a type of diagram',
@@ -38,6 +39,10 @@ export class DiagramGuidelinesRoute extends OpenAPIRoute {
         schema: {
           diagramGuidelines: new Str({
             description: "The requested diagram guidelines. Make sure to follow the guidelines before rendering a diagram",
+            required: false
+          }),
+          diagramThemes: new Str({
+            description: "Diagram themes to change the style of the diagram. The themes are specific to the diagram language. Don't render a diagram using a theme unless the user asks for it",
             required: false
           }),
         },
@@ -61,9 +66,12 @@ export class DiagramGuidelinesRoute extends OpenAPIRoute {
       'diagramGuidelinesParam': diagramGuidelinesParam,
     })
 
+    const diagramThemesByLanguage = diagramThemes[diagramLanguage]
+
     const responseBody =
       {
-        diagramGuidelines
+        diagramGuidelines,
+        ...diagramThemesByLanguage && { diagramThemes: diagramThemesByLanguage }
       }
 
     return new Response(

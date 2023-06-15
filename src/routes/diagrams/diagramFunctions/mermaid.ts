@@ -1,6 +1,6 @@
-import { encodeBase64 } from "./utils";
+import { encodeBase64, EditorLink } from "./utils";
 
-export function mermaidEditorLink(code: string): string {
+export function mermaidEditorLink(code: string): EditorLink {
   const mermaidEditorJson = {
     code,
     mermaid: { theme: 'default' },
@@ -9,6 +9,9 @@ export function mermaidEditorLink(code: string): string {
   const mermaidEditorJsonString = JSON.stringify(mermaidEditorJson)
   const buffer = encodeBase64(mermaidEditorJsonString)
 
-  return 'https://mermaid.live/edit#' + buffer
+  return {
+    link: `https://mermaid.live/edit#${buffer}`,
+    canAutofillDiagramCode: true
+  }
 }
 

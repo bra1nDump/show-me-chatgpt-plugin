@@ -30,3 +30,8 @@ export function encodeBase64(input: string) {
 
   return base64Encoded
 }
+
+export type EditorLink = {
+  link: string;
+  canAutofillDiagramCode: boolean;
+}

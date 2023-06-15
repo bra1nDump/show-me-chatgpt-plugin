@@ -7,25 +7,19 @@ import { Env } from '..';
 import { diagramDetails } from "./diagrams";
 import { DiagramLanguage, diagramLanguages, DiagramType, diagramTypes } from "./diagrams/utils";
 
+export type DiagramOptions = {
+  d2Theme: string | null
+}
+
 export class MermaidRoute extends OpenAPIRoute {
   /// 2. Creates /openapi.json route under the hood. Injects this into gpt prompt to teach about how to use the plugin.
   static schema = {
     tags: ["Diagram"],
-    summary: "Taking a diagram, renders it and returns a link to the rendered image. Request the diagram guidelines endpoint before requesting this endpoint only when it is not mermaid_graph.",
+    summary: "Taking a diagram, renders it and returns a link to the rendered image. Always request the diagram guidelines endpoint before requesting this endpoint",
     parameters: {
       // TODO: Pass manifest version as a parameter so its easier to debug old / new clients
       // not sure if its even possible.
 
-      // It still prefers the old name even if new manifest is fetched
-      diagram: Query(
-        new Str({
-          description: "Diagram to render. Avoid using a multiline string, instead use explicit newline characters.",
-          example: `graph TB\\n  U[\\"User\\"] -- \\"File Operations\\" --> FO[\\"File Operations\\"]\\n  U -- \\"Code Editor\\" --> CE[\\"Code Editor\\"]\\n  FO -- \\"Manipulation of Files\\" --> FS[\\"FileSystem\\"]\\n  FS -- \\"Write/Read\\" --> D[\\"Disk\\"]\\n  FS -- \\"Compress/Decompress\\" --> ZL[\\"ZipLib\\"]\\n  FS -- \\"Read\\" --> IP[\\"INIParser\\"]\\n  CE -- \\"Create/Display/Edit\\" --> WV[\\"Webview\\"]\\n  CE -- \\"Language/Code Analysis\\" --> VCA[\\"VSCodeAPI\\"]\\n  VCA -- \\"Talks to\\" --> VE[\\"ValidationEngine\\"]\\n  WV -- \\"Render UI\\" --> HC[\\"HTMLCSS\\"]\\n  VE -- \\"Decorate Errors\\" --> ED[\\"ErrorDecoration\\"]\\n  VE -- \\"Analyze Document\\" --> TD[\\"TextDocument\\"]\\n`,
-        }),
-        {
-          required: false,
-        }
-      ),
       diagramLanguage: Query(
         new Enumeration({
           description: 'Language of the diagram',
@@ -55,6 +49,27 @@ export class MermaidRoute extends OpenAPIRoute {
         new Str({
           description: "Topic of the diagram",
           example: "Software",
+        }),
+        {
+          required: false,
+        }
+      ),
+      d2Theme: Query(
+        new Str({
+          description: "Theme for d2 diagram",
+          example: "neutral-grey_sketch",
+        }),
+        {
+          required: false,
+        }
+      ),
+
+      // The diagram parameter was moved to the end to load the rest of the parameters first and use their context (language, type) to make the diagram preciser
+      // It still prefers the old name even if new manifest is fetched
+      diagram: Query(
+        new Str({
+          description: "Diagram to render. Avoid using a multiline string, instead use explicit newline characters.",
+          example: `graph TB\\n  U[\\"User\\"] -- \\"File Operations\\" --> FO[\\"File Operations\\"]\\n  U -- \\"Code Editor\\" --> CE[\\"Code Editor\\"]\\n  FO -- \\"Manipulation of Files\\" --> FS[\\"FileSystem\\"]\\n  FS -- \\"Write/Read\\" --> D[\\"Disk\\"]\\n  FS -- \\"Compress/Decompress\\" --> ZL[\\"ZipLib\\"]\\n  FS -- \\"Read\\" --> IP[\\"INIParser\\"]\\n  CE -- \\"Create/Display/Edit\\" --> WV[\\"Webview\\"]\\n  CE -- \\"Language/Code Analysis\\" --> VCA[\\"VSCodeAPI\\"]\\n  VCA -- \\"Talks to\\" --> VE[\\"ValidationEngine\\"]\\n  WV -- \\"Render UI\\" --> HC[\\"HTMLCSS\\"]\\n  VE -- \\"Decorate Errors\\" --> ED[\\"ErrorDecoration\\"]\\n  VE -- \\"Analyze Document\\" --> TD[\\"TextDocument\\"]\\n`,
         }),
         {
           required: false,
@@ -94,7 +109,7 @@ export class MermaidRoute extends OpenAPIRoute {
   }
 
   /// 3. Handles the API request
-  async handle(request: Request, env: Env, _ctx : unknown, data: Record<string, any>) {
+  async handle(request: Request, env: Env, _ctx: unknown, data: Record<string, any>) {
     const BASE_URL = new URL(request.url).origin
     const timeline = new Timeline();
 
@@ -106,9 +121,14 @@ export class MermaidRoute extends OpenAPIRoute {
       new URL(request.url).searchParams.get("diagram")
       ?? new URL(request.url).searchParams.get("mermaid") as string; // For older versions
 
-    const topic  = new URL(request.url).searchParams.get("topic") ?? "none";
-    const diagramType  = new URL(request.url).searchParams.get("diagramType") as DiagramType
+    const topic = new URL(request.url).searchParams.get("topic") ?? "none";
+    const diagramType = new URL(request.url).searchParams.get("diagramType") as DiagramType
       ?? "unknown";
+
+    const d2Theme = new URL(request.url).searchParams.get("d2Theme");
+    const diagramOptions: DiagramOptions = {
+      d2Theme
+    }
 
     console.log('diagramParam', diagramParam)
     console.log('topic', topic)
@@ -116,7 +136,7 @@ export class MermaidRoute extends OpenAPIRoute {
     if (!diagramParam) {
       const responseBody =
         {
-          results:  [
+          results: [
             {
               errorMessage: "The diagram parameter is missing. Please provide a diagram to render.",
               contributeToOpenSourceProject: "https://github.com/bra1nDump/show-me-chatgpt-plugin/issues"
@@ -136,7 +156,7 @@ export class MermaidRoute extends OpenAPIRoute {
       )
     }
 
-    const diagram = await diagramDetails(diagramParam, diagramLanguage)
+    const diagram = await diagramDetails(diagramParam, diagramLanguage, diagramOptions)
 
     const track = createTrackerForRequest(request, env)
     void track('render', {
@@ -158,8 +178,8 @@ export class MermaidRoute extends OpenAPIRoute {
     let shortenedEditDiagramURL: string | undefined;
     if (diagram.editorLink) {
       // Still show the edit link if available, even if there was an
-      const editorSlug = await saveShortLink(env.SHORTEN, diagram.editorLink);
-      shortenedEditDiagramURL = `${BASE_URL}/s/${editorSlug}`
+      const editorSlug = await saveShortLink(env.SHORTEN, diagram.editorLink.link);
+      shortenedEditDiagramURL = `${BASE_URL}/s/${editorSlug}${diagram.editorLink.canAutofillDiagramCode ? " (can autofill: yes)" : " (can autofill: no)"}`
     }
 
     console.log({ shortenedDiagramURL })
@@ -191,7 +211,7 @@ export class MermaidRoute extends OpenAPIRoute {
     // TODO: Type this reponse to avoid breaking in the future
     const responseBody =
       {
-        results:  [
+        results: [
           {
             ...shortenedDiagramURL && { image: shortenedDiagramURL },
             ...errorMessage && { errorMessage: errorMessage },

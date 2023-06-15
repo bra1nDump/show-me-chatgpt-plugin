@@ -168,3 +168,13 @@ export async function HACK_postMermaidDiagram(diagram: string): Promise<{
     }
   }
 }
+
+export function linkWithQueryParams(link: string, params: Record<string, string>): string {
+  const url = new URL(link);
+
+  for (const [key, value] of Object.entries(params)) {
+    url.searchParams.set(key, value);
+  }
+
+  return url.toString();
+}
