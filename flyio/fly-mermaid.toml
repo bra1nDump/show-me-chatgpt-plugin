@@ -1,13 +1,29 @@
 # fly.toml app configuration file generated for billowing-cherry-3012 on 2023-05-26T21:53:32-07:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
+# 
+# Updating memory as chrome is using a lot and I read somewhere that that helped people
+# https://fly.io/docs/rails/getting-started/dockerfiles/#out-of-memory
+
+# Didn't actually upgrade, had to run manually
+# fly scale memory 512  -c fly-mermaid.toml
+
+# Memory fix didn't work, added health check and a forked container
+# https://github.com/yuzutech/kroki/pull/1572
+
+# How to build & deploy image (need to be logged in nu11ptr, otherwise swap to your own)
+# Checkout https://github.com/bra1nDump/kroki/tree/add-health-check-route-to-mermaid
+# cd mermaid
+# docker build -t nu11ptr/mermaid-with-health-check .
+# docker push nu11ptr/mermaid-with-health-check
+# fly deploy -c fly-mermaid.toml --local-only
+# monitoring https://fly.io/apps/kroki-mermaid/monitoring
 
 app = "kroki-mermaid"
 primary_region = "lax"
 
 [build]
-  image = "yuzutech/kroki-mermaid"
+  image = "nu11ptr/mermaid-with-health-check"
 
 [http_service]
   internal_port = 8002
@@ -15,3 +31,14 @@ primary_region = "lax"
   auto_stop_machines = true
   auto_start_machines = true
   min_machines_running = 0
+
+[checks]
+  [checks.render_sample_diagram]
+    grace_period = "30s"
+    interval = "1m"
+    method = "get"
+    path = "/health-check"
+    protocol = "http"
+    port = 8002
+    timeout = "2s"
+    type = "http"

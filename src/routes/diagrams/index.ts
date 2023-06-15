@@ -113,7 +113,8 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
     insertDiagramOptionsIfNeeded(
       `https://kroki.io/${diagramLanguage}/svg/${compressAndEncodeBase64(diagram)}`
       , diagramLanguage, diagramOptions)
-
+  console.log("imageUrl", imageUrl);
+  
   if (isInvalidD2Theme) {
     return {
       editorLink: defaultEditorLink,
@@ -124,10 +125,14 @@ export async function diagramDetails(diagram: string, diagramLanguage: DiagramLa
       },
     }
   }
-
-  console.log("imageUrl", imageUrl);
-
-  const renderResult = await getSVG(imageUrl)
+  
+  let rednerResult: RenderResult
+  if (diagramLanguage === "mermaid") {
+    console.log("HACK: bypassing kroki.io for mermaid diagrams, going directly to kroki-mermaid.fly.dev")
+    rednerResult = await HACK_postMermaidDiagram(diagram)
+  } else {
+    rednerResult = await getSVG(imageUrl);
+  }
 
   const editorLink = diagramFunctions.editorLink?.(diagram)
 

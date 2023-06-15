@@ -23,15 +23,25 @@ export function createTrackerForRequest(request: Request, env: Env) {
           ip: realIP,
           'worker_environment': env.WORKER_ENV,
         }
-        await sendMixpanelEvent(env.MIXPANEL_TOKEN as string, event, ephemeralUserId, adjustedProperties)
-        console.log('Sent mixpanel event', event, properties)
+        await sendMixpanelEvent(
+          env.MIXPANEL_TOKEN, 
+          env.MIXPANEL_GLOBAL_SAMPLING_RATE, 
+          event, ephemeralUserId, 
+          adjustedProperties
+        )
       } catch (e) {
         console.log('Error sending mixpanel event', e)
       }
     }
 }
 
-export async function sendMixpanelEvent(token: string, eventName: string, userId: string | undefined, properties: MixpanelEventProperties) {
+export async function sendMixpanelEvent(token: string, samplingRate: number, eventName: string, userId: string | undefined, properties: MixpanelEventProperties) {
+  // Sample events
+  if (Math.random() > samplingRate) {
+    console.log('Skipping mixpanel event due to sampling', eventName, properties)
+    return
+  }
+
   let mixpanelEvent = {
     "event": eventName,
     "properties": {
@@ -63,4 +73,6 @@ export async function sendMixpanelEvent(token: string, eventName: string, userId
     // handle error
     console.error("Mixpanel event tracking failed")
   }
+
+  console.log('Sent mixpanel event', eventName, properties)
 }
