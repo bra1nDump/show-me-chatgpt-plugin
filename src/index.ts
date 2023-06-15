@@ -18,7 +18,9 @@ export interface Env {
   CHAT_HISTORY: KVNamespace
   OPENAI_KEY: string
   WORKER_ENV: 'production' | 'local'
+  
   MIXPANEL_TOKEN: string
+  MIXPANEL_GLOBAL_SAMPLING_RATE: number
 
   MAILCHIMP_API_KEY: string
   MAILCHIMP_LIST_ID: string
