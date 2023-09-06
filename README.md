@@ -1,3 +1,10 @@
+# This project is now private and the public version is not actively updated
+Thanks for all the stars and usage of the product! I wanted to provide clarity on why the commits have stopped:
+Our team is working on integrating with some partners and we dont currently feel comfortable publicaly sharing that code. 
+There are now multiple competitors in the diagram ChatGPT plugin space and we want to avoid loosing our competetive edge by sharing the latest updates to the code.
+
+If you strongly feel we should open the source again message kirill2003de@gmail.com with your reasons. 
+
 # Diagrams in ChatGPT - Show Me
 Create and edit diagrams in seconds without even leaving the chat.
 
